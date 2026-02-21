@@ -49,7 +49,7 @@ flowchart TD
     L -->|Yes| M[Dispatch subagents]
     L -->|No| N{All done?}
 
-    M --> O[Monitor: clipm tree]
+    M --> O[Monitor: clipm tree + fix stale status]
     O --> P[Check newly unblocked]
     P --> K
 
@@ -78,8 +78,9 @@ See [workflows/new-project.md](workflows/new-project.md#external-tool-discovery)
 
 ### Create Hierarchy
 ```bash
-clipm add "Root task"              # Returns {"id": "abcd", ...}
+clipm add "Root task"              # Outputs just the task ID, e.g. "abcd"
 clipm add "Child" --parent abcd    # Child of task abcd
+clipm parent efgh abcd             # Set abcd as parent of efgh (positional, no flags)
 clipm block abcd efgh              # efgh waits for abcd
 ```
 
@@ -109,6 +110,16 @@ Execute clipm task <ID>: "<description>"
 ```
 
 See [orchestration/parallel.md](orchestration/parallel.md) for checklist and examples.
+
+### After Subagent Completion
+
+Run `clipm tree` after each dispatch wave returns.
+
+**Fix stale leaf tasks:** If a completed subagent's task still shows `[TODO]`, manually run `clipm status <id> done`. Subagents occasionally fail to update clipm.
+
+**Roll up parent tasks:** After all children of a parent task are `[DONE]`, mark the parent done too: `clipm status <parent-id> done`. This unblocks any tasks that depend on the parent (e.g., INDEX.md blocked by a "Write developer docs" parent).
+
+**Avoid unnecessary grouping tasks.** Only create parent grouping tasks (e.g., "Write developer docs") when other tasks explicitly need to block on the whole group. If tasks only block on individual leaves, skip the grouping layer — it just adds status management overhead.
 
 ## When Things Go Wrong
 

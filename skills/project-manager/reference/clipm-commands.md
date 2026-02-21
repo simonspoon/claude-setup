@@ -1,6 +1,6 @@
 # clipm Command Reference
 
-Quick reference for all clipm commands. All commands output JSON by default. Use `--pretty` for human-readable output.
+Quick reference for all clipm commands. Most commands output JSON by default. Use `--pretty` for human-readable output. Exception: `add` outputs just the task ID.
 
 **IDs are 4-character strings** (e.g., `unke`, `ozit`), not integers.
 
@@ -13,7 +13,7 @@ clipm init              # Create .clipm/ in current directory
 ## Task Creation
 
 ```bash
-clipm add "Task name"                          # Create task
+clipm add "Task name"                          # Create task (outputs task ID)
 clipm add "Task name" --parent <id>            # Create child task
 clipm add "Task name" -d "Detailed description" # With description
 ```
@@ -98,7 +98,7 @@ clipm watch --interval 1s         # Custom poll interval (default 500ms)
 
 ## JSON Output Structure
 
-### Task Object
+### Task Object (from `show`, `list`, etc.)
 
 ```json
 {
@@ -127,8 +127,7 @@ clipm watch --interval 1s         # Custom poll interval (default 500ms)
 ### Create and Start Task
 
 ```bash
-clipm add "New task"
-# Note the ID from output, e.g., "abcd"
+clipm add "New task"        # Outputs task ID, e.g. "abcd"
 clipm claim abcd my-agent
 clipm status abcd in-progress
 ```

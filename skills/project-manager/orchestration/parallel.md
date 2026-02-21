@@ -6,10 +6,12 @@ Spawn multiple subagents for concurrent task execution.
 
 **Verify ALL before parallel dispatch:**
 
+- [ ] Count leaf tasks to dispatch — verify the count matches your plan's file list
 - [ ] Tasks have empty `blockedBy` arrays (`clipm show <id>`)
 - [ ] Tasks don't modify same files
 - [ ] Tasks don't produce output another task needs
 - [ ] Total concurrent agents ≤ 5
+- [ ] If dispatching in waves (>5 tasks), write down which tasks go in which wave
 
 ```bash
 # Quick check for unblocked tasks
@@ -121,10 +123,12 @@ Execute clipm task ozit: "Research search libraries"
 ## After Dispatch
 
 1. Wait for all subagents to complete
-2. Check status: `clipm tree`
-3. Find newly unblocked: `clipm list --status todo --unblocked`
-4. Dispatch next wave
-5. Repeat until all done
+2. Check status: `clipm tree --show-all`
+3. Fix stale tasks: if a completed subagent's task still shows `[TODO]`, run `clipm status <id> done`
+4. Roll up parents: if all children of a parent are `[DONE]`, run `clipm status <parent-id> done`
+5. Find newly unblocked: `clipm list --status todo --unblocked`
+6. Dispatch next wave
+7. Repeat until all done
 
 ## Integration Checkpoint
 
