@@ -131,8 +131,15 @@ If the project has a CLAUDE.md, trim it to essentials:
 - Data flow narratives
 - Implementation details
 
-**Add:**
-- A directive pointing to `docs/INDEX.md`: "For detailed architecture, contributor guides, and references, read `docs/INDEX.md` and the relevant topic file before working on unfamiliar subsystems."
+**Add a Required Reading section** immediately before the Architecture or first content section:
+
+```markdown
+## Required Reading
+
+Before starting any task, read `docs/INDEX.md` and the relevant topic file for the subsystem you are working on.
+```
+
+This must be a standalone section — not buried in prose. It ensures every AI session consults the docs before writing code.
 
 If no CLAUDE.md exists, don't create one — that's a separate concern.
 

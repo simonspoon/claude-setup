@@ -42,11 +42,32 @@ Execute clipm task <ID>: "<description>"
 1. clipm claim <ID> <agent-name>
 2. clipm status <ID> in-progress
 3. Do: <specific work instructions>
-4. clipm note <ID> "Done: <summary>"
-5. clipm status <ID> done
+4. Verify: <specific verification steps — build, run, test>
+5. If verification fails: fix the issue and re-verify before proceeding
+6. clipm note <ID> "Done: <summary>"
+7. clipm status <ID> done
 
 If blocked: clipm note <ID> "Blocked: <reason>" and report in response.
 ```
+
+### ⚠️ CRITICAL: Always include verification steps
+
+Every subagent prompt MUST include a "Verify" step. Code that compiles but crashes at runtime is not done.
+
+**For code-writing tasks, include ALL of:**
+- Build/compile check
+- A runtime smoke test (run the binary, call the function, hit the endpoint)
+- Fix any errors found before marking done
+
+**Example verification steps by language:**
+- **Rust**: `cargo build -p <crate> && cargo test -p <crate> && cargo run -p <crate> -- --help` (or a minimal invocation that exercises the new code path)
+- **Swift**: `swift build && swift run <binary> --help` (or a minimal invocation)
+- **TypeScript/JS**: `pnpm build && pnpm test && node dist/index.js --help` (or a minimal invocation)
+- **Python**: `uv run python -c "from module import func; func()"` or `uv run pytest`
+
+**"Tests pass" is not the same as "it works."** Unit tests verify isolated logic. A runtime smoke test verifies the binary starts, accepts the new flags, and doesn't crash when invoked. Always do both.
+
+**If the task produces a binary or server**, the subagent should run it briefly and confirm it starts without crashing. "It compiles" is NOT sufficient verification.
 
 ### Template Placeholders
 
@@ -130,20 +151,36 @@ Execute clipm task ozit: "Research search libraries"
 6. Dispatch next wave
 7. Repeat until all done
 
-## Integration Checkpoint
+## Integration Checkpoint (MANDATORY)
 
-After completing a wave of parallel tasks, verify integration:
+After completing a wave of parallel tasks, the orchestrator MUST verify integration before dispatching the next wave or marking parent tasks done.
 
-1. **Build check:** Run project build (`cargo check`, `npm run build`, etc.)
-2. **Smoke test:** Run minimal functionality test
-3. **If failures:** Create fix tasks before proceeding to next wave
+1. **Build check:** Run full project build (`cargo build`, `swift build`, `pnpm build`, etc.)
+2. **Unit test check:** Run the test suite (`cargo test`, `pnpm test`, etc.)
+3. **Runtime smoke test:** Actually run the produced binary/server/function and confirm it doesn't crash. If the task added a new flag or mode, invoke it. "Tests pass" is not sufficient — exercise the real code path.
+4. **Cross-component test:** If tasks produced components that interact (e.g., a server and a client), test them together
+5. **Cleanup:** Stop any servers, remove sockets/temp files, kill child processes spawned during testing
+6. **If failures:** Fix immediately or create fix tasks before proceeding
 
 ```bash
-# Example integration checkpoint
-cargo check 2>&1 | head -20  # Quick compilation check
+# Example: Rust + Swift project
+cargo build 2>&1 | tail -5
+swift build -c release 2>&1 | tail -5
+# Run the binary briefly to catch runtime crashes
+timeout 5 ./binary --help 2>&1 || echo "RUNTIME FAILURE"
 ```
 
 **Do NOT mark parent task done until integration is verified.**
+**Do NOT dispatch the next wave until this wave's integration passes.**
+**Clean up after smoke tests.** If your smoke test spawned a server, created sockets, wrote temp files, or started processes — stop and remove them before moving on.
+
+### Common runtime failures subagents miss
+
+- **Pipe deadlocks**: `Process.waitUntilExit()` before reading stdout/stderr pipe (Swift/Foundation)
+- **Missing framework init**: CoreGraphics/AppKit APIs crash without `NSApplication.shared` (Swift CLI tools)
+- **Binary not discoverable**: Hard-coded paths that only work in one build configuration
+- **Stdio corruption**: Child process writing to stdout/stderr of a TUI parent
+- **Permission errors**: ScreenCaptureKit, network, file access — only surface at runtime
 
 ## Do NOT Parallelize When
 

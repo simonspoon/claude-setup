@@ -23,6 +23,13 @@ Update existing project documentation to reflect code changes. Works with any `d
 - When a user says docs are stale or asks to sync them
 - As a post-implementation step after a feature branch
 
+## ⚠️ CRITICAL REQUIREMENTS
+
+- **CLAUDE.md is a doc target** — new/changed/removed CLI commands, subcommands, flags, or run examples MUST be reflected in CLAUDE.md's build commands section. This includes new subcommands, new flags on existing binaries (e.g., `--batch`), and changed test commands.
+- **README.md is a doc target** — you MUST read it and check it. If no changes are needed, say so explicitly. Do not silently skip it.
+- **Read before writing** — never guess at new behavior. Read the changed source code to extract exact details.
+- **Discover first** — never assume a doc structure exists. Read what's there before editing.
+
 ## Workflow
 
 ### Step 1: Discover the Doc Structure
@@ -83,10 +90,14 @@ Using your topic-to-file map from Step 1, identify which docs are affected. Cate
 
 **Changes that affect CLAUDE.md:**
 - Build/test/run commands changed
+- New CLI subcommands added or existing ones renamed/removed (update run examples)
+- New flags or modes added to existing binaries (e.g., `--batch`, `--verbose`) — add run examples
 - Packages/crates/modules added, removed, or renamed
+- Stale comments in command examples (e.g., "requires running session" when it no longer does)
 
 **Changes that affect README.md:**
 - Public-facing features added or removed
+- New flags or modes added to existing binaries — update the relevant Usage section
 - Installation steps changed
 - Requirements or dependencies changed
 - Usage examples became stale
@@ -141,15 +152,17 @@ CLAUDE.md is loaded into every AI conversation — keep it lean.
 - Package/module added, removed, or renamed (update the one-liner list)
 - Never add detail back — if something needs explanation, put it in the appropriate doc file
 
+**Verify the Required Reading directive exists.** If `docs/INDEX.md` exists, CLAUDE.md MUST contain a standalone "Required Reading" section that directs reading `docs/INDEX.md` before starting any task. If this section is missing or buried in prose, add it immediately before the first content section (e.g., Architecture).
+
 ### Step 7: Update README.md
 
-README.md is the public face. It should be accurate but doesn't need internals.
+README.md is the public face. It should be accurate but doesn't need internals. **You MUST read README.md** — if no updates are needed, state why.
 
 **Check these sections against reality:**
 - Overview / package list — does it match the current structure?
 - Requirements — any new dependencies?
 - Installation — any new steps?
-- Usage / Commands — are examples still valid? Any new commands missing?
+- Usage / Commands — are examples still valid? Any new flags or modes missing?
 - Architecture diagram (if present) — does it reflect current data flow?
 
 **Style rules:**

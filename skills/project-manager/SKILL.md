@@ -22,6 +22,8 @@ Decompose work into hierarchical tasks (clipm) and dispatch parallel subagents.
 - **File conflicts**: NEVER parallelize tasks modifying the same files
 - **Verify before dispatch**: Check `blockedBy` is empty before assigning
 - **IDs are strings**: clipm IDs are 4-char strings (e.g., `unke`), not integers
+- **Subagent prompts MUST include verification steps**: Every code-writing subagent must build AND runtime-test its output. "It compiles" is not done. See [orchestration/parallel.md](orchestration/parallel.md#-critical-always-include-verification-steps)
+- **Integration checkpoint is MANDATORY**: After each wave completes, the orchestrator must build and smoke-test before dispatching the next wave
 
 ## Workflow Overview
 
@@ -56,6 +58,10 @@ flowchart TD
     N -->|No| K
     N -->|Yes| Q[Report results]
 ```
+
+## Plan Mode Interop
+
+If you already created a plan file (via plan mode) before invoking this skill, **use the plan as your task source** — don't re-research. Convert the plan's steps directly into clipm tasks with dependencies. The plan file is your Phase 0 output; skip to task creation.
 
 ## Phase 0: Research (Before Task Creation)
 
@@ -105,8 +111,9 @@ Execute clipm task <ID>: "<description>"
 1. clipm claim <ID> <agent-name>
 2. clipm status <ID> in-progress
 3. <do the work>
-4. clipm note <ID> "Done: <summary>"
-5. clipm status <ID> done
+4. <verify: build + runtime smoke test>
+5. clipm note <ID> "Done: <summary>"
+6. clipm status <ID> done
 ```
 
 See [orchestration/parallel.md](orchestration/parallel.md) for checklist and examples.
