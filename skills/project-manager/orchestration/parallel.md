@@ -39,25 +39,47 @@ flowchart LR
 ```
 Execute clipm task <ID>: "<description>"
 
-1. clipm claim <ID> <agent-name>
-2. clipm status <ID> in-progress
-3. Do: <specific work instructions>
-4. Verify: <specific verification steps — build, run, test>
-5. If verification fails: fix the issue and re-verify before proceeding
-6. clipm note <ID> "Done: <summary>"
-7. clipm status <ID> done
+## Setup
+clipm claim <ID> <agent-name>
+clipm status <ID> in-progress
 
-If blocked: clipm note <ID> "Blocked: <reason>" and report in response.
+## Task
+<specific work instructions>
+
+## Verification
+<specific verification steps — build, run, test>
+If verification fails: fix the issue and re-verify before proceeding.
+
+## Finish
+clipm note <ID> "Done: <summary>"
+clipm status <ID> done
 ```
+
+**The `## Finish` block must always be the last section.** Subagents tend to skip `clipm status done` when it's buried mid-list. Putting it under a named heading after all work is complete makes it harder to miss.
 
 ### ⚠️ CRITICAL: Always include verification steps
 
-Every subagent prompt MUST include a "Verify" step. Code that compiles but crashes at runtime is not done.
+Every subagent prompt MUST include a "Verification" section. Code that compiles but crashes at runtime is not done.
 
 **For code-writing tasks, include ALL of:**
 - Build/compile check
 - A runtime smoke test (run the binary, call the function, hit the endpoint)
 - Fix any errors found before marking done
+
+### ⚠️ CRITICAL: Include edge-case analysis in subagent prompts
+
+When writing the "Task" section of a subagent prompt, the **orchestrator** must think through edge cases and include them as explicit requirements. Subagents only know what you tell them.
+
+**Common edge cases the orchestrator should catch:**
+- **Data with special characters**: Spaces, quotes, unicode in user-facing strings
+- **Empty/missing inputs**: What happens with no args, empty strings, null values
+- **Boundary interactions**: Does output from this code become input elsewhere? Does the format match?
+- **Quoting/escaping**: If the task involves composing strings that will be parsed later, specify quoting rules
+
+**Example — BAD**: "Rewrite accept_completion to use space-based insertion instead of paren-based"
+**Example — GOOD**: "Rewrite accept_completion to use space-based insertion. When inserting text that contains spaces, wrap it in double quotes so the parser treats it as a single token (e.g., `tap "Sign In"` not `tap Sign In`)."
+
+The orchestrator has full context. The subagent doesn't. **Spell out the edge cases you can foresee** — don't assume the subagent will infer them from general instructions.
 
 **Example verification steps by language:**
 - **Rust**: `cargo build -p <crate> && cargo test -p <crate> && cargo run -p <crate> -- --help` (or a minimal invocation that exercises the new code path)
@@ -94,23 +116,30 @@ Execute clipm task unke: "Implement auth"
 
 **Problem**: "Implement the authentication" gives no specifics.
 
-### ✅ Good: Specific instructions
+### ✅ Good: Specific instructions with edge cases
 
 ```
 Execute clipm task unke: "Implement JWT token generation"
 
-1. clipm claim unke jwt-impl
-2. clipm status unke in-progress
-3. Do:
-   - Create src/auth/jwt.ts
-   - Implement generateToken(userId) returning signed JWT
-   - Implement verifyToken(token) returning decoded payload
-   - Use HS256 algorithm, 24h expiry
-   - Export both functions
-4. clipm note unke "Done: created jwt.ts with generate/verify functions"
-5. clipm status unke done
+## Setup
+clipm claim unke jwt-impl
+clipm status unke in-progress
 
-If blocked: clipm note unke "Blocked: <reason>" and report in response.
+## Task
+- Create src/auth/jwt.ts
+- Implement generateToken(userId) returning signed JWT
+- Implement verifyToken(token) returning decoded payload
+- Use HS256 algorithm, 24h expiry
+- Export both functions
+- Edge case: verifyToken must handle expired tokens gracefully (return null, not throw)
+- Edge case: generateToken must reject empty/undefined userId
+
+## Verification
+pnpm build && pnpm test
+
+## Finish
+clipm note unke "Done: created jwt.ts with generate/verify functions"
+clipm status unke done
 ```
 
 ### ✅ Good: Research task
@@ -118,15 +147,19 @@ If blocked: clipm note unke "Blocked: <reason>" and report in response.
 ```
 Execute clipm task ozit: "Research search libraries"
 
-1. clipm claim ozit search-researcher
-2. clipm status ozit in-progress
-3. Do:
-   - Compare Elasticsearch, MeiliSearch, Typesense for our Node.js app
-   - Evaluate: ease of setup, query syntax, performance, hosting options
-   - Recommend one with justification
-   - Document findings in clipm note
-4. clipm note ozit "Done: Recommend MeiliSearch - <brief reason>"
-5. clipm status ozit done
+## Setup
+clipm claim ozit search-researcher
+clipm status ozit in-progress
+
+## Task
+- Compare Elasticsearch, MeiliSearch, Typesense for our Node.js app
+- Evaluate: ease of setup, query syntax, performance, hosting options
+- Recommend one with justification
+- Document findings in clipm note
+
+## Finish
+clipm note ozit "Done: Recommend MeiliSearch - <brief reason>"
+clipm status ozit done
 ```
 
 ## Agent Naming Conventions

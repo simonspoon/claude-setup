@@ -23,6 +23,7 @@ Decompose work into hierarchical tasks (clipm) and dispatch parallel subagents.
 - **Verify before dispatch**: Check `blockedBy` is empty before assigning
 - **IDs are strings**: clipm IDs are 4-char strings (e.g., `unke`), not integers
 - **Subagent prompts MUST include verification steps**: Every code-writing subagent must build AND runtime-test its output. "It compiles" is not done. See [orchestration/parallel.md](orchestration/parallel.md#-critical-always-include-verification-steps)
+- **Subagent prompts MUST include edge cases**: The orchestrator has full context; subagents don't. Spell out edge cases (spaces in strings, empty inputs, quoting rules) explicitly in the prompt. See [orchestration/parallel.md](orchestration/parallel.md#-critical-include-edge-case-analysis-in-subagent-prompts)
 - **Integration checkpoint is MANDATORY**: After each wave completes, the orchestrator must build and smoke-test before dispatching the next wave
 
 ## Workflow Overview
@@ -108,12 +109,19 @@ Dispatch using Task tool. **All independent tasks in ONE message.**
 ```
 Execute clipm task <ID>: "<description>"
 
-1. clipm claim <ID> <agent-name>
-2. clipm status <ID> in-progress
-3. <do the work>
-4. <verify: build + runtime smoke test>
-5. clipm note <ID> "Done: <summary>"
-6. clipm status <ID> done
+## Setup
+clipm claim <ID> <agent-name>
+clipm status <ID> in-progress
+
+## Task
+<do the work — include edge cases explicitly>
+
+## Verification
+<build + runtime smoke test>
+
+## Finish
+clipm note <ID> "Done: <summary>"
+clipm status <ID> done
 ```
 
 See [orchestration/parallel.md](orchestration/parallel.md) for checklist and examples.
