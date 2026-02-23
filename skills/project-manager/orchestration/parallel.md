@@ -57,6 +57,20 @@ clipm status <ID> done
 
 **The `## Finish` block must always be the last section.** Subagents tend to skip `clipm status done` when it's buried mid-list. Putting it under a named heading after all work is complete makes it harder to miss.
 
+### ⚠️ CRITICAL: Scope-bound subagent prompts
+
+Subagent prompts MUST explicitly list the files the subagent is allowed to modify. Subagents that go beyond their assigned files can create conflicts with other parallel agents.
+
+**Always include this in the Task section:**
+```
+IMPORTANT: Only modify these files:
+- path/to/file1.rs
+- path/to/file2.rs
+Do NOT edit any other files, even if you notice issues in them.
+```
+
+This prevents scope creep where a subagent "helpfully" fixes something in a file another agent is also editing.
+
 ### ⚠️ CRITICAL: Always include verification steps
 
 Every subagent prompt MUST include a "Verification" section. Code that compiles but crashes at runtime is not done.
@@ -65,6 +79,19 @@ Every subagent prompt MUST include a "Verification" section. Code that compiles 
 - Build/compile check
 - A runtime smoke test (run the binary, call the function, hit the endpoint)
 - Fix any errors found before marking done
+
+### ⚠️ CRITICAL: Preserve existing behavior when rewriting code
+
+When a subagent replaces or rewrites an existing function/block (not just adding new code), the orchestrator MUST explicitly list **behaviors to preserve** in the prompt. Subagents cannot infer what the old code did — they only see what you tell them.
+
+**Before writing a "replace this block" prompt, check the old code for:**
+- **Timing/metrics**: Does it track `Instant::now()`, elapsed_ms, or duration? → "Preserve elapsed_ms tracking with `Instant::now()` and include it in the result via `.with_data()`"
+- **Logging/tracing**: Does it emit `debug!()`, `info!()`, or structured log fields? → List each one
+- **Error message format**: Does the error include context like elapsed time, selector, or element type? → Specify exact format
+- **Return data shape**: Does `Ok` include `.with_data()`, `.with_screenshot()`, or other metadata? → List each attachment
+- **Side effects**: Does it update shared state, emit events, or write to a log?
+
+**If you provide replacement code in the prompt, diff it mentally against the original.** Any line in the old code that isn't in the new code is a potential regression.
 
 ### ⚠️ CRITICAL: Include edge-case analysis in subagent prompts
 
@@ -191,9 +218,10 @@ After completing a wave of parallel tasks, the orchestrator MUST verify integrat
 1. **Build check:** Run full project build (`cargo build`, `swift build`, `pnpm build`, etc.)
 2. **Unit test check:** Run the test suite (`cargo test`, `pnpm test`, etc.)
 3. **Runtime smoke test:** Actually run the produced binary/server/function and confirm it doesn't crash. If the task added a new flag or mode, invoke it. "Tests pass" is not sufficient — exercise the real code path.
-4. **Cross-component test:** If tasks produced components that interact (e.g., a server and a client), test them together
-5. **Cleanup:** Stop any servers, remove sockets/temp files, kill child processes spawned during testing
-6. **If failures:** Fix immediately or create fix tasks before proceeding
+4. **Output/behavior regression check:** If the change refactors existing behavior, verify the output format is preserved. Check: Are metadata fields still populated? Are status messages still emitted? Does the output schema match what downstream consumers (CLI formatters, log parsers, scripts) expect? Compare the old code path's output contract against the new one.
+5. **Cross-component test:** If tasks produced components that interact (e.g., a server and a client), test them together
+6. **Cleanup:** Stop any servers, remove sockets/temp files, kill child processes spawned during testing
+7. **If failures:** Fix immediately or create fix tasks before proceeding
 
 ```bash
 # Example: Rust + Swift project

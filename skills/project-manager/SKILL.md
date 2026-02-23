@@ -24,6 +24,7 @@ Decompose work into hierarchical tasks (clipm) and dispatch parallel subagents.
 - **IDs are strings**: clipm IDs are 4-char strings (e.g., `unke`), not integers
 - **Subagent prompts MUST include verification steps**: Every code-writing subagent must build AND runtime-test its output. "It compiles" is not done. See [orchestration/parallel.md](orchestration/parallel.md#-critical-always-include-verification-steps)
 - **Subagent prompts MUST include edge cases**: The orchestrator has full context; subagents don't. Spell out edge cases (spaces in strings, empty inputs, quoting rules) explicitly in the prompt. See [orchestration/parallel.md](orchestration/parallel.md#-critical-include-edge-case-analysis-in-subagent-prompts)
+- **Subagent prompts that rewrite existing code MUST list preserved behaviors**: When replacing a function/block, enumerate what the old code did (timing, logging, error format, return data shape). Subagents can't infer what they're replacing. See [orchestration/parallel.md](orchestration/parallel.md#-critical-preserve-existing-behavior-when-rewriting-code)
 - **Integration checkpoint is MANDATORY**: After each wave completes, the orchestrator must build and smoke-test before dispatching the next wave
 
 ## Workflow Overview
@@ -101,6 +102,16 @@ clipm list --status todo --unblocked
 clipm tree                         # Visual hierarchy
 clipm show <id>                    # Task details
 ```
+
+## Inline Execution (Small Tasks)
+
+Not every task needs a subagent. The orchestrator SHOULD execute a task directly when ALL of:
+- The task touches 1-2 files
+- The change is under ~20 lines
+- You already have the file content in context
+- There's no benefit to parallelizing it with other work
+
+Claim the task (`clipm claim <ID> orchestrator`), do the work, mark done. This avoids the overhead of spawning an agent for trivial edits.
 
 ## Subagent Dispatch
 
