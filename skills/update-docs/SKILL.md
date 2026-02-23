@@ -133,7 +133,29 @@ Use the Edit tool for surgical updates. Prefer small, precise edits over rewriti
 - Update the specific value — don't rewrite surrounding context
 - If a default changed, grep all docs for the old default value
 
-### Step 6: Update CLAUDE.md
+### Step 6: Capture Learned Knowledge
+
+Review the conversation history for hard-won knowledge that would help future developers (or AI sessions) avoid repeating the same research. This step targets `docs/dev/` files only.
+
+**Scan the conversation for these signals:**
+- **API gotchas** — an API was assumed to exist but didn't, or behaved unexpectedly
+- **Private/undocumented APIs** — a workaround required using private APIs, KVC, runtime introspection, or similar
+- **Platform quirks** — OS version differences, framework behavior that contradicts documentation
+- **Failed approaches** — something was tried and failed for a non-obvious reason
+- **Build/tooling surprises** — unexpected compiler behavior, flag interactions, dependency issues
+- **Performance findings** — measured data that explains why a particular approach was chosen
+
+**How to capture:**
+1. Identify the relevant `docs/dev/` file using your topic-to-file map
+2. Add a short note in the appropriate section — near the code/feature it relates to
+3. Format as a concise callout: what the gotcha is, why it matters, what to do instead
+4. Include concrete details (exact property names, bitmask values, version constraints) — don't be vague
+
+**Style:** Write as a factual note, not a narrative. Future readers need the *conclusion*, not the research journey.
+
+**Skip this step if:** the conversation was straightforward with no surprises, failed attempts, or non-obvious discoveries.
+
+### Step 7: Update CLAUDE.md
 
 CLAUDE.md is loaded into every AI conversation — keep it lean.
 
@@ -154,9 +176,9 @@ CLAUDE.md is loaded into every AI conversation — keep it lean.
 
 **Verify the Required Reading directive exists.** If `docs/INDEX.md` exists, CLAUDE.md MUST contain a standalone "Required Reading" section that directs reading `docs/INDEX.md` before starting any task. If this section is missing or buried in prose, add it immediately before the first content section (e.g., Architecture).
 
-### Step 7: Update README.md
+### Step 8: Update README.md
 
-README.md is the public face. It should be accurate but doesn't need internals. **You MUST read README.md** — if no updates are needed, state why.
+README.md is the public face. It should be accurate but doesn't need internals. **You MUST read README.md** — if no updates are needed, say so explicitly. Do not silently skip it.
 
 **Check these sections against reality:**
 - Overview / package list — does it match the current structure?
@@ -170,7 +192,7 @@ README.md is the public face. It should be accurate but doesn't need internals. 
 - Keep examples runnable — if syntax changed, update the examples
 - Don't add implementation details — those belong in `docs/dev/`
 
-### Step 8: Update INDEX.md
+### Step 9: Update INDEX.md
 
 If `docs/INDEX.md` exists:
 
@@ -179,7 +201,7 @@ If `docs/INDEX.md` exists:
 - **Doc file renamed or topic changed** → update the link and description
 - **No structural changes** → skip this step
 
-### Step 9: Verify
+### Step 10: Verify
 
 1. **Run the build** — confirm no code was accidentally changed
 2. **Grep for stale references** — search docs/ for old names, removed types, or changed defaults:
