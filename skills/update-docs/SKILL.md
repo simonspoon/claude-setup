@@ -82,6 +82,7 @@ Using your topic-to-file map from Step 1, identify which docs are affected. Cate
 - Protocol or wire format changes → find the protocol/API doc
 - Architecture changes (new modules, changed data flow) → find the architecture doc
 - Error types or variants changed → find the relevant subsystem doc
+- Bug fixes → update test descriptions in the contributing/testing doc; if the bug revealed a non-obvious gotcha (e.g., a subtle language footgun, an API that silently misbehaves), add a pitfall note to the relevant subsystem doc so future developers don't reintroduce it
 
 **Changes that affect user docs (`docs/user/`):**
 - New/changed/removed commands, CLI flags, or API endpoints → find the command reference or relevant guide
@@ -203,7 +204,7 @@ If `docs/INDEX.md` exists:
 
 ### Step 10: Verify
 
-1. **Run the build** — confirm no code was accidentally changed
+1. **Run the build** (only if source code files were modified) — confirm no code was accidentally changed
 2. **Grep for stale references** — search docs/ for old names, removed types, or changed defaults:
    ```bash
    # Example: if you renamed FooBar to BazQux

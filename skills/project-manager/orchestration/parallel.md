@@ -8,7 +8,7 @@ Spawn multiple subagents for concurrent task execution.
 
 - [ ] Count leaf tasks to dispatch — verify the count matches your plan's file list
 - [ ] Tasks have empty `blockedBy` arrays (`clipm show <id>`)
-- [ ] Tasks don't modify same files
+- [ ] Tasks don't modify same files (see "Shared File Partitioning" below)
 - [ ] Tasks don't produce output another task needs
 - [ ] Total concurrent agents ≤ 5
 - [ ] If dispatching in waves (>5 tasks), write down which tasks go in which wave
@@ -243,10 +243,28 @@ timeout 5 ./binary --help 2>&1 || echo "RUNTIME FAILURE"
 - **Stdio corruption**: Child process writing to stdout/stderr of a TUI parent
 - **Permission errors**: ScreenCaptureKit, network, file access — only surface at runtime
 
+## Shared File Partitioning
+
+Test files and shared config files are the most common source of parallel conflicts. When multiple tasks need to update the same file:
+
+**Option A — Assign shared files to exactly ONE agent.** Pick the agent whose task is most related, and include the other task's edits in its prompt. The other agent's prompt says "Do NOT modify `tests/foo.rs` — another agent handles it."
+
+**Option B — Create a dedicated post-wave cleanup task.** Neither parallel agent touches the shared file. Instead, create a separate task (blocked by both) that updates it after the wave completes. This is better when the shared file changes are independent of the main work.
+
+**Option C — Orchestrator handles it inline.** If the shared file changes are small (adding `None` to a few call sites), the orchestrator does it directly after the wave, during the integration checkpoint.
+
+### Common shared files to watch for
+- **Test files** that construct types modified by multiple tasks (e.g., `ActionLog::new()` call sites across integration tests)
+- **Module re-export files** (`mod.rs`, `lib.rs`, `index.ts`)
+- **Config/schema files** (Cargo.toml, package.json, migration files)
+- **Generated files** (protobuf outputs, OpenAPI specs)
+
+**Before dispatching a wave, enumerate every file each agent will touch. If any file appears in two agents' lists, apply Option A, B, or C.**
+
 ## Do NOT Parallelize When
 
 - Tasks have `blockedBy` entries
-- Tasks modify same files
+- Tasks modify same files (see "Shared File Partitioning" above)
 - Task B needs output from Task A
 - Tasks create files in same directory with potential naming conflicts
 

@@ -19,7 +19,7 @@ Decompose work into hierarchical tasks (clipm) and dispatch parallel subagents.
 - **Block order**: `clipm block <blocker> <blocked>` — first arg blocks the second
 - **Parallel dispatch**: Use multiple Task tool calls in a SINGLE message
 - **Concurrency limit**: Max 3-5 subagents at once
-- **File conflicts**: NEVER parallelize tasks modifying the same files
+- **File conflicts**: NEVER parallelize tasks modifying the same files. Before dispatch, enumerate every file each agent will touch and check for overlaps. Test files are the most common offender — see [orchestration/parallel.md](orchestration/parallel.md#shared-file-partitioning)
 - **Verify before dispatch**: Check `blockedBy` is empty before assigning
 - **IDs are strings**: clipm IDs are 4-char strings (e.g., `unke`), not integers
 - **Subagent prompts MUST include verification steps**: Every code-writing subagent must build AND runtime-test its output. "It compiles" is not done. See [orchestration/parallel.md](orchestration/parallel.md#-critical-always-include-verification-steps)
