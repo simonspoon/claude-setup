@@ -17,7 +17,7 @@ Orient yourself using a project's progressive-disclosure docs before writing cod
 Glob for `docs/INDEX.md` in the current working directory.
 
 - **Found** → Continue to Step 2.
-- **Not found** → Stop. This project does not use progressive-disclosure docs. Fall back to CLAUDE.md, README, and source code.
+- **Not found** → Stop. This project does not use progressive-disclosure docs. Fall back to README and source code.
 
 ## Step 2: Read INDEX.md
 

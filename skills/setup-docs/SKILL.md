@@ -1,6 +1,6 @@
 ---
 name: setup-docs
-description: Create a progressive disclosure documentation system for any software project. Generates docs/ with dev/ and user/ subdirectories, an INDEX.md for discovery, and trims CLAUDE.md to essentials with a pointer to the docs.
+description: Create a progressive disclosure documentation system for any software project. Generates docs/ with dev/ and user/ subdirectories, and an INDEX.md for discovery.
 triggers:
   - setup docs
   - create documentation
@@ -39,11 +39,10 @@ This skill typically produces 6-10 files. After Phase 2 (planning), invoke `/pro
 
 Before writing anything, understand what exists:
 
-1. **Read CLAUDE.md** (if it exists) — understand current AI guidance
-2. **Read README.md** — understand user-facing documentation
-3. **Scan the codebase structure** — `ls` top-level, identify crates/packages/modules
-4. **Read key source files** — models, types, main entry points. Extract exact details: type names, field names, method signatures, constants, defaults. This is your research — do it now, not in a separate phase.
-5. **Find existing docs** — check for `docs/`, wiki references, inline doc comments
+1. **Read README.md** — understand user-facing documentation
+2. **Scan the codebase structure** — `ls` top-level, identify crates/packages/modules
+3. **Read key source files** — models, types, main entry points. Extract exact details: type names, field names, method signatures, constants, defaults. This is your research — do it now, not in a separate phase.
+4. **Find existing docs** — check for `docs/`, wiki references, inline doc comments
 
 ### Phase 2: Plan the Documentation
 
@@ -81,7 +80,6 @@ Create `docs/dev/` and `docs/user/` directories first. Then dispatch parallel wr
 - One root task for the overall docs effort
 - One leaf task per doc file (no need for grouping tasks — they just add status management overhead)
 - `block` all content file tasks → INDEX.md task (INDEX.md must wait for all content)
-- `block` all content file tasks → CLAUDE.md trim task (if applicable)
 
 **Each writing agent does its own research.** Include in the agent prompt:
 - The exact source files to read before writing
@@ -116,34 +114,7 @@ Example:
 | Contributing | [dev/contributing.md](dev/contributing.md) | Adding features, running tests |
 ```
 
-### Phase 5: Trim CLAUDE.md
-
-If the project has a CLAUDE.md, trim it to essentials:
-
-**Keep:**
-- Build/test/run commands (these are used constantly)
-- One-liner descriptions of each package/module
-- Any project-specific AI instructions or constraints
-
-**Move to docs/dev/:**
-- Detailed module breakdowns
-- Type/struct/enum descriptions
-- Data flow narratives
-- Implementation details
-
-**Add a Required Reading section** immediately before the Architecture or first content section:
-
-```markdown
-## Required Reading
-
-Before starting any task, read `docs/INDEX.md` and the relevant topic file for the subsystem you are working on.
-```
-
-This must be a standalone section — not buried in prose. It ensures every AI session consults the docs before writing code.
-
-If no CLAUDE.md exists, don't create one — that's a separate concern.
-
-### Phase 6: Verify
+### Phase 5: Verify
 
 1. Run the project's build command — ensure no code was broken (there should be no code changes)
 2. Verify all planned files exist

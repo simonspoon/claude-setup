@@ -1,13 +1,12 @@
 ---
 name: update-docs
-description: Update project documentation (docs/, CLAUDE.md, README.md) to reflect recent code changes. Discovers the existing doc structure, detects what changed in code, and makes targeted updates to affected docs.
+description: Update project documentation (docs/ and README.md) to reflect recent code changes. Discovers the existing doc structure, detects what changed in code, and makes targeted updates to affected docs.
 triggers:
   - update docs
   - update documentation
   - sync docs
   - docs are stale
   - update the readme
-  - update claude.md
   - /update-docs
 model: sonnet
 ---
@@ -25,7 +24,6 @@ Update existing project documentation to reflect code changes. Works with any `d
 
 ## ⚠️ CRITICAL REQUIREMENTS
 
-- **CLAUDE.md is a doc target** — new/changed/removed CLI commands, subcommands, flags, or run examples MUST be reflected in CLAUDE.md's build commands section. This includes new subcommands, new flags on existing binaries (e.g., `--batch`), and changed test commands.
 - **README.md is a doc target** — you MUST read it and check it. If no changes are needed, say so explicitly. Do not silently skip it.
 - **Read before writing** — never guess at new behavior. Read the changed source code to extract exact details.
 - **Discover first** — never assume a doc structure exists. Read what's there before editing.
@@ -39,7 +37,7 @@ Before anything else, understand what documentation exists:
 ```bash
 # Find all doc files
 find docs/ -name '*.md' 2>/dev/null
-ls CLAUDE.md README.md 2>/dev/null
+ls README.md 2>/dev/null
 ```
 
 Read `docs/INDEX.md` if it exists — it maps topics to files and tells you what each doc covers. If there's no INDEX.md, read the heading and first few lines of each doc file to build a mental map.
@@ -58,7 +56,7 @@ Determine the scope of code changes using one of these strategies:
 **If asked to sync docs generally:**
 ```bash
 # Find the last commit that touched docs
-git log --oneline -1 -- docs/ CLAUDE.md README.md
+git log --oneline -1 -- docs/ README.md
 
 # See what source files changed since then
 git diff <that-commit>..HEAD --name-only -- ':!docs/' ':!*.md'
@@ -88,13 +86,6 @@ Using your topic-to-file map from Step 1, identify which docs are affected. Cate
 - New/changed/removed commands, CLI flags, or API endpoints → find the command reference or relevant guide
 - Changed behavior, defaults, or error messages → find the relevant guide or troubleshooting doc
 - New configuration options → find the config or getting-started doc
-
-**Changes that affect CLAUDE.md:**
-- Build/test/run commands changed
-- New CLI subcommands added or existing ones renamed/removed (update run examples)
-- New flags or modes added to existing binaries (e.g., `--batch`, `--verbose`) — add run examples
-- Packages/crates/modules added, removed, or renamed
-- Stale comments in command examples (e.g., "requires running session" when it no longer does)
 
 **Changes that affect README.md:**
 - Public-facing features added or removed
@@ -156,28 +147,7 @@ Review the conversation history for hard-won knowledge that would help future de
 
 **Skip this step if:** the conversation was straightforward with no surprises, failed attempts, or non-obvious discoveries.
 
-### Step 7: Update CLAUDE.md
-
-CLAUDE.md is loaded into every AI conversation — keep it lean.
-
-**What belongs in CLAUDE.md:**
-- Build/test/run commands
-- One-liner package/module descriptions
-- Pointer to `docs/INDEX.md` (if docs/ exists)
-- Project-specific AI instructions or constraints
-
-**What does NOT belong in CLAUDE.md:**
-- Detailed type definitions, method signatures, or module breakdowns → `docs/dev/`
-- User guides or command references → `docs/user/`
-
-**When to update:**
-- Build/test command added, changed, or removed
-- Package/module added, removed, or renamed (update the one-liner list)
-- Never add detail back — if something needs explanation, put it in the appropriate doc file
-
-**Verify the Required Reading directive exists.** If `docs/INDEX.md` exists, CLAUDE.md MUST contain a standalone "Required Reading" section that directs reading `docs/INDEX.md` before starting any task. If this section is missing or buried in prose, add it immediately before the first content section (e.g., Architecture).
-
-### Step 8: Update README.md
+### Step 7: Update README.md
 
 README.md is the public face. It should be accurate but doesn't need internals. **You MUST read README.md** — if no updates are needed, say so explicitly. Do not silently skip it.
 
@@ -193,7 +163,7 @@ README.md is the public face. It should be accurate but doesn't need internals. 
 - Keep examples runnable — if syntax changed, update the examples
 - Don't add implementation details — those belong in `docs/dev/`
 
-### Step 9: Update INDEX.md
+### Step 8: Update INDEX.md
 
 If `docs/INDEX.md` exists:
 
@@ -202,13 +172,13 @@ If `docs/INDEX.md` exists:
 - **Doc file renamed or topic changed** → update the link and description
 - **No structural changes** → skip this step
 
-### Step 10: Verify
+### Step 9: Verify
 
 1. **Run the build** (only if source code files were modified) — confirm no code was accidentally changed
 2. **Grep for stale references** — search docs/ for old names, removed types, or changed defaults:
    ```bash
    # Example: if you renamed FooBar to BazQux
-   grep -r "FooBar" docs/ CLAUDE.md README.md
+   grep -r "FooBar" docs/ README.md
    ```
 3. **Check cross-references** — if doc A links to doc B, make sure the target still exists
 
@@ -218,6 +188,5 @@ If `docs/INDEX.md` exists:
 - **Edit, don't rewrite** — surgical updates preserve context and authorial voice
 - **Read source before writing docs** — never guess at new behavior
 - **Match existing style** — don't introduce new formatting conventions
-- **CLAUDE.md stays lean** — resist adding detail; point to docs/ instead
 - **README.md stays accurate** — every example should work, every list should be current
 - **Skip what doesn't exist** — if the mapping says to update a file that isn't there, move on
