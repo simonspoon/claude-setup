@@ -18,13 +18,13 @@
 - **Manual fix**: Complete the work yourself, then mark done
   ```bash
   clipm note <id> "Manual fix: <description>"
-  clipm status <id> done
+  clipm status <id> done --outcome "Manual fix: <what was done and verified>"
   ```
 
 - **Skip**: If task is non-critical
   ```bash
   clipm note <id> "Skipped: <reason>"
-  clipm status <id> done
+  clipm status <id> done --outcome "Skipped: <reason>"
   ```
 
 ## Subagent timeout

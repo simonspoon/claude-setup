@@ -12,10 +12,19 @@ clipm init              # Create .clipm/ in current directory
 
 ## Task Creation
 
+All three structured fields are **required** by the CLI:
+
 ```bash
-clipm add "Task name"                          # Create task (outputs task ID)
-clipm add "Task name" --parent <id>            # Create child task
-clipm add "Task name" -d "Detailed description" # With description
+clipm add "Task name" \
+  --action "What concrete work to perform" \
+  --verify "How to confirm the action succeeded" \
+  --result "Template for what to report back"              # → outputs task ID
+
+clipm add "Task name" --parent <id> \
+  --action "..." --verify "..." --result "..."             # Create child task
+
+clipm add "Task name" -d "Detailed description" \
+  --action "..." --verify "..." --result "..."             # With description
 ```
 
 ## Task Status
@@ -23,7 +32,7 @@ clipm add "Task name" -d "Detailed description" # With description
 ```bash
 clipm status <id> todo         # Set to todo
 clipm status <id> in-progress  # Set to in-progress
-clipm status <id> done         # Set to done
+clipm status <id> done --outcome "What was done and verified"  # Set to done (--outcome required)
 ```
 
 ## Task Ownership
@@ -104,6 +113,10 @@ clipm watch --interval 1s         # Custom poll interval (default 500ms)
 {
   "id": "unke",
   "name": "Task name",
+  "action": "What to do",
+  "verify": "How to confirm",
+  "result": "What to report",
+  "outcome": "",
   "status": "todo",
   "parent": null,
   "blockedBy": [],
@@ -127,7 +140,8 @@ clipm watch --interval 1s         # Custom poll interval (default 500ms)
 ### Create and Start Task
 
 ```bash
-clipm add "New task"        # Outputs task ID, e.g. "abcd"
+clipm add "New task" \
+  --action "Do X" --verify "Check Y" --result "Report Z"  # → "abcd"
 clipm claim abcd my-agent
 clipm status abcd in-progress
 ```
@@ -136,7 +150,7 @@ clipm status abcd in-progress
 
 ```bash
 clipm note <id> "Completed: summary of work"
-clipm status <id> done
+clipm status <id> done --outcome "Did X, confirmed Y, result: Z"
 ```
 
 ### Find Available Work

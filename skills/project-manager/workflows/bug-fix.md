@@ -2,6 +2,8 @@
 
 For investigating and fixing bugs systematically.
 
+> **Note:** All `clipm add` calls require `--action`, `--verify`, `--result` flags. All `clipm status <id> done` calls require `--outcome`. Examples below use abbreviated form for readability — fill in the structured fields for each task when creating.
+
 ## Task Hierarchy Pattern
 
 ```

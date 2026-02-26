@@ -18,7 +18,7 @@ Check:
 Verify the work is actually complete, then:
 ```bash
 clipm note <id> "Force completed: verified work done"
-clipm status <id> done
+clipm status <id> done --outcome "Force completed: <what was verified>"
 ```
 
 ### Option 2: Reset and re-dispatch
@@ -35,9 +35,10 @@ Then dispatch new subagent.
 If task is corrupted or unclear:
 ```bash
 clipm note <id> "Abandoned: <reason>"
-clipm status <id> done
+clipm status <id> done --outcome "Abandoned: <reason>"
 
-clipm add "Replacement: <clearer description>" --parent <parent-id>
+clipm add "Replacement: <clearer description>" --parent <parent-id> \
+  --action "..." --verify "..." --result "..."
 ```
 
 ## Preventing Stuck Tasks

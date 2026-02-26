@@ -37,10 +37,11 @@ flowchart LR
 ```
 
 ```bash
-clipm add "Design"      # → abcd
-clipm add "Implement"   # → efgh
-clipm add "Test"        # → ijkl
-clipm add "Deploy"      # → mnop
+# All clipm add calls require --action, --verify, --result (abbreviated here)
+clipm add "Design" --action "..." --verify "..." --result "..."      # → abcd
+clipm add "Implement" --action "..." --verify "..." --result "..."   # → efgh
+clipm add "Test" --action "..." --verify "..." --result "..."        # → ijkl
+clipm add "Deploy" --action "..." --verify "..." --result "..."      # → mnop
 
 clipm block abcd efgh  # efgh waits for abcd
 clipm block efgh ijkl  # ijkl waits for efgh
@@ -116,7 +117,7 @@ clipm list --status todo --unblocked
 When task marked `done`, clipm updates dependent tasks:
 
 ```bash
-clipm status abcd done
+clipm status abcd done --outcome "Design complete: <summary>"
 clipm show efgh  # blockedBy now empty if only blocked by abcd
 ```
 

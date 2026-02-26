@@ -47,15 +47,21 @@ clipm status <ID> in-progress
 <specific work instructions>
 
 ## Verification
-<specific verification steps — build, run, test>
+Choose verification strategy by code type:
+- **Runnable** (CLI, API, script): build + run end-to-end with sample input
+- **Interactive** (TUI, GUI, game, curses): verify imports + API signatures,
+  then extract and unit-test pure logic helpers (collision, scoring, AI, parsing)
+- **Library**: import and call key functions with sample data + assert results
 If verification fails: fix the issue and re-verify before proceeding.
 
 ## Finish
 clipm note <ID> "Done: <summary>"
-clipm status <ID> done
+clipm status <ID> done --outcome "<what was done, what was verified, result>"
 ```
 
 **The `## Finish` block must always be the last section.** Subagents tend to skip `clipm status done` when it's buried mid-list. Putting it under a named heading after all work is complete makes it harder to miss.
+
+**The `--outcome` flag is required.** The outcome should summarize what work was performed, how it was verified, and what the result is. This enforces the do→verify→reply contract.
 
 ### ⚠️ CRITICAL: Scope-bound subagent prompts
 
@@ -118,6 +124,29 @@ The orchestrator has full context. The subagent doesn't. **Spell out the edge ca
 
 **If the task produces a binary or server**, the subagent should run it briefly and confirm it starts without crashing. "It compiles" is NOT sufficient verification.
 
+### Verification depth ladder
+
+Not all code can be fully exercised in a headless CI-style environment. Use the **deepest level of verification possible** for the task:
+
+| Level | What it catches | Example |
+|-------|----------------|---------|
+| 1. Import/parse | Syntax errors only | `python -c "import mod"` |
+| 2. Attribute/reference check | Missing attrs, bad names | `python -c "import mod; [getattr(mod, a) for a in ['func1', 'func2']]"` |
+| 3. Static analysis | Type errors, undefined refs | `python -c "import ast, sys; ast.parse(open('file.py').read()); print('AST OK')"` + `pyflakes file.py` or equivalent linter |
+| 4. Unit invocation | Logic bugs in callable code | `python -c "from mod import helper; assert helper(1,2) == 3"` |
+| 5. Full runtime | Integration/runtime failures | `cargo run -- --help`, `node dist/index.js`, etc. |
+
+**Level 1 alone is NEVER sufficient.** Always reach at least Level 3.
+
+**When full runtime isn't possible** (TUI apps, GUI code, interactive programs, curses-based games):
+- Use Level 3 (static analysis) as your floor — catch bad attribute names, undefined references, import errors
+- Add Level 2: explicitly access every stdlib/library attribute the code uses at import time. Example for curses code:
+  ```
+  python -c "import curses; attrs = ['ACS_HLINE', 'ACS_VLINE', 'ACS_ULCORNER', 'ACS_URCORNER', 'ACS_LLCORNER', 'ACS_LRCORNER']; [getattr(curses, a) for a in attrs]; print('all curses attrs OK')"
+  ```
+- Add Level 4 where possible: extract and test pure-logic helpers (collision detection, AI logic, scoring) even if the rendering can't be tested headlessly
+- **Orchestrator responsibility**: When writing the subagent prompt, explicitly list which library constants/attributes the code will use and require the subagent to verify they exist. The orchestrator has domain context the subagent may lack.
+
 ### Template Placeholders
 
 | Placeholder | Source | Example |
@@ -166,7 +195,7 @@ pnpm build && pnpm test
 
 ## Finish
 clipm note unke "Done: created jwt.ts with generate/verify functions"
-clipm status unke done
+clipm status unke done --outcome "Created jwt.ts with generateToken/verifyToken, HS256 24h expiry, handles expired tokens and empty userId. pnpm build+test pass."
 ```
 
 ### ✅ Good: Research task
@@ -186,7 +215,7 @@ clipm status ozit in-progress
 
 ## Finish
 clipm note ozit "Done: Recommend MeiliSearch - <brief reason>"
-clipm status ozit done
+clipm status ozit done --outcome "Evaluated 3 search libs. Recommend MeiliSearch: easiest setup, good Node.js SDK, sufficient for our scale."
 ```
 
 ## Agent Naming Conventions
@@ -205,15 +234,15 @@ clipm status ozit done
 
 1. Wait for all subagents to complete
 2. Check status: `clipm tree --show-all`
-3. Fix stale tasks: if a completed subagent's task still shows `[TODO]`, run `clipm status <id> done`
-4. Roll up parents: if all children of a parent are `[DONE]`, run `clipm status <parent-id> done`
+3. Fix stale tasks: if a completed subagent's task still shows `[TODO]`, run `clipm status <id> done --outcome "<verified: summary>"`
+4. Roll up parents: if all children of a parent are `[DONE]`, run `clipm status <parent-id> done --outcome "All child tasks completed"`
 5. Find newly unblocked: `clipm list --status todo --unblocked`
 6. Dispatch next wave
 7. Repeat until all done
 
 ## Integration Checkpoint (MANDATORY)
 
-After completing a wave of parallel tasks, the orchestrator MUST verify integration before dispatching the next wave or marking parent tasks done.
+After completing a wave of work (parallel subagents OR inline tasks), the orchestrator MUST verify integration before dispatching the next wave or marking parent tasks done. **This applies to inline execution too** — if you wrote a shared dependency inline, runtime-test it before dispatching agents that depend on it.
 
 1. **Build check:** Run full project build (`cargo build`, `swift build`, `pnpm build`, etc.)
 2. **Unit test check:** Run the test suite (`cargo test`, `pnpm test`, etc.)

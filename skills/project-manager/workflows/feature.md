@@ -2,6 +2,8 @@
 
 For adding a single feature to an existing codebase.
 
+> **Note:** All `clipm add` calls require `--action`, `--verify`, `--result` flags. All `clipm status <id> done` calls require `--outcome`. Examples below use abbreviated form for readability — fill in the structured fields for each task when creating.
+
 ## Task Hierarchy Pattern
 
 ```
@@ -23,7 +25,10 @@ Feature: <name>
 ### 1. Create Feature Root
 
 ```bash
-clipm add "Feature: <name>"              # → abcd
+clipm add "Feature: <name>" \
+  --action "Complete all child tasks for <name>" \
+  --verify "All children done, integration test passes" \
+  --result "Summary of feature implementation"              # → abcd
 ```
 
 ### 2. Add Phases
