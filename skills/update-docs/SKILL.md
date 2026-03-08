@@ -81,6 +81,8 @@ Using your topic-to-file map from Step 1, identify which docs are affected. Cate
 - Architecture changes (new modules, changed data flow) → find the architecture doc
 - Error types or variants changed → find the relevant subsystem doc
 - Bug fixes → update test descriptions in the contributing/testing doc; if the bug revealed a non-obvious gotcha (e.g., a subtle language footgun, an API that silently misbehaves), add a pitfall note to the relevant subsystem doc so future developers don't reintroduce it
+- Test infrastructure changes (new test helpers, changed test commands, added test types, new fixtures) → find the testing or contributing doc
+- CI pipeline changes (new required checks, changed test stages, added linting) → find the testing or contributing doc
 
 **Changes that affect user docs (`docs/user/`):**
 - New/changed/removed commands, CLI flags, or API endpoints → find the command reference or relevant guide
@@ -136,6 +138,7 @@ Review the conversation history for hard-won knowledge that would help future de
 - **Failed approaches** — something was tried and failed for a non-obvious reason
 - **Build/tooling surprises** — unexpected compiler behavior, flag interactions, dependency issues
 - **Performance findings** — measured data that explains why a particular approach was chosen
+- **Verification approaches** — a non-obvious way to test or verify behavior was discovered (e.g., a specific test invocation that isolates the issue, a manual verification step that catches regressions)
 
 **How to capture:**
 1. Identify the relevant `docs/dev/` file using your topic-to-file map

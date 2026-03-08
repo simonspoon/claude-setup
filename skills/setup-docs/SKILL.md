@@ -43,6 +43,11 @@ Before writing anything, understand what exists:
 2. **Scan the codebase structure** — `ls` top-level, identify crates/packages/modules
 3. **Read key source files** — models, types, main entry points. Extract exact details: type names, field names, method signatures, constants, defaults. This is your research — do it now, not in a separate phase.
 4. **Find existing docs** — check for `docs/`, wiki references, inline doc comments
+5. **Examine test infrastructure** — find test directories, config files (e.g. `pytest.ini`, `jest.config.*`, `.github/workflows/`), and a few sample test files. Note:
+   - Test runner and commands (how to run the full suite, how to run a single test)
+   - How tests are organized (unit / integration / e2e, directory conventions)
+   - Custom fixtures, helpers, or test utilities
+   - CI pipeline test steps, if present
 
 ### Phase 2: Plan the Documentation
 
@@ -56,7 +61,8 @@ Based on discovery, decide which files to create. Not every project needs every 
 | `protocol.md` | Wire protocols, binary formats, API contracts |
 | `data-model.md` | Complex data structures, schemas, or type hierarchies |
 | `{subsystem}.md` | Any subsystem complex enough to warrant its own reference |
-| `contributing.md` | Always — covers the "ripple" of adding a feature, testing guide |
+| `testing.md` | Multiple test types, custom fixtures/helpers, or non-trivial test setup. For simple projects, cover testing in `contributing.md` instead |
+| `contributing.md` | Always — covers the "ripple" of adding a feature, code style, PR process |
 
 **User docs (`docs/user/`) — one file per user task:**
 
@@ -97,6 +103,16 @@ Create `docs/dev/` and `docs/user/` directories first. Then dispatch parallel wr
 - Be precise — include types, defaults, and edge cases
 - No emojis unless the project style uses them
 - Keep each file focused on one topic — if it's getting long, split it
+
+**Testing documentation content** (whether in `testing.md` or a section of `contributing.md`):
+
+- How to run the full test suite (exact commands)
+- How to run a single test or subset (by file, by name pattern, by marker/tag)
+- Test directory layout and naming conventions
+- Key fixtures, helpers, or test utilities and what they provide
+- Any environment setup required for tests (databases, env vars, test servers)
+- How to verify a feature works end-to-end (manual or automated)
+- CI pipeline: what runs on PR, what runs on merge, any required checks
 
 ### Phase 4: Create INDEX.md
 
