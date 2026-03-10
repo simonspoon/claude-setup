@@ -12,7 +12,7 @@ Spawn multiple subagents for concurrent task execution.
 - [ ] Tasks don't produce output another task needs
 - [ ] Total concurrent agents ≤ 5
 - [ ] If dispatching in waves (>5 tasks), write down which tasks go in which wave
-- [ ] **Research source files via Explore agent** — for each file a subagent will modify, dispatch an Explore agent to extract the relevant functions, signatures, and surrounding context. Use those findings to write prompts with exact before/after diffs and preserved behaviors. Do NOT read entire files into the orchestrator's context. Do NOT write prompts from plan descriptions alone.
+- [ ] **Research source files via Explore agent** — for each file a subagent will modify, dispatch an Explore agent to extract the relevant functions, signatures, and surrounding context. **Also extract signatures from callee files** — if the modified code calls `self.add_output()`, `driver.get_target_info()`, or similar, include the callee's parameter types and return types in the prompt so the subagent doesn't guess wrong (e.g., `add_output` takes `Line<'_>` not `String`). Use those findings to write prompts with exact before/after diffs and preserved behaviors. Do NOT read entire files into the orchestrator's context. Do NOT write prompts from plan descriptions alone.
 
 ```bash
 # Quick check for unblocked tasks
@@ -102,6 +102,7 @@ When writing the "Task" section of a subagent prompt, the **orchestrator** must 
 - **Empty/missing inputs**: What happens with no args, empty strings, null values
 - **Boundary interactions**: Does output from this code become input elsewhere? Does the format match?
 - **Quoting/escaping**: If the task involves composing strings that will be parsed later, specify quoting rules
+- **Cross-boundary data contracts**: When component A serializes data for component B, list **every field B expects** and verify A actually sends them. If B uses strict deserialization (e.g., `serde` without `#[serde(default)]`), missing or extra fields will crash at runtime even though both sides compile. Spell out the expected JSON/binary shape in the subagent prompt.
 
 **Example — BAD**: "Rewrite accept_completion to use space-based insertion instead of paren-based"
 **Example — GOOD**: "Rewrite accept_completion to use space-based insertion. When inserting text that contains spaces, wrap it in double quotes so the parser treats it as a single token (e.g., `tap "Sign In"` not `tap Sign In`)."
@@ -221,9 +222,10 @@ After completing a wave of work (parallel subagents OR inline tasks), the orches
 2. **Unit test check:** Run the test suite (`cargo test`, `pnpm test`, etc.)
 3. **Runtime smoke test:** Actually run the produced binary/server/function and confirm it doesn't crash. If the task added a new flag or mode, invoke it. "Tests pass" is not sufficient — exercise the real code path.
 4. **Output/behavior regression check:** If the change refactors existing behavior, verify the output format is preserved. Check: Are metadata fields still populated? Are status messages still emitted? Does the output schema match what downstream consumers (CLI formatters, log parsers, scripts) expect? Compare the old code path's output contract against the new one.
-5. **Cross-component test:** If tasks produced components that interact (e.g., a server and a client), test them together
-6. **Cleanup:** Stop any servers, remove sockets/temp files, kill child processes spawned during testing
-7. **If failures:** Fix immediately or create fix tasks before proceeding
+5. **Data contract verification:** If one component serializes data and another deserializes it (e.g., Swift agent sends JSON, Rust client parses it), verify the **actual serialized output** matches the **consumer's struct/schema**. Common failures: producer omits fields the consumer requires, field names differ (camelCase vs snake_case), optional-on-one-side but required-on-the-other. **Test the real round-trip** — build both sides, trigger the operation, and confirm the consumer successfully parses what the producer actually sends. "Both sides compile" is not sufficient when the data contract is implicit.
+6. **Cross-component test:** If tasks produced components that interact (e.g., a server and a client), test them together
+7. **Cleanup:** Stop any servers, remove sockets/temp files, kill child processes spawned during testing
+8. **If failures:** Fix immediately or create fix tasks before proceeding
 
 ```bash
 # Example: Rust + Swift project
@@ -244,6 +246,7 @@ timeout 5 ./binary --help 2>&1 || echo "RUNTIME FAILURE"
 - **Binary not discoverable**: Hard-coded paths that only work in one build configuration
 - **Stdio corruption**: Child process writing to stdout/stderr of a TUI parent
 - **Permission errors**: ScreenCaptureKit, network, file access — only surface at runtime
+- **Data contract mismatches**: Producer sends partial/different fields than consumer expects — both compile, but deserialization fails at runtime (e.g., Swift agent sends `{"state":"..."}` but Rust expects `{"bundle_id":"...","state":"..."}`)
 
 ## Shared File Partitioning
 

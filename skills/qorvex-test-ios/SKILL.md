@@ -144,6 +144,34 @@ qorvex screenshot 2>/dev/null | base64 -d > /tmp/after.png
 qorvex log
 ```
 
+## Home Screen / SpringBoard
+
+To verify things outside an app (app icons, home screen layout, notifications):
+
+```bash
+# Switch qorvex target to SpringBoard
+qorvex set-target com.apple.springboard
+
+# Dismiss a foreground app (go to home screen)
+qorvex swipe up
+
+# Screenshot the home screen
+qorvex screenshot 2>/dev/null | base64 -d > /tmp/homescreen.png
+
+# Inspect home screen elements
+qorvex screen-info
+```
+
+**Do NOT use `xcrun simctl sendkey`** — this subcommand does not exist. Use `qorvex swipe up` to dismiss apps instead.
+
+To terminate a specific app before returning to the home screen:
+
+```bash
+xcrun simctl terminate <udid> <bundle_id>
+qorvex set-target com.apple.springboard
+qorvex swipe up
+```
+
 ## Gotchas
 
 - **Tap fails with "not found"**: You likely need `-l` (label) instead of ID matching
