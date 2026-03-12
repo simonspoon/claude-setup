@@ -27,6 +27,14 @@ Execute clipm task <ID>: "<description>"
 - <behavior 1 the old code had>
 - <behavior 2 that must not regress>
 
+## Test Initializers (if adding/removing struct fields)
+Update these test constructors to include the new fields:
+- path/to/tests.rs:line (add `new_field: default_value`)
+
+## Callers (if changing function signatures)
+These call sites use the old signature and must be updated:
+- path/to/caller.rs:line (`old_call()` → `new_call()`)
+
 ## Verification
 Choose by code type:
 - Runnable (CLI, API, script): build + run end-to-end with sample input
@@ -52,7 +60,9 @@ Before writing any subagent prompt:
 
 1. Use an Explore agent to extract relevant function signatures and types from files the subagent will modify
 2. Also extract signatures from files the modified code calls into (callees)
-3. Include this context in the prompt — subagents succeed when prompts have precise code context
-4. Do NOT read entire files into the orchestrator's context window
+3. **Find callers of any function whose signature changes** (async→sync, new params, new return type). If the function is called from files outside the subagent's scope, either expand the scope or create a follow-up task for the cascade
+4. **Find test constructors** for any struct/type that gains or loses fields. Grep for direct struct-literal initializers (e.g., `MyStruct {`) in test files and include those locations in the subagent prompt with instructions to add the new fields
+5. Include this context in the prompt — subagents succeed when prompts have precise code context
+6. Do NOT read entire files into the orchestrator's context window
 
 Back to [SKILL.md](../SKILL.md) | [INDEX.md](INDEX.md)

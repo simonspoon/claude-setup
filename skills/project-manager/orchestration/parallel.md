@@ -259,7 +259,8 @@ Test files and shared config files are the most common source of parallel confli
 **Option C — Orchestrator handles it inline.** If the shared file changes are small (adding `None` to a few call sites), the orchestrator does it directly after the wave, during the integration checkpoint.
 
 ### Common shared files to watch for
-- **Test files** that construct types modified by multiple tasks (e.g., `ActionLog::new()` call sites across integration tests)
+- **Test files** that construct types modified by multiple tasks (e.g., `ActionLog::new()` call sites across integration tests). **Even for single-agent tasks**: if a subagent adds fields to a struct, grep for struct-literal constructors in test files and include them in the prompt — subagents frequently miss test initializers because they focus on production code
+- **Callers of changed signatures**: if a subagent changes a function from async→sync, adds/removes params, or changes return type, grep for all call sites. Include out-of-scope callers as a follow-up task or expand the agent's scope
 - **Module re-export files** (`mod.rs`, `lib.rs`, `index.ts`)
 - **Config/schema files** (Cargo.toml, package.json, migration files)
 - **Generated files** (protobuf outputs, OpenAPI specs)
