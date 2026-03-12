@@ -12,7 +12,17 @@
 
 ### Code signing errors
 **Cause**: Physical devices require explicit code signing (simulators don't).
-**Fix**: Build with these flags:
+**Fix**: Set up per-user signing in `~/.qorvex/config.json`:
+```json
+{
+  "agent_source_dir": "/path/to/qorvex/qorvex-agent",
+  "development_team": "YOUR_TEAM_ID",
+  "agent_bundle_id": "com.yourorg.qorvex.agent"
+}
+```
+`qorvex start -d <UDID>` automatically applies these as xcodebuild overrides (`DEVELOPMENT_TEAM`, `CODE_SIGN_STYLE=Automatic`, etc.). If the default bundle ID `com.qorvex.agent` is claimed by another team, set `agent_bundle_id` to your own.
+
+For manual builds, use these flags:
 ```bash
 CODE_SIGNING_ALLOWED=YES \
 CODE_SIGN_IDENTITY="Apple Development" \
@@ -26,11 +36,24 @@ CODE_SIGN_STYLE=Automatic \
 **Cause**: iOS launch services cache is stale after a recent deploy.
 **Fix**: Retry `qorvex start-agent` — the second attempt almost always succeeds. If it persists, uninstall the test runner app from the device and retry.
 
+### "No automation backend connected"
+**Symptom**: Session starts but all commands fail with "No automation backend connected".
+**Cause**: The agent hasn't connected yet. This can happen when:
+1. `qorvex start -d <UDID>` is still deploying the agent (takes 30-60s on physical devices)
+2. Agent deployment failed silently
+3. Session was started without `-d` and no simulator agent is running
+
+**Fix**:
+1. Wait — agent deployment takes up to 120s on physical devices. Check logs: `tail -f ~/.qorvex/logs/qorvex-server.log`
+2. If "Auto-start agent failed" appears in logs, run `qorvex start-agent` manually
+3. If still failing, check device is **unlocked** and retry `qorvex stop && qorvex start -d <UDID>`
+4. Verify agent reachability: `nc -z <DeviceName>.local 8080`
+
 ### Agent startup timeout on physical device
-**Symptom**: `start-agent` fails with "Agent failed to become ready within timeout".
+**Symptom**: "Agent failed to become ready within timeout" (after 120s).
 **Cause**: Multiple possible causes:
-1. Device is **locked** — xcodebuild waits indefinitely for unlock, but qorvex times out at 30s
-2. First deploy after a build takes longer than expected
+1. Device is **locked** — xcodebuild waits indefinitely for unlock
+2. First deploy after a clean build takes longer than expected
 3. WiFi latency or connectivity issues
 
 **Fix**:
