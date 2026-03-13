@@ -3,7 +3,7 @@
 ## Standard Code Task Prompt
 
 ```
-Execute clipm task <ID>: "<description>"
+Execute limbo task <ID>: "<description>"
 
 ## Context
 <relevant function signatures, types, and surrounding code — extracted via Explore agent>

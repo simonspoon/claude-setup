@@ -2,7 +2,7 @@
 
 For building new systems or major feature sets from scratch.
 
-> **Note:** All `clipm add` calls require `--action`, `--verify`, `--result` flags. All `clipm status <id> done` calls require `--outcome`. Examples below use abbreviated form for readability — fill in the structured fields for each task when creating.
+> **Note:** All `limbo add` calls require `--action`, `--verify`, `--result` flags. All `limbo status <id> done` calls require `--outcome`. Examples below use abbreviated form for readability — fill in the structured fields for each task when creating.
 
 ## Task Hierarchy Pattern
 
@@ -53,16 +53,16 @@ axe describe-ui --udid $UDID | head -50  # See real output format
 ### 1. Create Root Task
 
 ```bash
-clipm add "Project: <name>"              # → abcd
+limbo add "Project: <name>"              # → abcd
 ```
 
 ### 2. Add Infrastructure Tasks
 
 ```bash
-clipm add "Infrastructure setup" --parent abcd              # → efgh
-clipm add "Initialize project structure" --parent efgh       # → ijkl
-clipm add "Configure dependencies" --parent efgh             # → mnop
-clipm add "Set up CI/CD" --parent efgh                       # → qrst
+limbo add "Infrastructure setup" --parent abcd              # → efgh
+limbo add "Initialize project structure" --parent efgh       # → ijkl
+limbo add "Configure dependencies" --parent efgh             # → mnop
+limbo add "Set up CI/CD" --parent efgh                       # → qrst
 ```
 
 ### 3. Add Feature Tasks
@@ -70,22 +70,22 @@ clipm add "Set up CI/CD" --parent efgh                       # → qrst
 For each major feature:
 
 ```bash
-clipm add "Feature: User Authentication" --parent abcd      # → uvwx
+limbo add "Feature: User Authentication" --parent abcd      # → uvwx
 
-clipm add "Design auth flow" --parent uvwx                   # → yzab
-clipm add "Implement auth logic" --parent uvwx               # → cdef
-clipm add "Write auth tests" --parent uvwx                   # → ghij
+limbo add "Design auth flow" --parent uvwx                   # → yzab
+limbo add "Implement auth logic" --parent uvwx               # → cdef
+limbo add "Write auth tests" --parent uvwx                   # → ghij
 
 # Set dependencies
-clipm block yzab cdef   # Implement blocked by Design
-clipm block cdef ghij   # Tests blocked by Implement
+limbo block yzab cdef   # Implement blocked by Design
+limbo block cdef ghij   # Tests blocked by Implement
 ```
 
 ### 4. Add Integration & Docs
 
 ```bash
-clipm add "Integration" --parent abcd                        # → klmn
-clipm add "Documentation" --parent abcd                      # → opqr
+limbo add "Integration" --parent abcd                        # → klmn
+limbo add "Documentation" --parent abcd                      # → opqr
 ```
 
 ### 5. Identify Parallel Work
@@ -95,7 +95,7 @@ Initial parallel tasks (no dependencies):
 - Design tasks for independent features
 
 ```bash
-clipm list --status todo
+limbo list --status todo
 ```
 
 ### 6. Dispatch
@@ -105,25 +105,25 @@ Spawn subagents for independent tasks. See [parallel.md](../orchestration/parall
 ## Example: REST API Project
 
 ```bash
-clipm add "REST API for User Management"                  # → abcd
+limbo add "REST API for User Management"                  # → abcd
 
 # Infrastructure
-clipm add "Infrastructure" --parent abcd                   # → efgh
-clipm add "Init Node.js project" --parent efgh             # → ijkl
-clipm add "Configure TypeScript" --parent efgh             # → mnop
-clipm add "Set up Express" --parent efgh                   # → qrst
+limbo add "Infrastructure" --parent abcd                   # → efgh
+limbo add "Init Node.js project" --parent efgh             # → ijkl
+limbo add "Configure TypeScript" --parent efgh             # → mnop
+limbo add "Set up Express" --parent efgh                   # → qrst
 
 # Features
-clipm add "User CRUD endpoints" --parent abcd              # → uvwx
-clipm add "Design user schema" --parent uvwx               # → yzab
-clipm add "Implement endpoints" --parent uvwx              # → cdef
-clipm add "Write endpoint tests" --parent uvwx             # → ghij
+limbo add "User CRUD endpoints" --parent abcd              # → uvwx
+limbo add "Design user schema" --parent uvwx               # → yzab
+limbo add "Implement endpoints" --parent uvwx              # → cdef
+limbo add "Write endpoint tests" --parent uvwx             # → ghij
 
 # Dependencies
-clipm block ijkl mnop   # TS after Node init
-clipm block mnop qrst   # Express after TS
-clipm block yzab cdef   # Impl after design
-clipm block cdef ghij   # Tests after impl
+limbo block ijkl mnop   # TS after Node init
+limbo block mnop qrst   # Express after TS
+limbo block yzab cdef   # Impl after design
+limbo block cdef ghij   # Tests after impl
 ```
 
 Parallel execution waves:

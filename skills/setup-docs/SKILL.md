@@ -31,7 +31,7 @@ docs/
 
 ## ⚠️ CRITICAL: Execution Method
 
-This skill typically produces 6-10 files. After Phase 2 (planning), invoke `/project-manager` to create a clipm task hierarchy and dispatch parallel writing agents. Do NOT try to write all files sequentially yourself.
+This skill typically produces 6-10 files. After Phase 2 (planning), invoke `/project-manager` to create a limbo task hierarchy and dispatch parallel writing agents. Do NOT try to write all files sequentially yourself.
 
 ## Workflow
 
@@ -116,7 +116,7 @@ Create `docs/dev/` and `docs/user/` directories first. Then dispatch parallel wr
 
 ### Phase 4: Create INDEX.md
 
-After all content files exist (blocked by dependencies in clipm), create `docs/INDEX.md` with:
+After all content files exist (blocked by dependencies in limbo), create `docs/INDEX.md` with:
 
 - Two sections: **Developer Documentation** and **User Documentation**
 - Three columns per table: **Topic**, **File** (relative link), **When to read**

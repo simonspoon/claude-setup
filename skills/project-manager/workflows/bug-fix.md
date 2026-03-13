@@ -2,7 +2,7 @@
 
 For investigating and fixing bugs systematically.
 
-> **Note:** All `clipm add` calls require `--action`, `--verify`, `--result` flags. All `clipm status <id> done` calls require `--outcome`. Examples below use abbreviated form for readability — fill in the structured fields for each task when creating.
+> **Note:** All `limbo add` calls require `--action`, `--verify`, `--result` flags. All `limbo status <id> done` calls require `--outcome`. Examples below use abbreviated form for readability — fill in the structured fields for each task when creating.
 
 ## Task Hierarchy Pattern
 
@@ -27,47 +27,47 @@ Bug: <description>
 ### 1. Create Bug Root
 
 ```bash
-clipm add "Bug: <short description>"              # → abcd
-clipm note abcd "Reported: <details>"
+limbo add "Bug: <short description>"              # → abcd
+limbo note abcd "Reported: <details>"
 ```
 
 ### 2. Add Investigation Phase
 
 ```bash
-clipm add "Investigate" --parent abcd              # → efgh
-clipm add "Reproduce the issue" --parent efgh      # → ijkl
-clipm add "Identify root cause" --parent efgh      # → mnop
-clipm add "Document findings" --parent efgh        # → qrst
+limbo add "Investigate" --parent abcd              # → efgh
+limbo add "Reproduce the issue" --parent efgh      # → ijkl
+limbo add "Identify root cause" --parent efgh      # → mnop
+limbo add "Document findings" --parent efgh        # → qrst
 
 # Root cause depends on reproduction
-clipm block ijkl mnop
-clipm block mnop qrst
+limbo block ijkl mnop
+limbo block mnop qrst
 ```
 
 ### 3. Add Fix Phase
 
 ```bash
-clipm add "Fix" --parent abcd                      # → uvwx
-clipm add "Implement fix" --parent uvwx            # → yzab
-clipm add "Prepare for review" --parent uvwx       # → cdef
+limbo add "Fix" --parent abcd                      # → uvwx
+limbo add "Implement fix" --parent uvwx            # → yzab
+limbo add "Prepare for review" --parent uvwx       # → cdef
 
 # Fix depends on investigation
-clipm block efgh uvwx
-clipm block yzab cdef
+limbo block efgh uvwx
+limbo block yzab cdef
 ```
 
 ### 4. Add Test & Verify
 
 ```bash
-clipm add "Test" --parent abcd                     # → ghij
-clipm add "Verify fix resolves issue" --parent ghij  # → klmn
-clipm add "Run regression tests" --parent ghij     # → opqr
+limbo add "Test" --parent abcd                     # → ghij
+limbo add "Verify fix resolves issue" --parent ghij  # → klmn
+limbo add "Run regression tests" --parent ghij     # → opqr
 
-clipm add "Verify in environment" --parent abcd    # → stuv
+limbo add "Verify in environment" --parent abcd    # → stuv
 
 # Dependencies
-clipm block uvwx ghij    # Test after fix
-clipm block ghij stuv    # Verify after test
+limbo block uvwx ghij    # Test after fix
+limbo block ghij stuv    # Verify after test
 ```
 
 ### 5. Execute Sequentially
@@ -76,36 +76,36 @@ Bug fixes are typically sequential (investigate → fix → test → verify).
 
 Dispatch investigation first:
 ```bash
-clipm claim ijkl bug-investigator
-clipm status ijkl in-progress
+limbo claim ijkl bug-investigator
+limbo status ijkl in-progress
 ```
 
 ## Example: Login Failure Bug
 
 ```bash
-clipm add "Bug: Users cannot log in with email containing +"  # → abcd
+limbo add "Bug: Users cannot log in with email containing +"  # → abcd
 
 # Investigation
-clipm add "Investigate login bug" --parent abcd              # → efgh
-clipm add "Reproduce with test account" --parent efgh        # → ijkl
-clipm add "Trace email handling in auth flow" --parent efgh  # → mnop
-clipm add "Document root cause" --parent efgh                # → qrst
+limbo add "Investigate login bug" --parent abcd              # → efgh
+limbo add "Reproduce with test account" --parent efgh        # → ijkl
+limbo add "Trace email handling in auth flow" --parent efgh  # → mnop
+limbo add "Document root cause" --parent efgh                # → qrst
 
 # Fix
-clipm add "Fix email handling" --parent abcd                 # → uvwx
-clipm add "Update email validation regex" --parent uvwx      # → yzab
-clipm add "Handle URL encoding for email" --parent uvwx      # → cdef
+limbo add "Fix email handling" --parent abcd                 # → uvwx
+limbo add "Update email validation regex" --parent uvwx      # → yzab
+limbo add "Handle URL encoding for email" --parent uvwx      # → cdef
 
 # Test
-clipm add "Test fix" --parent abcd                           # → ghij
-clipm add "Test login with + in email" --parent ghij         # → klmn
-clipm add "Test other special chars" --parent ghij           # → opqr
+limbo add "Test fix" --parent abcd                           # → ghij
+limbo add "Test login with + in email" --parent ghij         # → klmn
+limbo add "Test other special chars" --parent ghij           # → opqr
 
 # Set all dependencies
-clipm block ijkl mnop
-clipm block mnop qrst
-clipm block efgh uvwx
-clipm block uvwx ghij
+limbo block ijkl mnop
+limbo block mnop qrst
+limbo block efgh uvwx
+limbo block uvwx ghij
 ```
 
 Note: Fix tasks yzab & cdef can run in parallel once investigation completes.

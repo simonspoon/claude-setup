@@ -7,7 +7,7 @@ Spawn multiple subagents for concurrent task execution.
 **Verify ALL before parallel dispatch:**
 
 - [ ] Count leaf tasks to dispatch — verify the count matches your plan's file list
-- [ ] Tasks have empty `blockedBy` arrays (`clipm show <id>`)
+- [ ] Tasks have empty `blockedBy` arrays (`limbo show <id>`)
 - [ ] Tasks don't modify same files (see "Shared File Partitioning" below)
 - [ ] Tasks don't produce output another task needs
 - [ ] Total concurrent agents ≤ 5
@@ -16,7 +16,7 @@ Spawn multiple subagents for concurrent task execution.
 
 ```bash
 # Quick check for unblocked tasks
-clipm list --status todo --unblocked
+limbo list --status todo --unblocked
 ```
 
 ## Dispatch Method
@@ -38,7 +38,7 @@ flowchart LR
 ## Subagent Prompt Template
 
 ```
-Execute clipm task <ID>: "<description>"
+Execute limbo task <ID>: "<description>"
 
 ## Task
 <specific work instructions>
@@ -52,10 +52,10 @@ Choose verification strategy by code type:
 If verification fails: fix the issue and re-verify before proceeding.
 ```
 
-**Do NOT include clipm commands in subagent prompts.** Subagents unreliably execute `clipm claim`/`clipm status`/`clipm note` — they skip them, run them in wrong order, or fail silently. The orchestrator owns all clipm state:
+**Do NOT include limbo commands in subagent prompts.** Subagents unreliably execute `limbo claim`/`limbo status`/`limbo note` — they skip them, run them in wrong order, or fail silently. The orchestrator owns all limbo state:
 
-1. **Before dispatch**: `clipm claim <id> <agent-name> && clipm status <id> in-progress`
-2. **After agent returns**: Verify the result, then `clipm status <id> done --outcome "..."`
+1. **Before dispatch**: `limbo claim <id> <agent-name> && limbo status <id> in-progress`
+2. **After agent returns**: Verify the result, then `limbo status <id> done --outcome "..."`
 
 ### ⚠️ CRITICAL: Scope-bound subagent prompts
 
@@ -146,8 +146,8 @@ Not all code can be fully exercised in a headless CI-style environment. Use the 
 
 | Placeholder | Source | Example |
 |-------------|--------|---------|
-| `<ID>` | From `clipm list` output | `unke` |
-| `<description>` | Task name from clipm | `Implement JWT auth` |
+| `<ID>` | From `limbo list` output | `unke` |
+| `<description>` | Task name from limbo | `Implement JWT auth` |
 | `<agent-name>` | Descriptive name for this work | `jwt-impl` |
 | `<specific work instructions>` | What exactly to do (see examples) | |
 
@@ -156,7 +156,7 @@ Not all code can be fully exercised in a headless CI-style environment. Use the 
 ### ❌ Bad: Vague instructions
 
 ```
-Execute clipm task unke: "Implement auth"
+Execute limbo task unke: "Implement auth"
 
 Implement the authentication.
 ```
@@ -166,7 +166,7 @@ Implement the authentication.
 ### ✅ Good: Specific instructions with edge cases
 
 ```
-Execute clipm task unke: "Implement JWT token generation"
+Execute limbo task unke: "Implement JWT token generation"
 
 ## Task
 - Create src/auth/jwt.ts
@@ -184,7 +184,7 @@ pnpm build && pnpm test
 ### ✅ Good: Research task
 
 ```
-Execute clipm task ozit: "Research search libraries"
+Execute limbo task ozit: "Research search libraries"
 
 ## Task
 - Compare Elasticsearch, MeiliSearch, Typesense for our Node.js app
@@ -207,10 +207,10 @@ Execute clipm task ozit: "Research search libraries"
 ## After Dispatch
 
 1. Wait for all subagents to complete
-2. For each completed subagent: verify the result, then `clipm status <id> done --outcome "<verified: summary of agent result>"`
-3. Run `clipm tree` to confirm statuses and check for newly unblocked tasks
-4. Roll up parents: if all children of a parent are `[DONE]`, run `clipm status <parent-id> done --outcome "All child tasks completed"`
-5. Find newly unblocked: `clipm list --status todo --unblocked`
+2. For each completed subagent: verify the result, then `limbo status <id> done --outcome "<verified: summary of agent result>"`
+3. Run `limbo tree` to confirm statuses and check for newly unblocked tasks
+4. Roll up parents: if all children of a parent are `[DONE]`, run `limbo status <parent-id> done --outcome "All child tasks completed"`
+5. Find newly unblocked: `limbo list --status todo --unblocked`
 6. Dispatch next wave
 7. Repeat until all done
 
@@ -276,7 +276,7 @@ Test files and shared config files are the most common source of parallel confli
 
 When uncertain, add blocking dependency:
 ```bash
-clipm block <earlier-id> <later-id>
+limbo block <earlier-id> <later-id>
 ```
 
 Back to [INDEX.md](INDEX.md) | [SKILL.md](../SKILL.md)

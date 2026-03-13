@@ -2,7 +2,7 @@
 
 For modifying existing functionality.
 
-> **Note:** All `clipm add` calls require `--action`, `--verify`, `--result` flags. All `clipm status <id> done` calls require `--outcome`. Examples below use abbreviated form for readability — fill in the structured fields for each task when creating.
+> **Note:** All `limbo add` calls require `--action`, `--verify`, `--result` flags. All `limbo status <id> done` calls require `--outcome`. Examples below use abbreviated form for readability — fill in the structured fields for each task when creating.
 
 ## Task Hierarchy Pattern
 
@@ -25,38 +25,38 @@ Change: <description>
 ### 1. Create Change Root
 
 ```bash
-clipm add "Change: <description>"                  # → abcd
-clipm note abcd "Reason: <why this change>"
+limbo add "Change: <description>"                  # → abcd
+limbo note abcd "Reason: <why this change>"
 ```
 
 ### 2. Add Analysis Phase
 
 ```bash
-clipm add "Analyze change impact" --parent abcd              # → efgh
-clipm add "Document current behavior" --parent efgh          # → ijkl
-clipm add "Define target behavior" --parent efgh             # → mnop
-clipm add "Identify affected components" --parent efgh       # → qrst
+limbo add "Analyze change impact" --parent abcd              # → efgh
+limbo add "Document current behavior" --parent efgh          # → ijkl
+limbo add "Define target behavior" --parent efgh             # → mnop
+limbo add "Identify affected components" --parent efgh       # → qrst
 ```
 
 ### 3. Add Modification Phase
 
 ```bash
-clipm add "Implement changes" --parent abcd                  # → uvwx
-clipm add "Update <component 1>" --parent uvwx               # → yzab
-clipm add "Update <component 2>" --parent uvwx               # → cdef
+limbo add "Implement changes" --parent abcd                  # → uvwx
+limbo add "Update <component 1>" --parent uvwx               # → yzab
+limbo add "Update <component 2>" --parent uvwx               # → cdef
 
 # Block on analysis
-clipm block efgh uvwx
+limbo block efgh uvwx
 ```
 
 ### 4. Add Testing
 
 ```bash
-clipm add "Test changes" --parent abcd                       # → ghij
-clipm add "Verify new behavior" --parent ghij                # → klmn
-clipm add "Run regression suite" --parent ghij               # → opqr
+limbo add "Test changes" --parent abcd                       # → ghij
+limbo add "Verify new behavior" --parent ghij                # → klmn
+limbo add "Run regression suite" --parent ghij               # → opqr
 
-clipm block uvwx ghij
+limbo block uvwx ghij
 ```
 
 ### 5. Parallel Opportunities
@@ -68,30 +68,30 @@ clipm block uvwx ghij
 ## Example: Update API Response Format
 
 ```bash
-clipm add "Change: Update user API to return camelCase"  # → abcd
+limbo add "Change: Update user API to return camelCase"  # → abcd
 
 # Analysis
-clipm add "Analyze API change" --parent abcd             # → efgh
-clipm add "List all affected endpoints" --parent efgh    # → ijkl
-clipm add "Check client dependencies" --parent efgh      # → mnop
-clipm add "Plan migration strategy" --parent efgh        # → qrst
+limbo add "Analyze API change" --parent abcd             # → efgh
+limbo add "List all affected endpoints" --parent efgh    # → ijkl
+limbo add "Check client dependencies" --parent efgh      # → mnop
+limbo add "Plan migration strategy" --parent efgh        # → qrst
 
 # Modification
-clipm add "Update API responses" --parent abcd           # → uvwx
-clipm add "Update user endpoint" --parent uvwx           # → yzab
-clipm add "Update profile endpoint" --parent uvwx        # → cdef
-clipm add "Update settings endpoint" --parent uvwx       # → ghij
+limbo add "Update API responses" --parent abcd           # → uvwx
+limbo add "Update user endpoint" --parent uvwx           # → yzab
+limbo add "Update profile endpoint" --parent uvwx        # → cdef
+limbo add "Update settings endpoint" --parent uvwx       # → ghij
 
 # Testing
-clipm add "Test API changes" --parent abcd               # → klmn
-clipm add "Test each endpoint response" --parent klmn    # → opqr
-clipm add "Test client compatibility" --parent klmn      # → stuv
+limbo add "Test API changes" --parent abcd               # → klmn
+limbo add "Test each endpoint response" --parent klmn    # → opqr
+limbo add "Test client compatibility" --parent klmn      # → stuv
 
 # Dependencies
-clipm block ijkl qrst   # Migration plan needs endpoint list
-clipm block mnop qrst   # Migration plan needs client info
-clipm block efgh uvwx    # Modification after analysis
-clipm block uvwx klmn    # Test after modification
+limbo block ijkl qrst   # Migration plan needs endpoint list
+limbo block mnop qrst   # Migration plan needs client info
+limbo block efgh uvwx    # Modification after analysis
+limbo block uvwx klmn    # Test after modification
 ```
 
 Parallel execution:

@@ -1,6 +1,6 @@
 ---
 name: project-manager
-description: Orchestrate complex projects using clipm for hierarchical task management and parallel subagent execution
+description: Orchestrate complex projects using limbo for hierarchical task management and parallel subagent execution
 triggers:
   - manage this project
   - break down this feature
@@ -12,31 +12,31 @@ triggers:
 
 # Project Manager Skill
 
-Decompose work into hierarchical tasks (clipm) and dispatch parallel subagents.
+Decompose work into hierarchical tasks (limbo) and dispatch parallel subagents.
 
 ## ⚠️ CRITICAL REQUIREMENTS
 
-- **Structured task fields**: Every `clipm add` MUST include `--action`, `--verify`, and `--result` flags. Every `clipm status <id> done` MUST include `--outcome "..."`. These are enforced by the CLI and will error if omitted.
-- **Block order**: `clipm block <blocker> <blocked>` — first arg blocks the second
+- **Structured task fields**: Every `limbo add` MUST include `--action`, `--verify`, and `--result` flags. Every `limbo status <id> done` MUST include `--outcome "..."`. These are enforced by the CLI and will error if omitted.
+- **Block order**: `limbo block <blocker> <blocked>` — first arg blocks the second
 - **Parallel dispatch**: Use multiple Task tool calls in a SINGLE message
 - **Concurrency limit**: Max 3-5 subagents at once
 - **File conflicts**: NEVER parallelize tasks modifying the same files. Before dispatch, enumerate every file each agent will touch and check for overlaps. Test files are the most common offender — see [orchestration/parallel.md](orchestration/parallel.md#shared-file-partitioning)
 - **Verify before dispatch**: Check `blockedBy` is empty before assigning
-- **IDs are strings**: clipm IDs are 4-char strings (e.g., `unke`), not integers
+- **IDs are strings**: limbo IDs are 4-char strings (e.g., `unke`), not integers
 - **Scope-bound subagent prompts**: Every subagent prompt MUST list the files it is allowed to modify AND the files it must NOT touch. Subagents that go beyond their assigned files create conflicts with parallel agents and make downstream tasks partially pre-done or broken. See [orchestration/parallel.md](orchestration/parallel.md#-critical-scope-bound-subagent-prompts)
 - **Research source files before writing subagent prompts**: Before dispatching, use an Explore agent to research the files each subagent will modify — extracting only the relevant functions, signatures, and surrounding context. Also extract signatures from callee files (files the modified code calls into) so prompts include correct types and APIs. Do NOT read entire files into the orchestrator's context. Do NOT write prompts from plan descriptions alone. Subagents succeed when prompts contain precise code context; the orchestrator succeeds by protecting its context window.
 - **Subagent prompts MUST include verification steps**: Every code-writing subagent must build AND runtime-test its output. "It imports" / "it compiles" is not done — reach at least Level 3 (static analysis) on the verification depth ladder. For non-runnable code (TUI, GUI, interactive), explicitly verify library attributes exist and unit-test pure logic helpers. See [orchestration/parallel.md](orchestration/parallel.md#-critical-always-include-verification-steps)
 - **Subagent prompts MUST include edge cases**: The orchestrator has full context; subagents don't. Spell out edge cases (spaces in strings, empty inputs, quoting rules) explicitly in the prompt. See [orchestration/parallel.md](orchestration/parallel.md#-critical-include-edge-case-analysis-in-subagent-prompts)
 - **Subagent prompts that rewrite existing code MUST list preserved behaviors**: When replacing a function/block, enumerate what the old code did (timing, logging, error format, return data shape). Subagents can't infer what they're replacing. See [orchestration/parallel.md](orchestration/parallel.md#-critical-preserve-existing-behavior-when-rewriting-code)
-- **Orchestrator owns clipm status**: Do NOT include `clipm claim`, `clipm status`, or `clipm note` commands in subagent prompts. Subagents unreliably execute them. The orchestrator must `clipm claim` before dispatch and `clipm status done` after verifying each agent's result.
+- **Orchestrator owns limbo status**: Do NOT include `limbo claim`, `limbo status`, or `limbo note` commands in subagent prompts. Subagents unreliably execute them. The orchestrator must `limbo claim` before dispatch and `limbo status done` after verifying each agent's result.
 - **Integration checkpoint is MANDATORY**: After each wave completes (including inline tasks), the orchestrator must build and smoke-test before dispatching the next wave. Do NOT fabricate "skip verification" instructions in plans or subagent prompts — this checkpoint can only be waived if the user explicitly requests it
 
 ## Workflow Overview
 
 ```mermaid
 flowchart TD
-    A[User Request] --> B{clipm init?}
-    B -->|No| C[clipm init]
+    A[User Request] --> B{limbo init?}
+    B -->|No| C[limbo init]
     B -->|Yes| D{Task Type}
     C --> D
 
@@ -57,7 +57,7 @@ flowchart TD
     L -->|Yes| M[Dispatch subagents]
     L -->|No| N{All done?}
 
-    M --> O[Monitor: clipm tree + fix stale status]
+    M --> O[Monitor: limbo tree + fix stale status]
     O --> P[Check newly unblocked]
     P --> K
 
@@ -67,7 +67,7 @@ flowchart TD
 
 ## Plan Mode Interop
 
-If you already created a plan file (via plan mode) before invoking this skill, **use the plan as your task source** — don't re-research. Convert the plan's steps directly into clipm tasks with dependencies. The plan file is your Phase 0 output; skip to task creation.
+If you already created a plan file (via plan mode) before invoking this skill, **use the plan as your task source** — don't re-research. Convert the plan's steps directly into limbo tasks with dependencies. The plan file is your Phase 0 output; skip to task creation.
 
 ## Phase 0: Research (Before Task Creation)
 
@@ -85,35 +85,35 @@ See [workflows/new-project.md](workflows/new-project.md#external-tool-discovery)
 
 ### Initialize
 ```bash
-[ ! -d ".clipm" ] && clipm init
+[ ! -d ".limbo" ] && limbo init
 ```
 
 ### Create Hierarchy
 ```bash
-# Every clipm add requires --action, --verify, --result
-clipm add "Root task" \
+# Every limbo add requires --action, --verify, --result
+limbo add "Root task" \
   --action "Complete all child tasks" \
   --verify "All children are done" \
   --result "Summary of outcomes"           # → abcd
 
-clipm add "Child" --parent abcd \
+limbo add "Child" --parent abcd \
   --action "Do the specific work" \
   --verify "Run tests and confirm" \
   --result "Report what changed"           # → efgh
 
-clipm parent efgh abcd             # Set abcd as parent of efgh (positional, no flags)
-clipm block abcd efgh              # efgh waits for abcd
+limbo parent efgh abcd             # Set abcd as parent of efgh (positional, no flags)
+limbo block abcd efgh              # efgh waits for abcd
 ```
 
 ### Find Parallel Work
 ```bash
-clipm list --status todo --unblocked
+limbo list --status todo --unblocked
 ```
 
 ### Monitor
 ```bash
-clipm tree                         # Visual hierarchy
-clipm show <id>                    # Task details
+limbo tree                         # Visual hierarchy
+limbo show <id>                    # Task details
 ```
 
 ## Inline Execution (Small Tasks)
@@ -124,7 +124,7 @@ Not every task needs a subagent. The orchestrator SHOULD execute a task directly
 - You already have the file content in context
 - There's no benefit to parallelizing it with other work
 
-Claim the task (`clipm claim <ID> orchestrator`), do the work, mark done with `clipm status <ID> done --outcome "..."`. This avoids the overhead of spawning an agent for trivial edits.
+Claim the task (`limbo claim <ID> orchestrator`), do the work, mark done with `limbo status <ID> done --outcome "..."`. This avoids the overhead of spawning an agent for trivial edits.
 
 ⚠️ **Inline tasks require the same verification rigor as subagent tasks.** "It imports" is not done. If you wrote code, runtime-test it — especially code that other tasks depend on. A bug in a shared dependency breaks every downstream consumer.
 
@@ -134,20 +134,20 @@ Dispatch using Task tool. **All independent tasks in ONE message.**
 
 See [orchestration/templates.md](orchestration/templates.md) for prompt template, verification depth ladder, and research-before-dispatch checklist.
 
-**Do NOT include clipm commands in subagent prompts.** The orchestrator owns all clipm state management.
+**Do NOT include limbo commands in subagent prompts.** The orchestrator owns all limbo state management.
 
 ### After Subagent Completion
 
-The orchestrator MUST update clipm after each subagent returns:
+The orchestrator MUST update limbo after each subagent returns:
 
-1. Run `clipm tree` to see current state
-2. For each completed subagent, verify the result, then update clipm:
+1. Run `limbo tree` to see current state
+2. For each completed subagent, verify the result, then update limbo:
    ```bash
-   clipm status <id> done --outcome "<verified: summary of agent result>"
+   limbo status <id> done --outcome "<verified: summary of agent result>"
    ```
-3. Run `clipm tree` again to confirm unblocked tasks
+3. Run `limbo tree` again to confirm unblocked tasks
 
-**Roll up parent tasks:** After all children of a parent task are `[DONE]`, mark the parent done too: `clipm status <parent-id> done --outcome "All child tasks completed"`. This unblocks any tasks that depend on the parent (e.g., INDEX.md blocked by a "Write developer docs" parent).
+**Roll up parent tasks:** After all children of a parent task are `[DONE]`, mark the parent done too: `limbo status <parent-id> done --outcome "All child tasks completed"`. This unblocks any tasks that depend on the parent (e.g., INDEX.md blocked by a "Write developer docs" parent).
 
 **Avoid unnecessary grouping tasks.** Only create parent grouping tasks (e.g., "Write developer docs") when other tasks explicitly need to block on the whole group. If tasks only block on individual leaves, skip the grouping layer — it just adds status management overhead.
 
@@ -167,4 +167,4 @@ See [orchestration/recovery.md](orchestration/recovery.md) for mid-project re-en
 
 - [Workflow Index](workflows/INDEX.md)
 - [Orchestration Patterns](orchestration/INDEX.md)
-- [clipm Commands](reference/clipm-commands.md)
+- [limbo Commands](reference/limbo-commands.md)

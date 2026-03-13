@@ -1,20 +1,20 @@
 # Command Errors
 
-## clipm not found
+## limbo not found
 
-**Symptom**: `command not found: clipm`
+**Symptom**: `command not found: limbo`
 
 **Fix**:
-1. Check if clipm is installed: `which clipm`
-2. If not installed, inform user: "clipm CLI is required. Install it or use alternative task tracking."
+1. Check if limbo is installed: `which limbo`
+2. If not installed, inform user: "limbo CLI is required. Install it or use alternative task tracking."
 
-## clipm init failed
+## limbo init failed
 
-**Symptom**: Error when running `clipm init`
+**Symptom**: Error when running `limbo init`
 
 **Check**:
 ```bash
-ls -la .clipm 2>/dev/null || echo "Not initialized"
+ls -la .limbo 2>/dev/null || echo "Not initialized"
 ```
 
 **If already exists**: Skip init, proceed with existing project.
@@ -27,7 +27,7 @@ ls -la .clipm 2>/dev/null || echo "Not initialized"
 
 **Fix**:
 ```bash
-clipm list | jq '.[].id'  # List all valid IDs
+limbo list | jq '.[].id'  # List all valid IDs
 ```
 
 Use correct ID from list.
@@ -36,27 +36,27 @@ Use correct ID from list.
 
 **Symptom**: `Cannot block: would create cycle`
 
-**Fix**: Review dependency graph with `clipm tree`. Remove conflicting block or restructure tasks.
+**Fix**: Review dependency graph with `limbo tree`. Remove conflicting block or restructure tasks.
 
 ## Task ID conflicts
 
-**Symptom**: `clipm add` returns an ID that collides with an existing task, or `clipm show <id>` returns the wrong task.
+**Symptom**: `limbo add` returns an ID that collides with an existing task, or `limbo show <id>` returns the wrong task.
 
-**Fix**: clipm IDs are 4-char strings. If you suspect a collision, run `clipm list` to see all IDs. Use `clipm show <id>` to verify you have the right task before operating on it.
+**Fix**: limbo IDs are 4-char strings. If you suspect a collision, run `limbo list` to see all IDs. Use `limbo show <id>` to verify you have the right task before operating on it.
 
 ## Stale lock file
 
-**Symptom**: `clipm` commands hang or error with "lock" message.
+**Symptom**: `limbo` commands hang or error with "lock" message.
 
 **Fix**:
-1. Check for a lock file: `ls .clipm/*.lock 2>/dev/null`
+1. Check for a lock file: `ls .limbo/*.lock 2>/dev/null`
 2. If found, check if the owning process is still running
-3. Only remove the lock if no clipm process is active
+3. Only remove the lock if no limbo process is active
 
 ## Missing required flags
 
-**Symptom**: `clipm add` or `clipm status done` errors about missing fields.
+**Symptom**: `limbo add` or `limbo status done` errors about missing fields.
 
-**Fix**: Every `clipm add` requires `--action`, `--verify`, `--result`. Every `clipm status <id> done` requires `--outcome "..."`. These are not optional.
+**Fix**: Every `limbo add` requires `--action`, `--verify`, `--result`. Every `limbo status <id> done` requires `--outcome "..."`. These are not optional.
 
 Back to [INDEX.md](INDEX.md) | [SKILL.md](../SKILL.md)

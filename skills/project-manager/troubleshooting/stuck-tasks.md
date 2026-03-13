@@ -4,7 +4,7 @@
 
 **Diagnosis**:
 ```bash
-clipm show <id>
+limbo show <id>
 ```
 
 Check:
@@ -17,15 +17,15 @@ Check:
 
 Verify the work is actually complete, then:
 ```bash
-clipm note <id> "Force completed: verified work done"
-clipm status <id> done --outcome "Force completed: <what was verified>"
+limbo note <id> "Force completed: verified work done"
+limbo status <id> done --outcome "Force completed: <what was verified>"
 ```
 
 ### Option 2: Reset and re-dispatch
 
 ```bash
-clipm unclaim <id>
-clipm status <id> todo
+limbo unclaim <id>
+limbo status <id> todo
 ```
 
 Then dispatch new subagent.
@@ -34,10 +34,10 @@ Then dispatch new subagent.
 
 If task is corrupted or unclear:
 ```bash
-clipm note <id> "Abandoned: <reason>"
-clipm status <id> done --outcome "Abandoned: <reason>"
+limbo note <id> "Abandoned: <reason>"
+limbo status <id> done --outcome "Abandoned: <reason>"
 
-clipm add "Replacement: <clearer description>" --parent <parent-id> \
+limbo add "Replacement: <clearer description>" --parent <parent-id> \
   --action "..." --verify "..." --result "..."
 ```
 
@@ -46,7 +46,7 @@ clipm add "Replacement: <clearer description>" --parent <parent-id> \
 Include in subagent prompt:
 ```
 If you cannot complete this task:
-1. clipm note <ID> "Blocked: <reason>"
+1. limbo note <ID> "Blocked: <reason>"
 2. Report the blocker in your response
 ```
 

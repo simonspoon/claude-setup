@@ -21,7 +21,7 @@ git checkout <file>    # Restore to last commit
 Then re-run tasks sequentially.
 
 ### If no git:
-Manually review file and reconstruct correct state. Add clipm note documenting the conflict.
+Manually review file and reconstruct correct state. Add limbo note documenting the conflict.
 
 ## Prevention Checklist
 
@@ -33,13 +33,13 @@ Before parallel dispatch, verify:
 
 **How to check**:
 ```bash
-clipm show <id-1>  # Review task description
-clipm show <id-2>  # Compare target files
+limbo show <id-1>  # Review task description
+limbo show <id-2>  # Compare target files
 ```
 
 If tasks might conflict, dispatch sequentially:
 ```bash
-clipm block <id-1> <id-2>  # Force sequential execution
+limbo block <id-1> <id-2>  # Force sequential execution
 ```
 
 ## File Conflict Diagram

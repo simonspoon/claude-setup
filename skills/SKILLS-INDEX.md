@@ -4,7 +4,7 @@ Quick reference for all active skills — when to use each and how they compose.
 
 | Skill | Purpose | When to invoke | Composes with |
 |-------|---------|----------------|---------------|
-| **project-manager** | Orchestrate multi-file tasks with clipm + parallel subagents | Task creates/modifies 3+ files, spans 2+ concerns, has independent parts | project-docs-explore (Phase 0), qorvex-test-ios (verification) |
+| **project-manager** | Orchestrate multi-file tasks with limbo + parallel subagents | Task creates/modifies 3+ files, spans 2+ concerns, has independent parts | project-docs-explore (Phase 0), qorvex-test-ios (verification) |
 | **project-docs-explore** | Orient via progressive-disclosure docs before coding | Starting work on unfamiliar subsystem or onboarding to project | project-manager (Phase 0 research) |
 | **qorvex-test-ios** | Automate and verify iOS app UI on simulator or physical device | Testing iOS apps, verifying UI behavior, taking screenshots | project-manager (verification phase) |
 | **setup-docs** | Create docs/ structure with INDEX.md for progressive disclosure | New project needs documentation scaffolding | project-docs-explore (consumer of its output) |
