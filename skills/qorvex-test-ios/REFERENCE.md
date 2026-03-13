@@ -19,8 +19,16 @@ All commands accept these options:
 Start server, session, and agent in one step.
 
 ```bash
-qorvex start
+qorvex start                    # Simulator (uses booted sim)
+qorvex start -d <UDID>         # Physical device
+qorvex start --device <UDID>   # Physical device (long form)
 ```
+
+| Option | Description |
+|--------|-------------|
+| `-d, --device <UDID>` | Select a physical device by UDID. Builds and signs the agent in the foreground, then deploys to the device. Agent deploy takes 30-60s. |
+
+For physical devices, `start -d` handles: foreground agent build (with signing from `~/.qorvex/config.json`), server start, device selection, agent deployment, and connection.
 
 ### start-session
 
