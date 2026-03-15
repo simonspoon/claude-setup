@@ -14,6 +14,16 @@ triggers:
 
 Decompose work into hierarchical tasks (limbo) and dispatch parallel subagents.
 
+## Prerequisite Check
+
+Before doing anything else, verify `limbo` is installed:
+
+```bash
+command -v limbo >/dev/null 2>&1 && echo "OK" || echo "MISSING"
+```
+
+If `MISSING`: **STOP.** Tell the user: "limbo CLI is not installed. Install it before using /project-manager." Do NOT attempt to work around this — limbo is required for task tracking, dependency management, and status rollup.
+
 ## ⚠️ CRITICAL REQUIREMENTS
 
 - **Structured task fields**: Every `limbo add` MUST include `--action`, `--verify`, and `--result` flags. Every `limbo status <id> done` MUST include `--outcome "..."`. These are enforced by the CLI and will error if omitted.
@@ -29,7 +39,7 @@ Decompose work into hierarchical tasks (limbo) and dispatch parallel subagents.
 - **Subagent prompts MUST include edge cases**: The orchestrator has full context; subagents don't. Spell out edge cases (spaces in strings, empty inputs, quoting rules) explicitly in the prompt. See [orchestration/parallel.md](orchestration/parallel.md#-critical-include-edge-case-analysis-in-subagent-prompts)
 - **Subagent prompts that rewrite existing code MUST list preserved behaviors**: When replacing a function/block, enumerate what the old code did (timing, logging, error format, return data shape). Subagents can't infer what they're replacing. See [orchestration/parallel.md](orchestration/parallel.md#-critical-preserve-existing-behavior-when-rewriting-code)
 - **Orchestrator owns limbo status**: Do NOT include `limbo claim`, `limbo status`, or `limbo note` commands in subagent prompts. Subagents unreliably execute them. The orchestrator must `limbo claim` before dispatch and `limbo status done` after verifying each agent's result.
-- **Integration checkpoint is MANDATORY**: After each wave completes (including inline tasks), the orchestrator must build and smoke-test before dispatching the next wave. Do NOT fabricate "skip verification" instructions in plans or subagent prompts — this checkpoint can only be waived if the user explicitly requests it
+- **Integration checkpoint is MANDATORY**: After each wave completes (including inline tasks), the orchestrator must format-check, build, and smoke-test before dispatching the next wave. **Run the formatter first** (`cargo fmt`, `prettier`, etc.) — subagents routinely produce code with formatting violations. Do NOT fabricate "skip verification" instructions in plans or subagent prompts — this checkpoint can only be waived if the user explicitly requests it
 
 ## Workflow Overview
 

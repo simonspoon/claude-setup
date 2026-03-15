@@ -33,6 +33,14 @@ docs/
 
 This skill typically produces 6-10 files. After Phase 2 (planning), invoke `/project-manager` to create a limbo task hierarchy and dispatch parallel writing agents. Do NOT try to write all files sequentially yourself.
 
+**Prerequisite**: `/project-manager` requires the `limbo` CLI. Before invoking it, check:
+
+```bash
+command -v limbo >/dev/null 2>&1 && echo "OK" || echo "MISSING"
+```
+
+If `limbo` is missing: **STOP.** Tell the user: "limbo CLI is not installed. /setup-docs requires /project-manager which requires limbo. Install limbo first, or run /setup-docs manually." Do NOT proceed without limbo — the parallel dispatch workflow depends on it.
+
 ## Workflow
 
 ### Phase 1: Discover the Project

@@ -41,6 +41,8 @@ Choose by code type:
 - Interactive (TUI, GUI): verify imports + signatures exist, unit-test pure logic
 - Library: import and call key functions with sample data + assert results
 
+Always run the project formatter before declaring done (e.g., `cargo fmt`, `prettier --write .`, `black .`).
+
 Minimum: Level 3 (static analysis). Prefer Level 4+ (runtime test).
 ```
 

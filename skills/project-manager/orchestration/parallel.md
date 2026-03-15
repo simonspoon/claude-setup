@@ -12,7 +12,7 @@ Spawn multiple subagents for concurrent task execution.
 - [ ] Tasks don't produce output another task needs
 - [ ] Total concurrent agents ≤ 5
 - [ ] If dispatching in waves (>5 tasks), write down which tasks go in which wave
-- [ ] **Research source files via Explore agent** — for each file a subagent will modify, dispatch an Explore agent to extract the relevant functions, signatures, and surrounding context. **Also extract signatures from callee files** — if the modified code calls `self.add_output()`, `driver.get_target_info()`, or similar, include the callee's parameter types and return types in the prompt so the subagent doesn't guess wrong (e.g., `add_output` takes `Line<'_>` not `String`). Use those findings to write prompts with exact before/after diffs and preserved behaviors. Do NOT read entire files into the orchestrator's context. Do NOT write prompts from plan descriptions alone.
+- [ ] **Research source files via Explore agent** — for each file a subagent will modify, dispatch an Explore agent to extract the relevant functions, signatures, and surrounding context. **Also extract signatures from callee files** — if the modified code calls `self.add_output()`, `driver.get_target_info()`, or similar, include the callee's parameter types and return types in the prompt so the subagent doesn't guess wrong (e.g., `add_output` takes `Line<'_>` not `String`). Use those findings to write prompts with exact before/after diffs and preserved behaviors. Do NOT read entire files into the orchestrator's context. Do NOT write prompts from plan descriptions alone. **⚠️ Explore agents tend to summarize — explicitly say "Return the COMPLETE/VERBATIM contents" or "Return exact function signatures with line numbers, not summaries" in your prompt.** If the Explore agent returns summaries anyway, fall back to reading files directly with the Read tool.
 
 ```bash
 # Quick check for unblocked tasks
@@ -78,6 +78,7 @@ Every subagent prompt MUST include a "Verification" section. Code that compiles 
 **For code-writing tasks, include ALL of:**
 - Build/compile check
 - A runtime smoke test (run the binary, call the function, hit the endpoint)
+- **Run the project's formatter** (`cargo fmt`, `prettier --write`, `black .`, etc.) before declaring done — subagents frequently produce code that compiles and passes tests but fails formatting checks
 - Fix any errors found before marking done
 
 ### ⚠️ CRITICAL: Preserve existing behavior when rewriting code
@@ -218,14 +219,15 @@ Execute limbo task ozit: "Research search libraries"
 
 After completing a wave of work (parallel subagents OR inline tasks), the orchestrator MUST verify integration before dispatching the next wave or marking parent tasks done. **This applies to inline execution too** — if you wrote a shared dependency inline, runtime-test it before dispatching agents that depend on it.
 
-1. **Build check:** Run full project build (`cargo build`, `swift build`, `pnpm build`, etc.)
-2. **Unit test check:** Run the test suite (`cargo test`, `pnpm test`, etc.)
-3. **Runtime smoke test:** Actually run the produced binary/server/function and confirm it doesn't crash. If the task added a new flag or mode, invoke it. "Tests pass" is not sufficient — exercise the real code path.
-4. **Output/behavior regression check:** If the change refactors existing behavior, verify the output format is preserved. Check: Are metadata fields still populated? Are status messages still emitted? Does the output schema match what downstream consumers (CLI formatters, log parsers, scripts) expect? Compare the old code path's output contract against the new one.
-5. **Data contract verification:** If one component serializes data and another deserializes it (e.g., Swift agent sends JSON, Rust client parses it), verify the **actual serialized output** matches the **consumer's struct/schema**. Common failures: producer omits fields the consumer requires, field names differ (camelCase vs snake_case), optional-on-one-side but required-on-the-other. **Test the real round-trip** — build both sides, trigger the operation, and confirm the consumer successfully parses what the producer actually sends. "Both sides compile" is not sufficient when the data contract is implicit.
-6. **Cross-component test:** If tasks produced components that interact (e.g., a server and a client), test them together
-7. **Cleanup:** Stop any servers, remove sockets/temp files, kill child processes spawned during testing
-8. **If failures:** Fix immediately or create fix tasks before proceeding
+1. **Format/lint check:** Run the project's formatter and linter first (`cargo fmt --check && cargo clippy`, `pnpm lint`, `black --check . && ruff check .`, etc.). Subagents routinely produce code with formatting violations — catch these before deeper checks. If formatting fails, run the auto-fixer (`cargo fmt`, `prettier --write .`) and move on.
+2. **Build check:** Run full project build (`cargo build`, `swift build`, `pnpm build`, etc.)
+3. **Unit test check:** Run the test suite (`cargo test`, `pnpm test`, etc.)
+4. **Runtime smoke test:** Actually run the produced binary/server/function and confirm it doesn't crash. If the task added a new flag or mode, invoke it. "Tests pass" is not sufficient — exercise the real code path.
+5. **Output/behavior regression check:** If the change refactors existing behavior, verify the output format is preserved. Check: Are metadata fields still populated? Are status messages still emitted? Does the output schema match what downstream consumers (CLI formatters, log parsers, scripts) expect? Compare the old code path's output contract against the new one.
+6. **Data contract verification:** If one component serializes data and another deserializes it (e.g., Swift agent sends JSON, Rust client parses it), verify the **actual serialized output** matches the **consumer's struct/schema**. Common failures: producer omits fields the consumer requires, field names differ (camelCase vs snake_case), optional-on-one-side but required-on-the-other. **Test the real round-trip** — build both sides, trigger the operation, and confirm the consumer successfully parses what the producer actually sends. "Both sides compile" is not sufficient when the data contract is implicit.
+7. **Cross-component test:** If tasks produced components that interact (e.g., a server and a client), test them together
+8. **Cleanup:** Stop any servers, remove sockets/temp files, kill child processes spawned during testing
+9. **If failures:** Fix immediately or create fix tasks before proceeding
 
 ```bash
 # Example: Rust + Swift project
