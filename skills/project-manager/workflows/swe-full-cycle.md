@@ -1,6 +1,6 @@
 # SWE Full Cycle Workflow
 
-For end-to-end software engineering: issue → plan → implement → test → review → merge.
+For end-to-end software engineering: issue → plan → implement → test → review → retrospective → merge.
 
 > **Note:** All `limbo add` calls require `--action`, `--verify`, `--result` flags. All `limbo status <id> done` calls require `--outcome`. Examples below use abbreviated form for readability — fill in the structured fields for each task when creating.
 
@@ -18,6 +18,7 @@ Use this workflow when the task requires the full engineering cycle — not just
 | Test | `/test-engineer` | Generate tests, run suites, analyze coverage |
 | Review | `/code-reviewer` | Review diffs for bugs, security, conventions |
 | CI/CD | `/devops` | Create/update CI pipeline if needed |
+| Retrospective | `/software-engineering`, `/skill-reflection` | Capture lessons, fix skill/workflow gaps |
 
 ## Task Hierarchy Pattern
 
@@ -42,6 +43,9 @@ SWE: <description>
 │   └── Update pipeline (devops)
 ├── Completion Gate (MANDATORY)
 │   └── Verify all phases executed with evidence
+├── Retrospective (MANDATORY)
+│   ├── Answer 3 questions
+│   └── Create follow-up tasks for findings
 └── Deliver
     ├── Commit
     └── Create PR
@@ -180,7 +184,50 @@ CI/CD: [updated/not needed]
 
 If ANY phase lacks evidence, **do NOT pass the gate**. Go back and execute the missing phase.
 
-### 7. Deliver Phase
+### 7. Retrospective (MANDATORY)
+
+After the gate passes, conduct a brief retrospective before delivery. This is how the team evolves.
+
+```bash
+limbo add "Retrospective" --parent root                  # → retro
+limbo block gate retro   # Retro after gate passes
+
+limbo add "Deliver" --parent root                        # → dlvr
+limbo block retro dlvr   # Deliver BLOCKED on retro
+```
+
+Answer these 3 questions:
+
+**1. What phase caused the most friction?**
+Identify the phase that was hardest, took longest, or produced the weakest results. This points to skill/workflow gaps.
+
+**2. Did the test plan match what was actually tested?**
+Compare the acceptance criteria from the plan phase to the tests that were generated. Gaps indicate planning needs improvement. Over-testing indicates the plan was too vague.
+
+**3. Any lesson worth saving?**
+Conventions discovered, preferences to capture, mistakes to avoid. Only save things that apply to future work — not one-off observations.
+
+**Where findings go:**
+
+| Finding type | Action | Destination |
+|-------------|--------|-------------|
+| Skill produced wrong/incomplete output | Fix the skill's docs directly, or run `/skill-reflection` | Skill's SKILL.md or reference files |
+| New convention or preference | Save via `/software-engineering` preference capture | `software-engineering/preferences/` |
+| Workflow gap (missing step, wrong ordering) | Update the workflow template directly | `workflows/swe-full-cycle.md` or other template |
+| Tool limitation or missing capability | Create a follow-up task or note for user | Limbo task or user communication |
+| Nothing noteworthy | Record "No findings" — this is a valid outcome | Gate task outcome |
+
+**Follow-up tasks have teeth:** If the retrospective identifies a gap, create a concrete follow-up task (in limbo or communicated to the user). Do NOT just note it and move on — that's how gaps persist.
+
+Record the retrospective in the task outcome:
+```
+Friction: [phase] — [what happened]
+Test plan accuracy: [matched/gaps/over-tested] — [details]
+Lesson: [saved to X / none]
+Follow-up: [task created / none needed]
+```
+
+### 8. Deliver Phase
 
 ```bash
 limbo add "Create commit" --parent dlvr                  # → cmit
@@ -193,7 +240,7 @@ limbo block cmit pr      # PR after commit
 
 ```
 req ──┐
-      ├→ dsgn → tpln → impl ──→ test ──→ rev ──→ gate ──→ dlvr
+      ├→ dsgn → tpln → impl ──→ test ──→ rev ──→ gate ──→ retro ──→ dlvr
 expl ─┘                     │         ↗
                              └→ cicd ─┘ (optional)
 ```
@@ -209,7 +256,8 @@ expl ─┘                     │         ↗
 - **Wave 7**: crev (review all changes)
 - **Wave 8**: addr (if review has feedback)
 - **Wave 9**: gate (verify all phases, produce evidence)
-- **Wave 10**: cmit → pr (deliver)
+- **Wave 10**: retro (retrospective — capture lessons, create follow-ups)
+- **Wave 11**: cmit → pr (deliver)
 
 ## Review Loop
 
@@ -247,8 +295,9 @@ limbo add "Review search" --parent root                   # → rev
 limbo add "Code review" --parent rev                      # → crev
 limbo add "Address feedback" --parent rev                 # → addr
 
-# Completion gate
+# Completion gate + Retrospective
 limbo add "Completion gate" --parent root                 # → gate
+limbo add "Retrospective" --parent root                   # → retro
 
 # Deliver
 limbo add "Deliver search" --parent root                  # → dlvr
@@ -265,7 +314,8 @@ limbo block tgen trun
 limbo block test rev
 limbo block crev addr
 limbo block rev gate
-limbo block gate dlvr
+limbo block gate retro
+limbo block retro dlvr
 limbo block cmit pr
 ```
 

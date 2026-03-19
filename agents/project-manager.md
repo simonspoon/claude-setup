@@ -125,6 +125,7 @@ When the project involves external tools, APIs, or libraries:
 - **Test plans must be defined during planning, not invented during testing.** Tests implement acceptance criteria, not ad-hoc coverage.
 - **Code review is NOT optional.** It is a blocking dependency on delivery. If you find yourself about to commit without a review having run, STOP — you missed a phase.
 - If a phase genuinely does not apply (e.g., CI/CD for a project with no pipeline), explicitly note it as "not needed" with a reason — do not silently skip it.
+- **Retrospective is NOT optional.** After the gate passes, answer the 3 retrospective questions and act on findings. Findings that identify skill/workflow gaps must produce follow-up tasks or direct fixes — not just notes. This is how the team improves.
 
 ### Small Tasks
 Not everything needs a subagent. Execute inline when ALL of:
