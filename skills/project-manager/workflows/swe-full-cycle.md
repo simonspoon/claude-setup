@@ -1,0 +1,222 @@
+# SWE Full Cycle Workflow
+
+For end-to-end software engineering: issue → plan → implement → test → review → merge.
+
+> **Note:** All `limbo add` calls require `--action`, `--verify`, `--result` flags. All `limbo status <id> done` calls require `--outcome`. Examples below use abbreviated form for readability — fill in the structured fields for each task when creating.
+
+## When to Use
+
+Use this workflow when the task requires the full engineering cycle — not just implementation, but also testing, review, and delivery. Choose a simpler workflow (feature.md, bug-fix.md) when only some phases are needed.
+
+## Skills Involved
+
+| Phase | Skill | Purpose |
+|-------|-------|---------|
+| Plan | `/software-engineering` | Load conventions, architecture knowledge |
+| Plan | `/project-docs-explore` | Understand existing codebase |
+| Implement | (subagents) | Write code per task decomposition |
+| Test | `/test-engineer` | Generate tests, run suites, analyze coverage |
+| Review | `/code-reviewer` | Review diffs for bugs, security, conventions |
+| CI/CD | `/devops` | Create/update CI pipeline if needed |
+
+## Task Hierarchy Pattern
+
+```
+SWE: <description>
+├── Plan
+│   ├── Research & understand requirements
+│   ├── Explore codebase (project-docs-explore)
+│   └── Design approach
+├── Implement
+│   ├── Core changes
+│   └── Supporting changes
+├── Test
+│   ├── Generate tests (test-engineer)
+│   ├── Run test suite
+│   └── Coverage analysis
+├── Review
+│   ├── Code review (code-reviewer)
+│   └── Address review feedback
+├── CI/CD (if needed)
+│   └── Update pipeline (devops)
+└── Deliver
+    ├── Commit
+    └── Create PR
+```
+
+## Step-by-Step
+
+### 1. Plan Phase
+
+Load context before decomposing:
+
+```bash
+# Load skills (orchestrator does this, not subagents)
+# /software-engineering — conventions and preferences
+# /project-docs-explore — architecture docs
+```
+
+Create the root and plan tasks:
+
+```bash
+limbo add "SWE: <description>"                           # → root
+limbo add "Plan" --parent root                           # → plan
+limbo add "Research requirements" --parent plan          # → req
+limbo add "Explore codebase" --parent plan               # → expl
+limbo add "Design approach" --parent plan                # → dsgn
+
+limbo block req dsgn    # Design after requirements
+limbo block expl dsgn   # Design after exploration
+```
+
+### 2. Implement Phase
+
+```bash
+limbo add "Implement" --parent root                      # → impl
+limbo add "Core: <main change>" --parent impl            # → core
+limbo add "Support: <secondary>" --parent impl           # → supp
+
+limbo block plan impl   # Implement after plan
+```
+
+Dispatch core and support tasks to subagents in parallel (if no file conflicts).
+
+### 3. Test Phase
+
+Use `/test-engineer` for test generation and coverage:
+
+```bash
+limbo add "Test" --parent root                           # → test
+limbo add "Generate tests for changed code" --parent test  # → tgen
+limbo add "Run full test suite" --parent test            # → trun
+limbo add "Coverage analysis" --parent test              # → tcov
+
+limbo block impl test   # Test after implement
+limbo block tgen trun   # Run after generation
+limbo block trun tcov   # Coverage after run
+```
+
+Subagent prompt for test generation should include:
+- Files that were changed (from implement phase)
+- The test-engineer skill activation protocol
+- Framework detection commands
+- Expected output format
+
+**Refactoring note:** When the implement phase is a refactoring (extracting modules, splitting files), the test generation task MUST generate tests for newly created modules, not just verify existing tests still pass. Include in the subagent prompt: "Generate tests for any newly extracted modules that don't have their own test coverage."
+
+### 4. Review Phase
+
+Use `/code-reviewer` on all changes:
+
+```bash
+limbo add "Review" --parent root                         # → rev
+limbo add "Code review" --parent rev                     # → crev
+limbo add "Address feedback" --parent rev                # → addr
+
+limbo block test rev     # Review after tests pass
+limbo block crev addr    # Address after review
+```
+
+The code review task should:
+1. Run `git diff main..HEAD` (or appropriate base)
+2. Apply the code-reviewer activation protocol
+3. Produce structured output (Critical/Warnings/Info/Verdict)
+4. If verdict is REQUEST CHANGES, the "Address feedback" task becomes active
+
+If review passes with APPROVE, mark "Address feedback" as done with outcome "No changes needed."
+
+### 5. CI/CD Phase (Optional)
+
+Only if the project needs a new or updated pipeline:
+
+```bash
+limbo add "CI/CD" --parent root                          # → cicd
+limbo add "Update CI pipeline" --parent cicd             # → pipe
+
+limbo block impl cicd   # CI after implement (can parallel with test)
+```
+
+### 6. Deliver Phase
+
+```bash
+limbo add "Deliver" --parent root                        # → dlvr
+limbo add "Create commit" --parent dlvr                  # → cmit
+limbo add "Create PR" --parent dlvr                      # → pr
+
+limbo block rev dlvr     # Deliver after review passes
+limbo block cmit pr      # PR after commit
+```
+
+## Dependency Graph
+
+```
+req ──┐
+      ├→ dsgn → impl ──→ test ──→ rev ──→ dlvr
+expl ─┘              │         ↗
+                     └→ cicd ─┘ (optional)
+```
+
+## Wave Execution
+
+- **Wave 1**: req + expl (parallel research)
+- **Wave 2**: dsgn (depends on both)
+- **Wave 3**: core + supp (parallel implementation)
+- **Wave 4**: tgen + cicd (parallel — tests + CI)
+- **Wave 5**: trun → tcov (sequential test execution)
+- **Wave 6**: crev (review all changes)
+- **Wave 7**: addr (if review has feedback)
+- **Wave 8**: cmit → pr (deliver)
+
+## Review Loop
+
+If code review returns REQUEST CHANGES:
+1. Mark "Code review" as done with outcome noting the issues
+2. "Address feedback" becomes the active task
+3. After addressing feedback, add a new "Re-review" task
+4. Block delivery on re-review
+5. Maximum 2 review iterations before escalating to user
+
+## Example: Add User Search Feature (Full Cycle)
+
+```bash
+limbo add "SWE: Add user search to admin panel"          # → root
+
+# Plan
+limbo add "Plan search feature" --parent root             # → plan
+limbo add "Research search requirements" --parent plan    # → req
+limbo add "Explore admin panel code" --parent plan        # → expl
+limbo add "Design search approach" --parent plan          # → dsgn
+
+# Implement
+limbo add "Implement search" --parent root                # → impl
+limbo add "Add search API endpoint" --parent impl         # → api
+limbo add "Add search UI component" --parent impl         # → ui
+
+# Test
+limbo add "Test search" --parent root                     # → test
+limbo add "Generate search tests" --parent test           # → tgen
+limbo add "Run test suite" --parent test                  # → trun
+
+# Review
+limbo add "Review search" --parent root                   # → rev
+limbo add "Code review" --parent rev                      # → crev
+limbo add "Address feedback" --parent rev                 # → addr
+
+# Deliver
+limbo add "Deliver search" --parent root                  # → dlvr
+limbo add "Commit changes" --parent dlvr                  # → cmit
+limbo add "Create PR" --parent dlvr                       # → pr
+
+# Dependencies
+limbo block req dsgn
+limbo block expl dsgn
+limbo block plan impl
+limbo block impl test
+limbo block tgen trun
+limbo block test rev
+limbo block crev addr
+limbo block rev dlvr
+limbo block cmit pr
+```
+
+Back to [INDEX.md](INDEX.md) | [SKILL.md](../SKILL.md)

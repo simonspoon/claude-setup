@@ -4,6 +4,13 @@ For investigating and fixing bugs systematically.
 
 > **Note:** All `limbo add` calls require `--action`, `--verify`, `--result` flags. All `limbo status <id> done` calls require `--outcome`. Examples below use abbreviated form for readability — fill in the structured fields for each task when creating.
 
+## SWE Team Skills
+
+For bug fixes that need thorough verification, compose with these skills:
+- **Test phase**: Use `/test-engineer` to generate regression tests that prevent recurrence
+- **Review phase**: Use `/code-reviewer` to review the fix for security and correctness
+- **CI phase**: Use `/devops` if the fix reveals a CI gap (missing test step, etc.)
+
 ## Task Hierarchy Pattern
 
 ```
@@ -14,10 +21,10 @@ Bug: <description>
 │   └── Document findings
 ├── Fix
 │   ├── Implement fix
-│   └── Code review prep
+│   └── Code review (code-reviewer)
 ├── Test
 │   ├── Verify fix
-│   └── Regression tests
+│   └── Regression tests (test-engineer)
 └── Verify
     └── Confirm in target environment
 ```

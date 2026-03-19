@@ -4,6 +4,15 @@ For adding a single feature to an existing codebase.
 
 > **Note:** All `limbo add` calls require `--action`, `--verify`, `--result` flags. All `limbo status <id> done` calls require `--outcome`. Examples below use abbreviated form for readability — fill in the structured fields for each task when creating.
 
+## SWE Team Skills
+
+For features that need full engineering rigor, compose with these skills:
+- **Test phase**: Use `/test-engineer` to generate tests and analyze coverage for new code
+- **Review phase**: Use `/code-reviewer` to review the implementation before merging
+- **CI phase**: Use `/devops` if the feature requires CI/CD pipeline changes
+
+For the complete plan→implement→test→review→deliver cycle, use [swe-full-cycle.md](swe-full-cycle.md) instead.
+
 ## Task Hierarchy Pattern
 
 ```
@@ -15,8 +24,9 @@ Feature: <name>
 │   ├── Core logic
 │   └── Integration points
 ├── Testing
-│   ├── Unit tests
+│   ├── Unit tests (test-engineer)
 │   └── Integration tests
+├── Review (code-reviewer)
 └── Documentation (if needed)
 ```
 

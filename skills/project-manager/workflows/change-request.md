@@ -59,6 +59,12 @@ limbo add "Run regression suite" --parent ghij               # → opqr
 limbo block uvwx ghij
 ```
 
+## SWE Team Skills
+
+For change requests that involve refactoring, compose with:
+- **Test phase**: Use `/test-engineer` — especially important for refactoring. Generate tests for newly extracted modules, don't just verify existing tests pass.
+- **Review phase**: Use `/code-reviewer` to verify refactoring preserves behavior and doesn't break encapsulation.
+
 ### 5. Parallel Opportunities
 
 - Analysis sub-tasks can often run in parallel
