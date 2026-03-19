@@ -26,12 +26,13 @@ SWE: <description>
 ├── Plan
 │   ├── Research & understand requirements
 │   ├── Explore codebase (project-docs-explore)
-│   └── Design approach
+│   ├── Design approach
+│   └── Define test plan (acceptance criteria)
 ├── Implement
 │   ├── Core changes
 │   └── Supporting changes
 ├── Test
-│   ├── Generate tests (test-engineer)
+│   ├── Generate tests (from test plan)
 │   ├── Run test suite
 │   └── Coverage analysis
 ├── Review
@@ -39,6 +40,8 @@ SWE: <description>
 │   └── Address review feedback
 ├── CI/CD (if needed)
 │   └── Update pipeline (devops)
+├── Completion Gate (MANDATORY)
+│   └── Verify all phases executed with evidence
 └── Deliver
     ├── Commit
     └── Create PR
@@ -64,10 +67,20 @@ limbo add "Plan" --parent root                           # → plan
 limbo add "Research requirements" --parent plan          # → req
 limbo add "Explore codebase" --parent plan               # → expl
 limbo add "Design approach" --parent plan                # → dsgn
+limbo add "Define test plan" --parent plan               # → tpln
 
 limbo block req dsgn    # Design after requirements
 limbo block expl dsgn   # Design after exploration
+limbo block dsgn tpln   # Test plan after design
 ```
+
+**Test plan (MANDATORY):** Before implementation begins, define acceptance criteria as a concrete test plan. This must include:
+- What behaviors must be tested (happy path, edge cases, error cases)
+- What existing behavior must be preserved
+- What conventions/patterns tests must follow
+- Specific scenarios that constitute "done"
+
+The test plan becomes the input for the Test phase — test generation implements the plan, not ad-hoc coverage.
 
 ### 2. Implement Phase
 
@@ -136,14 +149,43 @@ limbo add "Update CI pipeline" --parent cicd             # → pipe
 limbo block impl cicd   # CI after implement (can parallel with test)
 ```
 
-### 6. Deliver Phase
+### 6. Completion Gate (MANDATORY)
+
+**Do NOT skip this step.** Before delivery, the orchestrator must verify every phase actually executed and produce evidence.
 
 ```bash
+limbo add "Completion gate" --parent root                # → gate
+limbo block rev gate     # Gate after review
+
 limbo add "Deliver" --parent root                        # → dlvr
+limbo block gate dlvr    # Deliver BLOCKED on gate
+```
+
+To pass the gate, the orchestrator must verify ALL of the following and record the evidence in the gate task outcome:
+
+1. **Plan phase**: Test plan was defined with acceptance criteria
+2. **Implement phase**: Code was written and builds clean
+3. **Test phase**: Tests were generated from the test plan, suite passes, coverage analyzed
+4. **Review phase**: Code review ran with structured output, verdict was APPROVE (or feedback was addressed and re-review passed)
+5. **CI/CD phase**: Pipeline updated if needed (or explicitly noted as not needed)
+
+Evidence format for the gate outcome:
+```
+Plan: test plan defined [N acceptance criteria]
+Implement: [N files changed], builds clean
+Test: [N tests], all pass, coverage [X%]
+Review: verdict [APPROVE/REQUEST CHANGES→fixed→APPROVE]
+CI/CD: [updated/not needed]
+```
+
+If ANY phase lacks evidence, **do NOT pass the gate**. Go back and execute the missing phase.
+
+### 7. Deliver Phase
+
+```bash
 limbo add "Create commit" --parent dlvr                  # → cmit
 limbo add "Create PR" --parent dlvr                      # → pr
 
-limbo block rev dlvr     # Deliver after review passes
 limbo block cmit pr      # PR after commit
 ```
 
@@ -151,21 +193,23 @@ limbo block cmit pr      # PR after commit
 
 ```
 req ──┐
-      ├→ dsgn → impl ──→ test ──→ rev ──→ dlvr
-expl ─┘              │         ↗
-                     └→ cicd ─┘ (optional)
+      ├→ dsgn → tpln → impl ──→ test ──→ rev ──→ gate ──→ dlvr
+expl ─┘                     │         ↗
+                             └→ cicd ─┘ (optional)
 ```
 
 ## Wave Execution
 
 - **Wave 1**: req + expl (parallel research)
 - **Wave 2**: dsgn (depends on both)
-- **Wave 3**: core + supp (parallel implementation)
-- **Wave 4**: tgen + cicd (parallel — tests + CI)
-- **Wave 5**: trun → tcov (sequential test execution)
-- **Wave 6**: crev (review all changes)
-- **Wave 7**: addr (if review has feedback)
-- **Wave 8**: cmit → pr (deliver)
+- **Wave 3**: tpln (test plan from design)
+- **Wave 4**: core + supp (parallel implementation)
+- **Wave 5**: tgen + cicd (parallel — tests + CI)
+- **Wave 6**: trun → tcov (sequential test execution)
+- **Wave 7**: crev (review all changes)
+- **Wave 8**: addr (if review has feedback)
+- **Wave 9**: gate (verify all phases, produce evidence)
+- **Wave 10**: cmit → pr (deliver)
 
 ## Review Loop
 
@@ -186,6 +230,7 @@ limbo add "Plan search feature" --parent root             # → plan
 limbo add "Research search requirements" --parent plan    # → req
 limbo add "Explore admin panel code" --parent plan        # → expl
 limbo add "Design search approach" --parent plan          # → dsgn
+limbo add "Define test plan" --parent plan                # → tpln
 
 # Implement
 limbo add "Implement search" --parent root                # → impl
@@ -202,6 +247,9 @@ limbo add "Review search" --parent root                   # → rev
 limbo add "Code review" --parent rev                      # → crev
 limbo add "Address feedback" --parent rev                 # → addr
 
+# Completion gate
+limbo add "Completion gate" --parent root                 # → gate
+
 # Deliver
 limbo add "Deliver search" --parent root                  # → dlvr
 limbo add "Commit changes" --parent dlvr                  # → cmit
@@ -210,12 +258,14 @@ limbo add "Create PR" --parent dlvr                       # → pr
 # Dependencies
 limbo block req dsgn
 limbo block expl dsgn
+limbo block dsgn tpln
 limbo block plan impl
 limbo block impl test
 limbo block tgen trun
 limbo block test rev
 limbo block crev addr
-limbo block rev dlvr
+limbo block rev gate
+limbo block gate dlvr
 limbo block cmit pr
 ```
 

@@ -119,6 +119,13 @@ When the project involves external tools, APIs, or libraries:
 - Runtime smoke test: actually execute the code path
 - Data contract verification: if components serialize/deserialize, test the real round-trip
 
+### Workflow Phase Enforcement (CRITICAL)
+- **Every phase in the chosen workflow template MUST actually execute.** Do NOT skip phases, even under time pressure or when results seem obvious.
+- **Before marking the root task done**, verify every phase ran and record evidence. If using swe-full-cycle, the completion gate task enforces this — do NOT mark it done without listing evidence for each phase.
+- **Test plans must be defined during planning, not invented during testing.** Tests implement acceptance criteria, not ad-hoc coverage.
+- **Code review is NOT optional.** It is a blocking dependency on delivery. If you find yourself about to commit without a review having run, STOP — you missed a phase.
+- If a phase genuinely does not apply (e.g., CI/CD for a project with no pipeline), explicitly note it as "not needed" with a reason — do not silently skip it.
+
 ### Small Tasks
 Not everything needs a subagent. Execute inline when ALL of:
 - Touches 1-2 files
