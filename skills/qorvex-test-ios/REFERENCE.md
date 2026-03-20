@@ -171,7 +171,7 @@ qorvex screenshot 2>/dev/null | base64 -d > /tmp/screenshot.png
 
 ### screen-info
 
-Get UI hierarchy information. Returns JSON array of elements.
+Get UI hierarchy information. Returns JSON array of elements followed by a summary line (e.g., `40 elements`). Strip the last line before JSON parsing.
 
 ```bash
 qorvex screen-info

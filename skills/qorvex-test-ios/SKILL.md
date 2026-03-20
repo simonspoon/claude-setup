@@ -84,7 +84,7 @@ Then read `/tmp/screenshot.png` with the Read tool to visually inspect the app.
 qorvex screen-info
 ```
 
-Returns JSON array of elements with `type`, `label`, `id`, `frame`, and `value` fields. Use this to discover element labels and IDs before interacting.
+Returns JSON array of elements with `type`, `label`, `id`, `frame`, and `value` fields, followed by a summary line (e.g., `40 elements`). If parsing the JSON programmatically, strip the last line first. Use this to discover element labels and IDs before interacting.
 
 ### Tap an Element
 
@@ -148,6 +148,8 @@ xcrun devicectl device process launch --device <UDID> <BUNDLE_ID>
 xcrun devicectl device process terminate --device <UDID> <BUNDLE_ID>
 ```
 
+**Note:** After `start-target`, the app may take a moment to fully render its UI. Use `wait-for` on a known element before interacting, rather than immediately calling `screen-info` or `tap`.
+
 ## Verification Workflow
 
 1. **Screenshot** the initial state
@@ -159,15 +161,20 @@ xcrun devicectl device process terminate --device <UDID> <BUNDLE_ID>
 
 ## Home Screen / SpringBoard
 
+First terminate the foreground app, then navigate to SpringBoard:
+
 ```bash
+xcrun simctl terminate <udid> <bundle_id>     # simulator
 qorvex set-target com.apple.springboard
 qorvex swipe up               # go to home screen
 qorvex screenshot 2>/dev/null | base64 -d > /tmp/homescreen.png
 ```
 
+**Important:** `swipe up` alone won't go to the home screen if a foreground app is still running — it will swipe within that app. Terminate the app first.
+
 **Do NOT use `xcrun simctl sendkey`** — this subcommand does not exist.
 
-To terminate a specific app first:
+To terminate an app:
 
 ```bash
 xcrun simctl terminate <udid> <bundle_id>     # simulator
