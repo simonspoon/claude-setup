@@ -55,10 +55,16 @@ flowchart TD
     D -->|Fix bug| G[workflows/bug-fix.md]
     D -->|Modify existing| H[workflows/change-request.md]
 
-    E --> I[Create task hierarchy]
-    F --> I
-    G --> I
-    H --> I
+    E --> T{Template available?}
+    F --> T
+    G --> T
+    H --> T
+
+    T -->|Yes| U[limbo template apply name]
+    T -->|No| I[Create task hierarchy manually]
+    U --> I2[Customize if needed]
+    I2 --> J
+    I --> J
 
     I --> J[Set dependencies]
     J --> K[Find unblocked tasks]
@@ -157,7 +163,7 @@ Claim the task (`limbo claim <ID> orchestrator`), do the work, mark done with `l
 
 Dispatch using Task tool. **All independent tasks in ONE message.**
 
-See [orchestration/templates.md](orchestration/templates.md) for prompt template, verification depth ladder, and research-before-dispatch checklist.
+See [orchestration/subagent-prompts.md](orchestration/subagent-prompts.md) for prompt template, verification depth ladder, and research-before-dispatch checklist.
 
 **Do NOT include limbo commands in subagent prompts.** The orchestrator owns all limbo state management.
 

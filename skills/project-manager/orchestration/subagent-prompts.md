@@ -67,4 +67,4 @@ Before writing any subagent prompt:
 5. Include this context in the prompt — subagents succeed when prompts have precise code context
 6. Do NOT read entire files into the orchestrator's context window
 
-Back to [SKILL.md](../SKILL.md) | [INDEX.md](INDEX.md)
+Back to [SKILL.md](../SKILL.md) | [Orchestration Index](INDEX.md)

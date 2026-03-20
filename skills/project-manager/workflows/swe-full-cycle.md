@@ -2,6 +2,15 @@
 
 For end-to-end software engineering: issue → plan → implement → test → review → retrospective → merge.
 
+## Quick Start
+
+```bash
+limbo template apply swe-full-cycle                # Scaffold full cycle with all phases
+limbo template apply swe-full-cycle --parent <id>  # Nest under existing task
+```
+
+This creates the complete hierarchy (Plan → Implement → Test → Review → Gate → Retrospective → Deliver) with all dependencies pre-wired. Customize by adding tasks or notes after applying. Use the manual approach below for non-standard cycles.
+
 > **Note:** All `limbo add` calls require `--action`, `--verify`, `--result` flags. All `limbo status <id> done` calls require `--outcome`. Examples below use abbreviated form for readability — fill in the structured fields for each task when creating.
 
 ## When to Use
