@@ -107,7 +107,13 @@ See [workflows/new-project.md](workflows/new-project.md#external-tool-discovery)
 [ ! -d ".limbo" ] && limbo init
 ```
 
-### Create Hierarchy
+### Create Hierarchy (from template)
+```bash
+limbo template apply feature               # Scaffold a standard workflow
+limbo template apply bug-fix --parent abcd # Nest under existing task
+```
+
+### Create Hierarchy (manual)
 ```bash
 # Every limbo add requires --action, --verify, --result
 limbo add "Root task" \
@@ -187,3 +193,4 @@ See [orchestration/recovery.md](orchestration/recovery.md) for mid-project re-en
 - [Workflow Index](workflows/INDEX.md)
 - [Orchestration Patterns](orchestration/INDEX.md)
 - [limbo Commands](reference/limbo-commands.md)
+- [limbo Templates](reference/limbo-templates.md)

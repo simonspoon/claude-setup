@@ -88,6 +88,17 @@ limbo next                          # Next task (depth-first traversal)
 limbo next --unclaimed              # Next unowned task
 ```
 
+## Templates
+
+```bash
+limbo template list                        # List available templates
+limbo template show <name>                 # Show template task hierarchy
+limbo template apply <name>                # Create all tasks from template
+limbo template apply <name> --parent <id>  # Nest template under existing task
+```
+
+See [limbo-templates.md](limbo-templates.md) for template details and task hierarchies.
+
 ## Cleanup
 
 ```bash

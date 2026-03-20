@@ -44,7 +44,7 @@ Skills are specialized capabilities invoked with `/skill-name`. They provide dom
 
 | Skill | Command | Description |
 |-------|---------|-------------|
-| **project-manager** | `/project-manager` | Orchestrates complex projects using limbo for task management and parallel subagent execution. |
+| **project-manager** | `/project-manager` | Orchestrates complex projects using limbo for task management and parallel subagent execution. Includes built-in templates (`bug-fix`, `feature`, `swe-full-cycle`) for scaffolding common workflows. |
 | **session-handoff** | `/session-handoff` | Preserves strategic context, decisions, and priorities in SESSION_STATE.md for the next session. |
 | **project-docs-explore** | `/project-docs-explore` | Discovers and reads a project's documentation structure for quick onboarding. |
 
