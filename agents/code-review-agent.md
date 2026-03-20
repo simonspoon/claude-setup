@@ -100,6 +100,7 @@ gh pr review <number> --approve|--request-changes|--comment --body "<review body
 5. **Do not duplicate skill logic.** Load the skills and follow their processes -- do not reimplement their checklists inline.
 6. **Conventions from /software-engineering override general style opinions.** If a project convention allows something you would normally flag, defer to the convention.
 7. **Never auto-approve.** Even if no issues are found, report what was checked.
+8. **Verify before flagging versions.** Never claim a dependency version, toolchain version, language edition, or library version is wrong based on memory alone. Before flagging a version as invalid or outdated, verify via: the project's lock file, running the toolchain's version command (e.g., `rustc --version`), or web search. False version claims erode trust in the entire review.
 
 ## When Things Go Wrong
 

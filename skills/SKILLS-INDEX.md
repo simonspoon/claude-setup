@@ -20,6 +20,7 @@ Quick reference for all active skills — when to use each and how they compose.
 | **simplify** | Analyze code for unnecessary complexity and apply focused refactorings | Simplifying code, refactoring, cleanup, reducing complexity, extracting modules, removing duplication | software-engineering (conventions), test-engineer (verify tests), code-reviewer (review result) |
 | **code-index** | Generate structural index of codebase (files + exported symbols) | Indexing a project, generating code map, understanding project structure | project-docs-explore (complements docs with code structure) |
 | **session-handoff** | Update SESSION_STATE.md to preserve context across sessions | End of session, wrapping up, user says goodbye, significant milestone | software-engineering (lessons), all projects (status updates) |
+| **nyx** | Search past Claude Code conversation history | Recalling prior decisions, finding past discussions, "did we already…" questions, locating context from previous sessions | session-handoff (recalls what was preserved), software-engineering (find past architecture decisions) |
 
 ## Composition Patterns
 
@@ -76,6 +77,11 @@ This is the primary workflow for the SWE agent team. The project-manager orchest
 4. `/simplify` → apply refactorings one at a time, verify tests after each
 5. `/test-engineer` → run full test suite, confirm no regressions
 6. `/code-reviewer` → review the refactored code for quality
+
+### Recall prior context
+1. `/nyx` → search conversation history for past decisions, discussions, or patterns
+2. `/session-handoff` → check SESSION_STATE.md for strategic context
+3. Combine findings to inform current task
 
 ### Team improvement cycle
 1. `/team-evaluator` → run benchmarks, identify gaps

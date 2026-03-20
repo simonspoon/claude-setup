@@ -48,6 +48,10 @@ Review diff, check CI status, read PR description for context.
 git diff main..feature-branch
 ```
 
+## Critical Requirements
+
+- **Verify before flagging versions.** Never claim a dependency version, toolchain version, language edition, or library version is wrong based on memory alone. If you intend to flag a version as invalid, outdated, or incorrect, verify it first — check the project's lock file, run the toolchain's version command, or search the web. False version claims erode trust in the entire review.
+
 ## Review Process
 
 For changes over 30 lines, follow all 6 steps below. For small changes (under 30 lines), use the Quick Checklist section instead.
@@ -57,6 +61,7 @@ For changes over 30 lines, follow all 6 steps below. For small changes (under 30
 - Read the diff or files.
 - Identify what changed and why (commit messages, PR description).
 - Note the language, framework, and project conventions.
+- If the review involves config files (Cargo.toml, package.json, go.mod, pyproject.toml, etc.), verify toolchain and dependency versions are current before flagging any as incorrect.
 
 ### Step 2: Security Scan
 
