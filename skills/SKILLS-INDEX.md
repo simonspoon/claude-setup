@@ -17,6 +17,7 @@ Quick reference for all active skills — when to use each and how they compose.
 | **devops** | CI/CD pipelines, Docker, deployment scripts, infrastructure | GitHub Actions, CI/CD, Docker, deployment, infrastructure, pipelines | test-engineer (CI test step), code-reviewer (PR checks) |
 | **agent-composer** | Generate agent .md definitions from role descriptions and skills | Creating a new agent, composing an agent from skills, generating agent definitions | skill-creator (skill structure), SKILLS-INDEX.md (skill discovery) |
 | **team-evaluator** | Benchmark and score team capabilities, identify gaps | Evaluating team performance, running benchmarks, auditing capabilities, gap analysis | All skills (benchmarks exercise them), skill-reflection (improvement loop) |
+| **simplify** | Analyze code for unnecessary complexity and apply focused refactorings | Simplifying code, refactoring, cleanup, reducing complexity, extracting modules, removing duplication | software-engineering (conventions), test-engineer (verify tests), code-reviewer (review result) |
 | **session-handoff** | Update SESSION_STATE.md to preserve context across sessions | End of session, wrapping up, user says goodbye, significant milestone | software-engineering (lessons), all projects (status updates) |
 
 ## Composition Patterns
@@ -66,6 +67,14 @@ This is the primary workflow for the SWE agent team. The project-manager orchest
 1. `/agent-composer` → generate agent definition from requirements
 2. `/skill-creator` → create any new skills the agent needs
 3. `/team-evaluator` → benchmark the new agent's capabilities
+
+### Simplify/Refactor workflow
+1. `/software-engineering` → load project conventions and preferences
+2. `/simplify` → analyze code, identify opportunities, present findings
+3. User approves specific refactorings
+4. `/simplify` → apply refactorings one at a time, verify tests after each
+5. `/test-engineer` → run full test suite, confirm no regressions
+6. `/code-reviewer` → review the refactored code for quality
 
 ### Team improvement cycle
 1. `/team-evaluator` → run benchmarks, identify gaps

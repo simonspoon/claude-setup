@@ -22,14 +22,26 @@ On every activation:
 3. Read `knowledge/INDEX.md`. If a relevant entry exists, read the knowledge file(s). If the index is empty, skip to step 5.
 4. Apply combined knowledge to the task. **Preferences override general knowledge when they conflict.**
 5. **Staleness check**: If any read knowledge file has a `Last researched` date older than 3 months, flag it as potentially stale. If the task depends on version-specific info (e.g., library versions, framework features), re-research before relying on that data.
-6. If knowledge gaps are detected AND the task involves design decisions (not just implementation), follow the Research Protocol.
+6. **Knowledge gap check**: If the task involves a language, framework, or pattern with no entry in knowledge/INDEX.md, follow the Research Protocol. This applies to implementation work too, not just design decisions.
 7. If the user expresses a preference or lesson, follow the Preference Capture Protocol.
+
+Now do the task. **When the task is complete, execute the Post-Task Protocol below.**
+
+## Post-Task Protocol
+
+Run this after every task, before responding to the user with final results.
+
+1. **Capture new knowledge**: Did you learn something reusable about the language, framework, or pattern used? If yes and it's not already in the knowledge base, write it via the Research Protocol (prefer `Sources: "experience"` over web research for lessons learned by doing).
+2. **Capture preferences**: Did the user correct your approach or confirm a non-obvious choice? If yes, follow the Preference Capture Protocol.
+3. **Evolution check**: Check `meta/evolution-log.md` entry count. If it exceeds 50 entries, trigger consolidation (see Evolution & Consolidation below).
+
+This protocol is how the knowledge base grows. Do not skip it.
 
 ## Research Protocol
 
-**Trigger**: The task involves a topic where knowledge/INDEX.md has no entry, OR the existing entry is thin (under 20 lines), OR the user explicitly asks to research something.
+**Trigger**: The task involves a language, framework, or pattern where knowledge/INDEX.md has no entry, OR the existing entry is thin (under 20 lines), OR the user explicitly asks to research something. This includes implementation work — if you're writing Go code and there's no Go knowledge file, that's a gap.
 
-**Do NOT research** when existing knowledge is sufficient or during urgent debugging (note the gap for later instead).
+**Do NOT research** when existing knowledge is sufficient or during urgent debugging (note the gap for later instead). For post-work capture, prefer writing from experience over web research — what you just learned by doing is more valuable than generic articles.
 
 Process:
 1. Use WebSearch to find authoritative, current sources on the topic.
@@ -83,9 +95,7 @@ Sources: [URLs or "experience"]
 
 ## Evolution & Consolidation
 
-After every activation, check `meta/evolution-log.md` entry count.
-
-**If log exceeds 50 entries**, trigger consolidation:
+The Post-Task Protocol checks the evolution log entry count after every task. **If log exceeds 50 entries**, trigger consolidation:
 1. Survey all files via `knowledge/INDEX.md`.
 2. Merge overlapping files in the same domain into single, refined files.
 3. Remove redundant files and update INDEX.md.
@@ -112,7 +122,7 @@ After every activation, check `meta/evolution-log.md` entry count.
 
 ## Rules
 
-1. **Only modify SKILL.md via /skill-reflection.** During normal activation, only knowledge/, preferences/, and meta/ evolve.
+1. **Only modify SKILL.md via /skill-reflection or explicit user request.** During normal activation, only knowledge/, preferences/, and meta/ evolve.
 2. **Read before write.** Always check existing knowledge before creating new files.
 3. **Preferences win.** When general knowledge and a user preference conflict, follow the preference.
 4. **Skip research during urgent debugging** unless asked. Apply best available knowledge; note the gap for later.

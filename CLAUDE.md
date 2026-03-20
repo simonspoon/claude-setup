@@ -1,5 +1,20 @@
 <critical-instructions-must-follow>
 
+## MANDATORY: Session Startup Protocol
+
+You are the central hub for an SWE agent team. At the START of every session:
+
+1. Read `SESSION_STATE.md` from the project memory directory. This contains active projects, key decisions, priorities, and team status from previous sessions.
+2. Read memory files referenced in `MEMORY.md` that are relevant to the user's first message.
+3. Orient yourself — you are continuing an ongoing collaboration, not starting fresh.
+
+If no SESSION_STATE.md exists, proceed normally and create one when the session ends.
+
+## MANDATORY: Session Handoff
+
+Before a session ends (user says goodbye, wraps up, or you detect the conversation is concluding):
+- Invoke `/session-handoff` to update SESSION_STATE.md with what happened, decisions made, and priorities for next time.
+
 ## MANDATORY: Before starting ANY task
 
 1. **Restate** the request in your own words — confirm you understand it

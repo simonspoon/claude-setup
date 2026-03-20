@@ -13,3 +13,7 @@ Tracks additions and changes to the knowledge base.
 | 2026-03-15 | modified | knowledge/architecture/rust-cli-patterns.md | Added: feature-gated optional subsystems, transparent backend routing via constructors, mixing blocking reqwest with async axum |
 | 2026-03-15 | modified | preferences/lessons.md | Added 2 lessons: prefer stdlib over heavyweight deps, mutex poison recovery in servers |
 | 2026-03-16 | modified | knowledge/architecture/rust-cli-patterns.md | Added: background polling tasks in axum servers — lock/unlock/network/lock pattern, interval usage, batched API calls, early bail |
+| 2026-03-19 | modified | SKILL.md | Fixed evolution mechanism: broadened research trigger to include implementation work, added post-work capture step, allowed experience-based knowledge capture |
+| 2026-03-19 | added | knowledge/architecture/go-cli-patterns.md | Go/Cobra CLI patterns from limbo project — command structure, flag management, storage, testing |
+| 2026-03-19 | modified | knowledge/architecture/go-cli-patterns.md | Added: portable data ID remapping pattern, import merge vs replace modes |
+| 2026-03-19 | modified | SKILL.md | Structural fix: extracted post-work capture (step 8) into its own "Post-Task Protocol" section with forward reference from activation protocol. Folded evolution log check into post-task steps. Validated with Haiku. |
