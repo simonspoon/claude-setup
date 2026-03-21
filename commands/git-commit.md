@@ -6,7 +6,9 @@ description: Stage and commit changes with a clear, concise commit message.
 ## Steps
 
 1. **Survey changes** — run `git status` (never use `-uall`) and `git diff` (staged + unstaged) to understand what changed.
-2. **Docs check** — if the project has a `docs/` directory or `README.md`, check whether the changes being committed affect user-facing behavior (new commands, changed flags, renamed features, altered defaults) without a corresponding docs update. If so, warn: *"Source changes affect user-facing behavior but docs/ were not updated. Run /update-docs before committing?"* and stop. Skip this check for internal-only changes (refactors, tests, CI, dependencies).
+2. **Docs check** — two gates:
+   - **Existence gate** (early commits only): if the repo has ≤5 commits AND no `docs/` directory AND the project has meaningful source code (not just config/scaffolding), warn: *"This project has no docs/ directory. Run /setup-docs to create project documentation?"* Proceed if user declines, but flag it.
+   - **Freshness gate**: if the project has a `docs/` directory or `README.md`, check whether the changes being committed affect user-facing behavior (new commands, changed flags, renamed features, altered defaults) without a corresponding docs update. If so, warn: *"Source changes affect user-facing behavior but docs/ were not updated. Run /update-docs before committing?"* and stop. Skip this check for internal-only changes (refactors, tests, CI, dependencies).
 3. **Stage files** — add files by name. Prefer specific paths over `git add -A` or `git add .` to avoid accidentally committing secrets (`.env`, credentials) or large binaries. If ALL changes are clearly intentional, staging everything is fine.
 4. **Check for empty state** — if there are no changes to commit, say so and stop. Do not create empty commits.
 5. **Draft the commit message**:
