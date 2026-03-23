@@ -72,6 +72,14 @@ Options:
 - `--font-size <float>` -- font size in pixels
 - `--radius <float>` -- corner radius in pixels
 - `--opacity <float>` -- opacity from 0.0 to 1.0
+- `--z-index <int>` -- stacking order (higher = on top)
+- `--text-wrap` -- enable text wrapping with auto-height (for text nodes)
+- `--layout-mode <mode>` -- layout mode: `none` (default) or `flex` (auto-layout)
+- `--direction <dir>` -- flex direction: `row` or `column` (default: column)
+- `--align <align>` -- flex align-items: `start`, `center`, `end`, `stretch`
+- `--justify <justify>` -- flex justify-content: `start`, `center`, `end`, `stretch`, `space_between`
+- `--gap <float>` -- gap between flex children in pixels
+- `--padding <float>` -- padding inside flex container in pixels
 
 Capture the created node's ID:
 ```bash
@@ -84,7 +92,7 @@ ID=$(wisp node add "Panel" -t frame --width 400 --height 300 --json | jq -r .id)
 wisp node edit <id> [options]
 ```
 
-Only the fields you specify are changed -- everything else is preserved. Same options as `add` except `--name <string>` replaces the positional name argument, and there is no `--node-type` or `--parent`.
+Only the fields you specify are changed -- everything else is preserved. Same options as `add` (including `--z-index`, `--text-wrap`, `--layout-mode`, `--direction`, `--align`, `--justify`, `--gap`, `--padding`) except `--name <string>` replaces the positional name argument, and there is no `--node-type` or `--parent`.
 
 ```bash
 # Change only the fill color (position, size preserved)
@@ -211,6 +219,89 @@ wisp> quit
 
 Useful for batch operations -- avoids reconnecting for each command. Session mode is efficient when creating many nodes (e.g., building a chart with 12+ bars).
 
+## Auto-Layout (Flexbox)
+
+Frames and groups can use flexbox auto-layout to position children automatically instead of manual absolute positioning.
+
+### Create a Flex Container
+
+```bash
+# Vertical stack with 16px gap and 20px padding
+CARD=$(wisp node add "Card" -t frame --width 300 --height 400 --fill "#ffffff" \
+  --layout-mode flex --direction column --gap 16 --padding 20 --json | jq -r .id)
+
+# Add children -- they stack automatically, no x/y needed
+wisp node add "Title" -t text --parent $CARD --text "Revenue" --font-size 18
+wisp node add "Value" -t text --parent $CARD --text "$12,400" --font-size 32
+wisp node add "Chart" -t rectangle --parent $CARD --width 260 --height 120 --fill "#e2e8f0"
+```
+
+### Convert an Existing Node to Flex
+
+```bash
+wisp node edit $CONTAINER --layout-mode flex --direction row --gap 12 --align center
+```
+
+### Flex Properties
+
+| Property | Flag | Values | Default |
+|----------|------|--------|---------|
+| Mode | `--layout-mode` | `none`, `flex` | `none` |
+| Direction | `--direction` | `row`, `column` | `column` |
+| Align items | `--align` | `start`, `center`, `end`, `stretch` | `start` |
+| Justify content | `--justify` | `start`, `center`, `end`, `stretch`, `space_between` | `start` |
+| Gap | `--gap` | pixels (float) | none |
+| Padding | `--padding` | pixels (float) | none |
+
+### How Flex Children Behave
+
+- Children of a flex container are positioned automatically -- their `x` and `y` are ignored
+- Children still use their `width` and `height` for sizing
+- The flex container's `width` and `height` define the container bounds
+- Use `--align stretch` to make children fill the cross-axis
+
+### When to Use Flex vs Manual Positioning
+
+- **Use flex** for lists, stacks, cards with vertical content, toolbars, nav bars, button rows
+- **Use manual** for overlapping elements, precise pixel placement, scattered elements on a canvas
+
+## Z-Index (Stacking Order)
+
+Control which nodes render on top when they overlap:
+
+```bash
+# Background layer
+wisp node add "BG" -t rectangle --width 400 --height 300 --fill "#e2e8f0" --z-index 0
+
+# Foreground element (renders on top)
+wisp node add "Badge" -t ellipse --width 24 --height 24 --fill "#ef4444" -x 380 --z-index 10
+```
+
+Higher `z_index` = renders on top. Nodes without a z-index default to 0.
+
+## Text Wrapping
+
+Text nodes can wrap within their width and auto-size their height:
+
+```bash
+# Fixed-width text that wraps and grows vertically
+wisp node add "Description" -t text --width 280 \
+  --text "This is a longer paragraph that will wrap within the 280px width" \
+  --font-size 14 --text-wrap
+```
+
+Without `--text-wrap`, text renders on a single line. With it, text wraps at the node's width and height adjusts automatically.
+
+## Human Interactive Editing
+
+The Wisp desktop app supports direct manipulation on the canvas:
+
+- **Click** a node to select it (shows blue outline)
+- **Drag** a selected node to move it
+- **Resize handle** appears at bottom-right of selected node -- drag to resize
+
+Changes made interactively are persisted to the same document the CLI operates on. Use `wisp tree` or `wisp node show <id>` to see updated positions after manual edits.
+
 ## Global Flags
 
 - `--json` -- output raw JSON instead of formatted text (works on all commands)
@@ -240,7 +331,21 @@ MAIN=$(wisp node add "Main" -t frame -x 260 -y 64 --width 940 --height 800 --fil
 wisp node add "Title" -t text --parent $HEADER -x 20 -y 18 --text "My App" --font-size 24
 ```
 
-### 3. Use Components for Repeated Patterns
+### 3. Use Auto-Layout Where Appropriate
+
+For vertical stacks (sidebars, card contents) or horizontal rows (toolbars, stat rows), use flex:
+
+```bash
+# Make sidebar a vertical flex container
+wisp node edit $SIDEBAR --layout-mode flex --direction column --gap 4 --padding 8
+
+# Nav items stack automatically -- no y positioning needed
+wisp components use nav-item --parent $SIDEBAR --label "Dashboard"
+wisp components use nav-item --parent $SIDEBAR --label "Analytics"
+wisp components use nav-item --parent $SIDEBAR --label "Settings"
+```
+
+### 4. Use Components for Repeated Patterns
 Instead of manually building stat cards or buttons, use templates:
 
 ```bash
@@ -249,7 +354,7 @@ wisp components use stat-card --parent $MAIN -x 320 -y 20 --label "Users" --valu
 wisp components use button --parent $MAIN -x 20 -y 180 --label "View Report"
 ```
 
-### 4. Screenshot and Inspect
+### 5. Screenshot and Inspect
 
 ```bash
 wisp screenshot --out /tmp/design-v1.png
@@ -257,7 +362,7 @@ wisp screenshot --out /tmp/design-v1.png
 
 Read the screenshot to see what the design looks like. Use `wisp tree` to see the node hierarchy.
 
-### 5. Iterate
+### 6. Iterate
 Based on what you see, adjust:
 
 ```bash
@@ -274,7 +379,7 @@ wisp node delete $BAD_NODE
 wisp undo
 ```
 
-### 6. Save Your Work
+### 7. Save Your Work
 
 ```bash
 wisp save /tmp/my-design.json
@@ -285,8 +390,9 @@ wisp save /tmp/my-design.json
 - All coordinates are in pixels, relative to the parent node
 - `x: 0, y: 0` is the top-left corner of the parent
 - Width and height define the node's bounding box
-- There is no auto-layout -- you position everything manually
-- Common spacing: 16px-32px padding, 16px-24px gaps between elements
+- Use `--layout-mode flex` on containers for automatic child positioning (see Auto-Layout section)
+- For manual positioning, common spacing: 16px-32px padding, 16px-24px gaps between elements
+- Children inside a flex container ignore x/y -- they are positioned by the flex layout
 
 ## Color Reference
 
@@ -301,7 +407,7 @@ Common hex colors for UI design:
 
 - **App must be running first.** The CLI connects to the desktop app's WebSocket server. If you get "Failed to connect," launch the app.
 - **IDs are UUIDs.** Always capture IDs from `--json` output or from the formatted "Created node <id>" response. The root canvas node ID is `00000000-0000-0000-0000-000000000000`.
-- **No auto-layout.** You must manually calculate x, y, width, height for every node. Plan positions before creating.
+- **Auto-layout available.** Use `--layout-mode flex` on frames/groups for automatic child positioning. Without it, you position manually with x/y/width/height.
 - **Partial edits are safe.** `node edit` only changes the fields you specify -- layout, style, and typography you omit are preserved.
 - **Component position.** Templates are placed at (0,0) within the parent by default. Use `-x` and `-y` flags on `components use` to set initial position, or `node edit` to reposition afterward.
 - **Session mode for bulk work.** When creating many nodes (charts, lists, grids), pipe commands through `wisp session` to avoid per-command WebSocket reconnection.
@@ -317,3 +423,6 @@ Common hex colors for UI design:
 | Node appears at wrong position | Coordinates relative to parent, not canvas | Check parent node's position; child coords are offsets from parent |
 | Screenshot is empty/blank | No nodes on canvas, or app not rendering | Add nodes first; check `wisp tree` for content |
 | Edit seems to reset other properties | Should not happen with partial edits | Only specify fields you want to change; verify with `wisp node show <id>` |
+| Flex children still at (0,0) | Parent not set to flex mode | Use `wisp node edit $PARENT --layout-mode flex` |
+| Child ignoring x/y position | Parent is a flex container | Flex children are auto-positioned; x/y are ignored. Remove flex or use a non-flex parent |
+| Text overflows its width | Text wrapping not enabled | Add `--text-wrap` flag when creating or editing the text node |
