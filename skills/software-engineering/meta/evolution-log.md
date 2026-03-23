@@ -17,3 +17,5 @@ Tracks additions and changes to the knowledge base.
 | 2026-03-19 | added | knowledge/architecture/go-cli-patterns.md | Go/Cobra CLI patterns from limbo project — command structure, flag management, storage, testing |
 | 2026-03-19 | modified | knowledge/architecture/go-cli-patterns.md | Added: portable data ID remapping pattern, import merge vs replace modes |
 | 2026-03-19 | modified | SKILL.md | Structural fix: extracted post-work capture (step 8) into its own "Post-Task Protocol" section with forward reference from activation protocol. Folded evolution log check into post-task steps. Validated with Haiku. |
+| 2026-03-22 | added | knowledge/tooling/macos-desktop-automation.md | macOS desktop automation patterns from Loki project — CGEvent mouse/keyboard, accessibility APIs, System Events for reliable keyboard input, bundle ID case sensitivity, screenshot via CGWindowListCreateImage |
+| 2026-03-22 | added | knowledge/tooling/chromiumoxide-cdp.md | Chromiumoxide CDP patterns from Khora project — reconnection via fetch_targets(), navigate via new_page(url), session persistence, handler pattern, evaluate() type constraints |

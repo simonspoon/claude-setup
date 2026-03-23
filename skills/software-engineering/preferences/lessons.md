@@ -25,3 +25,9 @@ Recorded: 2026-03-15
 Context: Paper trading server used `.lock().unwrap()` on a `Mutex<PaperState>`. If any handler panicked while holding the lock, the mutex would poison and all subsequent requests would panic — bricking the server.
 Lesson: In server contexts where a poisoned mutex shouldn't kill the process, use `.lock().unwrap_or_else(|e| e.into_inner())` to recover the inner data. Similarly, handle `JoinError` from `spawn_blocking` gracefully instead of unwrapping.
 Impact: For any shared mutable state behind a Mutex in a server, default to poison recovery. Only use bare `.unwrap()` on mutex locks in short-lived CLI contexts where a panic is acceptable.
+
+## Agent fix instructions must include full CI verification
+Recorded: 2026-03-22
+Context: Spawned agents to fix `cargo fmt` failures across 3 repos. Agents ran `cargo fmt` and committed, but didn't check clippy — which then failed. Spawned clippy fix agents, but one didn't re-run `cargo fmt` after its changes, causing yet another CI failure. Three rounds of fixes for what should have been one.
+Lesson: When spawning agents to fix a CI failure, always instruct them to run the full CI check suite (fmt + clippy + tests), not just the failing step. Fixing one check can break another, and agents won't chain verification unless explicitly told to.
+Impact: Every agent prompt that involves code changes and committing should include: "After fixing, run the full CI checks (cargo fmt --check, cargo clippy --workspace --all-targets -- -D warnings, cargo test) and fix any new issues before committing."

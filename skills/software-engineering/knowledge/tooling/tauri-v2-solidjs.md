@@ -1,5 +1,5 @@
 # Tauri v2 + SolidJS Desktop Apps
-Last updated: 2026-03-20
+Last updated: 2026-03-21
 Last researched: 2026-03-20
 Sources: crates.io, npm, tauri.app docs, GitHub releases
 
@@ -68,6 +68,14 @@ Tauri's scaffold creates `src-tauri/` inside the frontend project. To use a Carg
 - WKWebView (macOS) may silently drop CSS background-images in SVG foreignObject
 - Base64 PNG via IPC: strip `data:image/png;base64,` prefix, send via `invoke()`
 - For large payloads (2-4MB), JSON serialization works but benchmark if latency matters
+
+## CI/CD & Release
+
+- **CI on Linux** requires system deps: `libwebkit2gtk-4.1-dev libappindicator3-dev librsvg2-dev patchelf`
+- **macOS universal binary**: `--target universal-apple-darwin` (needs both `aarch64-apple-darwin` and `x86_64-apple-darwin` targets installed)
+- **Use `tauri-apps/tauri-action@v0`** with `tagName: ${{ github.ref_name }}` — this uploads .dmg, .msi, .deb, .AppImage directly to the GitHub Release
+- **Do NOT use artifact upload/download for Tauri bundles** — the bundle paths are deeply nested (`target/**/release/bundle/**/*.dmg`) and download-artifact with `merge-multiple` flattens incorrectly. Let tauri-action handle uploads directly.
+- **App version in Cargo.toml should use `version.workspace = true`** to stay in sync with the workspace
 
 ## Related Topics
 

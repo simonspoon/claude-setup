@@ -104,6 +104,7 @@ When writing the "Task" section of a subagent prompt, the **orchestrator** must 
 - **Boundary interactions**: Does output from this code become input elsewhere? Does the format match?
 - **Quoting/escaping**: If the task involves composing strings that will be parsed later, specify quoting rules
 - **Cross-boundary data contracts**: When component A serializes data for component B, list **every field B expects** and verify A actually sends them. If B uses strict deserialization (e.g., `serde` without `#[serde(default)]`), missing or extra fields will crash at runtime even though both sides compile. Spell out the expected JSON/binary shape in the subagent prompt.
+- **Platform portability**: If the project targets multiple OSes, tests must not use platform-specific paths or APIs without guards. Common failures: using `/bin/sh` or `/tmp` in tests (doesn't exist on Windows), `std::os::unix` without `#[cfg(unix)]`, hardcoded path separators. Use `std::env::current_exe()`, `std::env::temp_dir()`, or `cfg` attributes for cross-platform tests.
 
 **Example — BAD**: "Rewrite accept_completion to use space-based insertion instead of paren-based"
 **Example — GOOD**: "Rewrite accept_completion to use space-based insertion. When inserting text that contains spaces, wrap it in double quotes so the parser treats it as a single token (e.g., `tap "Sign In"` not `tap Sign In`)."
@@ -119,6 +120,8 @@ The orchestrator has full context. The subagent doesn't. **Spell out the edge ca
 **"Tests pass" is not the same as "it works."** Unit tests verify isolated logic. A runtime smoke test verifies the binary starts, accepts the new flags, and doesn't crash when invoked. Always do both.
 
 **If the task produces a binary or server**, the subagent should run it briefly and confirm it starts without crashing. "It compiles" is NOT sufficient verification.
+
+**Cold-state testing for cross-process features**: When the code interacts with other processes (sends input to apps, communicates over IPC, automates GUIs), verify from a cold state — meaning the target process is NOT already active/frontmost. Many APIs (CGEvent keyboard, IPC connections) work in warm testing (target already active) but fail in real usage (target must be activated first). Always test the full flow: launch target → perform action → verify result.
 
 ### Verification depth ladder
 
@@ -222,7 +225,7 @@ After completing a wave of work (parallel subagents OR inline tasks), the orches
 1. **Format/lint check:** Run the project's formatter and linter first (`cargo fmt --check && cargo clippy`, `pnpm lint`, `black --check . && ruff check .`, etc.). Subagents routinely produce code with formatting violations — catch these before deeper checks. If formatting fails, run the auto-fixer (`cargo fmt`, `prettier --write .`) and move on.
 2. **Build check:** Run full project build (`cargo build`, `swift build`, `pnpm build`, etc.)
 3. **Unit test check:** Run the test suite (`cargo test`, `pnpm test`, etc.)
-4. **Runtime smoke test:** Actually run the produced binary/server/function and confirm it doesn't crash. If the task added a new flag or mode, invoke it. "Tests pass" is not sufficient — exercise the real code path.
+4. **Runtime smoke test:** Actually run the produced binary/server/function and confirm it doesn't crash. If the task added a new flag or mode, invoke it. "Tests pass" is not sufficient — exercise the real code path. **Show actual command output** — do not just report "E2E passed." Paste the real stdout/stderr so the orchestrator (or human reviewer) can verify. If a subagent claims E2E verification succeeded but doesn't include output, the orchestrator must re-run the smoke test itself.
 5. **Output/behavior regression check:** If the change refactors existing behavior, verify the output format is preserved. Check: Are metadata fields still populated? Are status messages still emitted? Does the output schema match what downstream consumers (CLI formatters, log parsers, scripts) expect? Compare the old code path's output contract against the new one.
 6. **Data contract verification:** If one component serializes data and another deserializes it (e.g., Swift agent sends JSON, Rust client parses it), verify the **actual serialized output** matches the **consumer's struct/schema**. Common failures: producer omits fields the consumer requires, field names differ (camelCase vs snake_case), optional-on-one-side but required-on-the-other. **Test the real round-trip** — build both sides, trigger the operation, and confirm the consumer successfully parses what the producer actually sends. "Both sides compile" is not sufficient when the data contract is implicit.
 7. **Cross-component test:** If tasks produced components that interact (e.g., a server and a client), test them together
@@ -249,6 +252,7 @@ timeout 5 ./binary --help 2>&1 || echo "RUNTIME FAILURE"
 - **Stdio corruption**: Child process writing to stdout/stderr of a TUI parent
 - **Permission errors**: ScreenCaptureKit, network, file access — only surface at runtime
 - **Data contract mismatches**: Producer sends partial/different fields than consumer expects — both compile, but deserialization fails at runtime (e.g., Swift agent sends `{"state":"..."}` but Rust expects `{"bundle_id":"...","state":"..."}`)
+- **Platform-specific test paths**: Tests using `/bin/sh`, `/tmp`, or Unix-only APIs pass on macOS/Linux CI but fail on Windows. Use `std::env::current_exe()`, `std::env::temp_dir()`, or `#[cfg(unix)]`/`#[cfg(windows)]` guards
 
 ## Shared File Partitioning
 

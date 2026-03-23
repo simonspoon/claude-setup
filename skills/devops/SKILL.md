@@ -38,11 +38,12 @@ Create and manage CI/CD pipelines, container configurations, deployment scripts,
 
 **GitHub Actions workflow:**
 Read reference/github-actions.md, then:
-1. Check `.github/workflows/` for existing workflows.
-2. If existing workflows are found, review them and update rather than replace. Bump pinned action versions if outdated.
-3. If no workflows exist, create a new workflow YAML using the language-appropriate pattern.
-4. Validate syntax: `actionlint` if available, otherwise manual review.
-5. Test locally with `act` if available.
+1. **Run the Pre-Flight Checklist** in reference/github-actions.md BEFORE writing any workflow. This catches system deps, binary name mismatches, and Tauri gotchas that cause CI failures.
+2. Check `.github/workflows/` for existing workflows.
+3. If existing workflows are found, review them and update rather than replace. Bump pinned action versions if outdated.
+4. If no workflows exist, create a new workflow YAML using the language-appropriate pattern.
+5. Validate syntax: `actionlint` if available, otherwise manual review.
+6. Test locally with `act` if available.
 
 **Docker configuration:**
 Read reference/docker.md, then:
@@ -77,7 +78,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - name: Setup
         # language-specific setup
       - name: Install dependencies
