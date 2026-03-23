@@ -6,7 +6,7 @@
     "name": "simonspoon",
     "url": "https://github.com/simonspoon"
   },
-  "repository": "https://github.com/simonspoon/claude-setup",
+  "repository": "https://github.com/simonspoon/swe-team",
   "license": "MIT",
   "keywords": ["swe", "code-review", "testing", "devops", "verification", "agents"]
 }
