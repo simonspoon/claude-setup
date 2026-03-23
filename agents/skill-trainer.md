@@ -13,8 +13,8 @@ description: >
   - User: 'Test my new skill'
     Assistant: 'I'll launch the skill-trainer agent to validate your skill through self-testing and Haiku calibration.'
 
-  - User: 'Validate the dante-trader skill for weaker models'
-    Assistant: 'I'll use the skill-trainer agent to run Haiku validation on dante-trader.'
+  - User: 'Validate the code-reviewer skill for weaker models'
+    Assistant: 'I'll use the skill-trainer agent to run Haiku validation on code-reviewer.'
 
   Triggers: train skill, test skill, validate skill, calibrate skill, harden skill, skill training, skill testing
 tools: Bash, Read, Write, Edit, Glob, Grep, Skill

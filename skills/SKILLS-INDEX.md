@@ -21,6 +21,12 @@ Quick reference for all active skills — when to use each and how they compose.
 | **code-index** | Generate structural index of codebase (files + exported symbols) | Indexing a project, generating code map, understanding project structure | project-docs-explore (complements docs with code structure) |
 | **session-handoff** | Update SESSION_STATE.md to preserve context across sessions | End of session, wrapping up, user says goodbye, significant milestone | software-engineering (lessons), all projects (status updates) |
 | **nyx** | Search past Claude Code conversation history | Recalling prior decisions, finding past discussions, "did we already…" questions, locating context from previous sessions | session-handoff (recalls what was preserved), software-engineering (find past architecture decisions) |
+| **loki-test-desktop** | Automate and verify macOS desktop application UI via the loki CLI | Testing desktop apps, verifying UI behavior, macOS app testing, accessibility testing, taking screenshots, clicking buttons, inspecting UI trees | project-manager (verification phase), qorvex-test-ios (sibling pattern) |
+| **khora-test-web** | Automate and verify web application UI via the khora CLI and Chrome DevTools Protocol | Testing web apps, browser testing, Chrome automation, verifying web pages, clicking buttons, taking screenshots, checking page content | project-manager (verification phase), loki-test-desktop (sibling pattern) |
+| **cmux-control** | Control terminals and browsers via the cmux CLI | Spawning interactive terminals, starting Claude Code sessions, running REPLs/TUIs, opening web browsers, reading terminal output, sending commands | project-manager (interactive tasks), loki-test-desktop (desktop context), khora-test-web (browser context) |
+| **qorvex-app-explorer** | Systematically explore and map an iOS app's UI via qorvex | Mapping app screens, exploring app functionality, discovering UI flows, building screen maps, generating automation scripts | qorvex-test-ios (uses same tool), project-docs-explore (produces documentation) |
+| **skill-trainer** | Validate and harden skills through automated testing and weak-model calibration | Training skills, testing skills, validating skill instructions, calibrating for weaker models, stress-testing before deployment | skill-reflection (improvement loop), all skills (target of training) |
+| **wisp-design** | Design and build visual UI layouts using the Wisp desktop canvas and CLI | Designing UI, building layouts, creating mockups, visual design, placing components, arranging elements, iterating on designs | project-manager (design tasks), loki-test-desktop (verify desktop app showing design) |
 
 ## Composition Patterns
 
@@ -33,6 +39,26 @@ Quick reference for all active skills — when to use each and how they compose.
 1. `/project-docs-explore` → understand subsystem
 2. `/project-manager` → investigate → fix → test
 3. `/qorvex-test-ios` → reproduce bug, verify fix on device
+
+### Desktop app verification
+1. `/project-docs-explore` → understand the desktop app's subsystem
+2. `/project-manager` → decompose into tasks, dispatch subagents
+3. `/loki-test-desktop` → verify macOS desktop UI changes (screenshot, inspect tree, interact, verify)
+
+### Desktop bug fix
+1. `/project-docs-explore` → understand subsystem
+2. `/project-manager` → investigate → fix → test
+3. `/loki-test-desktop` → reproduce bug, verify fix on desktop app
+
+### Web app verification
+1. `/project-docs-explore` → understand the web app's subsystem
+2. `/project-manager` → decompose into tasks, dispatch subagents
+3. `/khora-test-web` → verify web UI changes (launch Chrome, navigate, screenshot, inspect, verify)
+
+### Web bug fix
+1. `/project-docs-explore` → understand subsystem
+2. `/project-manager` → investigate → fix → test
+3. `/khora-test-web` → reproduce bug in browser, verify fix on web app
 
 ### New project setup
 1. `/setup-docs` → create docs/ structure
@@ -82,6 +108,12 @@ This is the primary workflow for the SWE agent team. The project-manager orchest
 1. `/nyx` → search conversation history for past decisions, discussions, or patterns
 2. `/session-handoff` → check SESSION_STATE.md for strategic context
 3. Combine findings to inform current task
+
+### UI design workflow
+1. `/wisp-design` → build the visual layout on the Wisp canvas using CLI commands
+2. `/wisp-design` → screenshot and inspect, iterate on positioning and styling
+3. `/wisp-design` → save the final design to a JSON file
+4. `/project-manager` → if the design informs code generation, orchestrate implementation from the saved design
 
 ### Team improvement cycle
 1. `/team-evaluator` → run benchmarks, identify gaps
