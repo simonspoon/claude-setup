@@ -45,6 +45,8 @@ Build a **topic-to-file map** — for each doc file, note:
 - What topic/subsystem it covers
 - Whether it's developer-facing (`docs/dev/`) or user-facing (`docs/user/`)
 
+If no `docs/` directory and no `README.md` exist, tell the user: "No documentation found to update. Consider running the `setup-docs` skill first."
+
 ### Step 2: Detect What Changed in Code
 
 Determine the scope of code changes using one of these strategies:
@@ -55,8 +57,8 @@ Determine the scope of code changes using one of these strategies:
 **If there are uncommitted working tree changes:**
 ```bash
 git status
-git diff HEAD --name-only -- ':!docs/' ':!*.md'
-git diff HEAD -- ':!docs/' ':!*.md'
+git diff HEAD --name-only -- ':!docs/' ':!*.md' ':!*.lock' ':!*-lock.*'
+git diff HEAD -- ':!docs/' ':!*.md' ':!*.lock' ':!*-lock.*'
 ```
 
 **If asked to sync docs generally:**
@@ -149,7 +151,7 @@ Review the conversation history for hard-won knowledge that would help future de
 - **Verification approaches** — a non-obvious way to test or verify behavior was discovered (e.g., a specific test invocation that isolates the issue, a manual verification step that catches regressions)
 
 **How to capture:**
-1. Identify the relevant `docs/dev/` file using your topic-to-file map
+1. Identify the relevant `docs/dev/` file using your topic-to-file map. If there is no `docs/dev/` directory, add the note to whichever dev-facing doc covers the relevant subsystem.
 2. Add a short note in the appropriate section — near the code/feature it relates to
 3. Format as a concise callout: what the gotcha is, why it matters, what to do instead
 4. Include concrete details (exact property names, bitmask values, version constraints) — don't be vague

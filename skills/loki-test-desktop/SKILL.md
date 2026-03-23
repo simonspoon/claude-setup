@@ -11,12 +11,14 @@ Automate and verify macOS desktop application UI using the `loki` CLI.
 
 ```bash
 loki check-permission
-loki windows
+loki launch com.apple.Calculator
+loki wait-window --bundle-id com.apple.Calculator
 WINDOW_ID=$(loki windows --bundle-id com.apple.Calculator -f json | jq -r '.[0].window_id')
 loki tree "$WINDOW_ID"
 loki find "$WINDOW_ID" --role AXButton --title "5"
 loki click-element "$WINDOW_ID" --role AXButton --title "5"
 loki screenshot --window "$WINDOW_ID" --output /tmp/screenshot.png
+loki kill com.apple.Calculator
 ```
 
 ## Setup Checklist
@@ -151,6 +153,17 @@ loki screenshot --window "$WINDOW" --output after-save.png
 ### Screenshots
 - **Default output is `loki-screenshot.png` in the current directory**: Use `--output` to specify a path.
 - **`--screen` captures all displays**: Use `--window <ID>` for a specific window.
+
+### Empty Results
+- **`loki windows` returns an empty JSON array `[]`** when no windows match the filter -- it does not error. Always check the array length before extracting `.[0].window_id`.
+- **`loki find` returns `[]`** when no elements match. The exit code is still 0. Use `wait-for` if you need to block until an element appears.
+
+### Timeouts
+- **`wait-for`, `wait-gone`, `wait-window`, and `wait-title` exit with code 3 on timeout.** Always check the exit code or use `set -e` in scripts to catch timeout failures.
+- **`jq` is required** for the JSON parsing patterns shown in Quick Start and Scripting Pattern. Ensure it is installed.
+
+### Button Titles
+- **Accessibility titles may differ from visible labels.** For example, Calculator buttons show "+", "-", etc. on screen but their accessibility titles are "Add", "Subtract", "Multiply", "Divide". Always use `loki find` or `loki tree --flat` to discover the actual titles before writing click commands.
 
 ## Reference
 

@@ -148,6 +148,11 @@ khora kill "$SESSION"
 - Override per-command: `--timeout 15000`
 - Override globally: `KHORA_TIMEOUT=15000`
 - Override format globally: `KHORA_FORMAT=json`
+- **Timeout errors**: `wait-for` and `wait-gone` exit with a non-zero status if the timeout expires. Always handle this — if a wait fails mid-workflow, `kill` the session before returning an error.
+
+### Error Recovery
+- **Always kill sessions on failure.** If any command fails mid-workflow, run `khora kill "$SESSION"` before reporting the error. Orphaned Chrome processes consume memory.
+- **Use `--format json`** when you need to parse output programmatically (e.g., extracting session ID from `launch`, checking element counts from `find`). Plain text output is fine for `text` and `eval` where you just need the value.
 
 ### Multiple Sessions
 - Each `launch` creates an independent Chrome instance

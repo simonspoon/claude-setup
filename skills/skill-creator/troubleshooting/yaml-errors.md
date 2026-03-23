@@ -333,5 +333,5 @@ A: Keep description concise (what + when). Put details in SKILL.md body.
 
 ## Related Issues
 
-- [name-validation-errors.md](name-validation-errors.md) - Specific name validation problems
-- [description-errors.md](description-errors.md) - Specific description problems
+- [trigger-problems.md](trigger-problems.md) - Skill not triggering due to description issues
+- [trigger-too-broad.md](trigger-too-broad.md) - Description too generic, skill triggers too often

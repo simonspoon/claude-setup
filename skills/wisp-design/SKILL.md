@@ -22,11 +22,10 @@ The CLI binary is at `wisp` (if installed via Homebrew) or at the project's `tar
 ```bash
 # 1. Ensure the Wisp desktop app is running (it provides the WebSocket server)
 
-# 2. Create a frame
-wisp node add "Header" -t frame --width 800 --height 60 --fill "#1e40af"
+# 2. Create a frame and capture its ID
+HEADER_ID=$(wisp node add "Header" -t frame --width 800 --height 60 --fill "#1e40af" --json | jq -r .id)
 
 # 3. Add text inside it
-HEADER_ID=$(wisp node add "Header" -t frame --width 800 --height 60 --fill "#1e40af" --json | jq -r .id)
 wisp node add "Title" -t text --parent $HEADER_ID -x 16 -y 16 --text "Dashboard" --font-size 24
 
 # 4. See the tree
@@ -304,7 +303,7 @@ Common hex colors for UI design:
 - **IDs are UUIDs.** Always capture IDs from `--json` output or from the formatted "Created node <id>" response. The root canvas node ID is `00000000-0000-0000-0000-000000000000`.
 - **No auto-layout.** You must manually calculate x, y, width, height for every node. Plan positions before creating.
 - **Partial edits are safe.** `node edit` only changes the fields you specify -- layout, style, and typography you omit are preserved.
-- **Component position.** Templates are created at (0,0) within the parent. Always `node edit` to reposition after using a template.
+- **Component position.** Templates are placed at (0,0) within the parent by default. Use `-x` and `-y` flags on `components use` to set initial position, or `node edit` to reposition afterward.
 - **Session mode for bulk work.** When creating many nodes (charts, lists, grids), pipe commands through `wisp session` to avoid per-command WebSocket reconnection.
 - **Screenshot for verification.** The canvas is visual -- always screenshot after significant changes to verify the result matches your intent.
 - **Save often.** Use `wisp save` after completing major sections. You can `wisp load` to restore if something goes wrong.

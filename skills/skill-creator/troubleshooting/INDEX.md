@@ -26,19 +26,15 @@ Common issues when creating skills and how to fix them.
 - [trigger-too-broad.md](trigger-too-broad.md) - Skill loads when it shouldn't
 
 ### Validation Errors
-- [yaml-errors.md](yaml-errors.md) - YAML frontmatter problems
-- [name-validation-errors.md](name-validation-errors.md) - Invalid skill names
-- [description-errors.md](description-errors.md) - Description validation failures
+- [yaml-errors.md](yaml-errors.md) - YAML frontmatter problems (includes name and description validation)
 
 ### Content Issues
 - [unclear-examples.md](unclear-examples.md) - Examples missing details
 - [file-too-long.md](file-too-long.md) - SKILL.md exceeds 200 lines
-- [missing-documentation.md](missing-documentation.md) - Templates without docs
 
 ### Structure Issues
 - [structure-problems.md](structure-problems.md) - Unclear how to organize files
 - [broken-links.md](broken-links.md) - File references don't work
-- [missing-files.md](missing-files.md) - Referenced files don't exist
 
 ## Problem Categories
 

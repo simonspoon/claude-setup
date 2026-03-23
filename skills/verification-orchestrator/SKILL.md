@@ -9,7 +9,7 @@ Route verification work to the right QA tool based on what the project actually 
 
 ## Step 1: Detect Project Type
 
-Scan the current working directory (and immediate children) for platform indicators.
+Scan the current working directory and up to 3 levels deep for platform indicators. Common project layouts nest platform files (e.g., `app/src-tauri/tauri.conf.json` for Tauri, `app/vite.config.ts` for web frontends).
 
 ### iOS Indicators
 Look for ANY of:

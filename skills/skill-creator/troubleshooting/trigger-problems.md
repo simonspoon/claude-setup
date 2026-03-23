@@ -188,4 +188,4 @@ After updating description, verify:
 ## Related Issues
 
 - [trigger-too-broad.md](trigger-too-broad.md) - Skill triggers too often
-- [description-errors.md](description-errors.md) - Description validation failures
+- [yaml-errors.md](yaml-errors.md) - YAML and description validation failures

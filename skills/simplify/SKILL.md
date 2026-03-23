@@ -23,10 +23,10 @@ Analyze code for unnecessary complexity and apply focused refactorings that pres
 1. Invoke `/swe-team:software-engineering` to load project conventions. If the user's message indicates it was already invoked in this conversation, skip this step.
 2. Determine scope: specific files, staged changes, or a module/class the user identified. If the user says "simplify everything" or gives no specific target, ask them to identify the files or module to analyze. Do not scan the entire codebase unprompted.
 3. Run the Analysis Workflow (which starts by reading the refactoring catalog, THEN the target code).
-5. Present findings to the user. Wait for approval before applying changes.
-6. Run the Refactoring Workflow for each approved change.
-7. Invoke `/swe-team:test-engineer` to verify all tests pass after changes.
-8. Invoke `/swe-team:code-reviewer` to review the refactored code.
+4. Present findings to the user. Wait for approval before applying changes.
+5. Run the Refactoring Workflow for each approved change.
+6. Invoke `/swe-team:test-engineer` to verify all tests pass after changes.
+7. Invoke `/swe-team:code-reviewer` to review the refactored code.
 
 ## Analysis Workflow
 
