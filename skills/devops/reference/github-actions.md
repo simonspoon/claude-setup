@@ -301,6 +301,34 @@ jobs:
 
 **Key**: `tauri-action` with `tagName` uploads .dmg, .msi, .deb, .AppImage, .rpm directly to the GitHub Release. Do not try to capture these via `upload-artifact` — the bundle paths are deeply nested and glob patterns fail.
 
+## Homebrew Tap Auto-Update
+
+Add this job to release workflows to auto-update the Homebrew formula when a new tag is pushed. Requires a `HOMEBREW_TAP_TOKEN` secret (a PAT with repo scope on the tap repo).
+
+```yaml
+  update-tap:
+    needs: release  # or needs: build, depending on workflow structure
+    runs-on: ubuntu-latest
+    steps:
+      - name: Update Homebrew formula
+        env:
+          GH_TOKEN: ${{ secrets.HOMEBREW_TAP_TOKEN }}
+        run: |
+          VERSION="${GITHUB_REF_NAME#v}"
+          gh api repos/OWNER/homebrew-tap/dispatches \
+            -f event_type=update-formula \
+            -f "client_payload[tool]=TOOL_NAME" \
+            -f "client_payload[version]=$VERSION" \
+            -f "client_payload[repo]=OWNER/REPO_NAME"
+```
+
+**Replace** `OWNER` with the GitHub user/org, `TOOL_NAME` with the formula name, `REPO_NAME` with the source repo name.
+
+**Setup checklist for new repos:**
+1. Create a PAT with `repo` scope (or reuse existing one)
+2. Add it as `HOMEBREW_TAP_TOKEN` secret: `gh secret set HOMEBREW_TAP_TOKEN --repo OWNER/REPO_NAME`
+3. Ensure the tap repo has a `repository_dispatch` workflow that handles `update-formula` events
+
 ## Docker Build and Push
 
 ```yaml

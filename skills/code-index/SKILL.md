@@ -20,9 +20,11 @@ Install helios: `brew install simonspoon/tap/helios`
 
 ## Activation Protocol
 
-1. Determine the project directory to index.
-2. Check if `.helios/index.db` already exists — if so, run `helios update` (incremental). Otherwise run `helios init`.
-3. Use `helios symbols`, `helios deps`, or `helios summary` to answer questions about the codebase.
+1. Check helios is installed: `which helios`. If not found, tell the user: `brew install simonspoon/tap/helios`
+2. Determine the project directory to index.
+3. Check if `.helios/index.db` already exists — if so, run `helios update` (incremental). Otherwise run `helios init`.
+4. If `helios init` reports 0 files indexed — the project may have no supported language files. Fall back to manual Glob/Grep exploration.
+5. Use `helios symbols`, `helios deps`, or `helios summary` to answer questions about the codebase.
 
 ## Commands
 
