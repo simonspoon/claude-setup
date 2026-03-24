@@ -60,6 +60,13 @@ USER appuser
 CMD ["myapp"]
 ```
 
+### Context-Aware Copy Logic
+
+When writing multi-stage builds, check what the build step actually produces:
+- If the project has a real build step that outputs to `dist/`, `build/`, or `target/` → copy that output directory from the builder stage.
+- If the project has no build step or a no-op build → copy `src/` (or the source directory) directly. Do not copy a `dist/` that doesn't exist.
+- Always verify: read the `build` script in `package.json` or `Makefile` to confirm where output goes.
+
 ## .dockerignore Template
 
 ```

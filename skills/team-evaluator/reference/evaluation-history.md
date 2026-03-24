@@ -209,3 +209,94 @@ Key recommendation: CI/CD pipelines should include lockfile validation and expli
 - All code benchmarks produced passing test suites (verified by running pytest).
 - The only remaining gaps are minor CI/CD completeness issues, both rated LOW severity.
 - RF-1 improved from 11/12 (previous simplify eval) to 12/12 — the completeness gap for extracted module tests has been addressed.
+
+## 2026-03-24 — Full Team Evaluation (v1.9.0 Regression Check)
+Overall: 11.72/12 (97.7%)
+Strengths: Bug Fix (36/36), Code Review (36/36), Test Generation (36/36) — all perfect
+Gaps: CI/CD (33/36) — deploy scaffold missing rollback docs, Docker copy logic not context-aware
+Key recommendation: Add rollback documentation to devops deploy template per skill's own rules.
+
+### Per-Benchmark Scores
+| Benchmark | Score | Verdict |
+|-----------|-------|---------|
+| BF-1: Null Reference in API Handler | 12/12 | PASS |
+| BF-2: Off-by-One in Pagination | 12/12 | PASS |
+| BF-3: Race Condition in Cache | 12/12 | PASS |
+| FI-1: Add Search Endpoint | 12/12 | PASS |
+| FI-2: Add Rate Limiting Middleware | 12/12 | PASS |
+| FI-3: Add Webhook System | 11/12 | PASS |
+| CR-1: Security Vulnerabilities | 12/12 | PASS |
+| CR-2: Performance Anti-Patterns | 12/12 | PASS |
+| CR-3: Mixed Quality PR | 12/12 | PASS |
+| TG-1: Unit Tests for Utility Module | 12/12 | PASS |
+| TG-2: Integration Tests for API | 12/12 | PASS |
+| TG-3: Test Coverage Gap Analysis | 12/12 | PASS |
+| CD-1: GitHub Actions for Node.js | 12/12 | PASS |
+| CD-2: Docker Multi-Stage Build | 11/12 | PASS |
+| CD-3: Deployment Pipeline | 10/12 | PASS |
+| RF-1: Extract Module from God Object | 12/12 | PASS |
+| RF-2: Replace Callback Hell with Async/Await | 11/12 | PASS |
+| RF-3: Dependency Injection Refactor | 12/12 | PASS |
+
+### Detailed Scores
+| Benchmark | Correctness | Completeness | Quality | Conventions | Total |
+|-----------|-------------|--------------|---------|-------------|-------|
+| BF-1 | 3 | 3 | 3 | 3 | 12 |
+| BF-2 | 3 | 3 | 3 | 3 | 12 |
+| BF-3 | 3 | 3 | 3 | 3 | 12 |
+| FI-1 | 3 | 3 | 3 | 3 | 12 |
+| FI-2 | 3 | 3 | 3 | 3 | 12 |
+| FI-3 | 3 | 3 | 3 | 2 | 11 |
+| CR-1 | 3 | 3 | 3 | 3 | 12 |
+| CR-2 | 3 | 3 | 3 | 3 | 12 |
+| CR-3 | 3 | 3 | 3 | 3 | 12 |
+| TG-1 | 3 | 3 | 3 | 3 | 12 |
+| TG-2 | 3 | 3 | 3 | 3 | 12 |
+| TG-3 | 3 | 3 | 3 | 3 | 12 |
+| CD-1 | 3 | 3 | 3 | 3 | 12 |
+| CD-2 | 3 | 3 | 2 | 3 | 11 |
+| CD-3 | 3 | 2 | 2 | 3 | 10 |
+| RF-1 | 3 | 3 | 3 | 3 | 12 |
+| RF-2 | 3 | 3 | 3 | 2 | 11 |
+| RF-3 | 3 | 3 | 3 | 3 | 12 |
+
+### Category Averages
+| Category | Total Score | Avg (per dimension) | Rating |
+|----------|-----------|---------------------|--------|
+| Bug Fix | 36/36 | 3.00 | GREEN |
+| Feature Implementation | 35/36 | 2.92 | GREEN |
+| Code Review | 36/36 | 3.00 | GREEN |
+| Test Generation | 36/36 | 3.00 | GREEN |
+| CI/CD Setup | 33/36 | 2.75 | GREEN |
+| Refactoring | 35/36 | 2.92 | GREEN |
+
+### Comparison with Previous Evaluation (Mar 19 Full)
+| Benchmark | Previous | Current | Change |
+|-----------|----------|---------|--------|
+| CD-1 | 11/12 | 12/12 | +1 (pnpm lockfile detection fixed) |
+| CD-2 | 12/12 | 11/12 | -1 (Docker copy logic not context-aware) |
+| CD-3 | 11/12 | 10/12 | -1 (missing rollback docs) |
+| FI-3 | 12/12 | 11/12 | -1 (Python truthiness convention) |
+| RF-2 | 12/12 | 11/12 | -1 (error format changed during async conversion) |
+| All others | 12/12 | 12/12 | Stable |
+| **Overall** | **214/216 (99.1%)** | **211/216 (97.7%)** | **-1.4%** |
+
+### Gaps Identified
+| Gap | Severity | Root Cause | Affected Workflows |
+|-----|----------|------------|-------------------|
+| CD-3: No rollback mechanism/docs in deploy scaffold | YELLOW | Devops skill rules require rollback docs but deploy template omits them | Deployment workflows |
+| CD-2: Builder copies src/ not dist/ | LOW | Copy logic not context-aware for projects with real build steps | Docker workflows |
+| RF-2: Error message format changed during async conversion | LOW | Callback error prefixes dropped in favor of native exceptions | Refactoring workflows |
+| FI-3: datetime.utcnow() deprecated in Python 3.12+ | LOW | Not proactively caught during code generation | Feature Implementation |
+
+### Recommendations
+1. **[MEDIUM] Add rollback docs to devops deploy template** — CD-3 dropped because skill's own rules require rollback steps but scaffold omits them. Add a rollback job or commented rollback instructions.
+2. **[LOW] Docker copy context-awareness** — Builder stage should copy dist/ when a real build step exists vs src/ for runtime-only apps.
+3. **[LOW] Python datetime modernization** — Use datetime.now(timezone.utc) in generated code to avoid 3.12+ deprecation.
+
+### Notes
+- This is a regression check after the v1.9.0 portability refactor and suda integration.
+- **No regressions from the portability work.** The 3-point drop is from convention/completeness nuances, not correctness.
+- **CD-1 pnpm bug confirmed fixed** — lockfile detection now works correctly (+1 vs previous).
+- All 18 benchmarks PASS. All categories GREEN. Zero CRITICAL or FAIL verdicts.
+- Correctness is 54/54 (100%) across all benchmarks — every solution solves the stated problem.

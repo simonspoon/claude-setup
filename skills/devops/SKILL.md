@@ -7,6 +7,10 @@ description: Create and manage CI/CD pipelines, Docker configurations, deploymen
 
 Create and manage CI/CD pipelines, container configurations, deployment scripts, and infrastructure patterns.
 
+## Critical Requirements
+
+- **Every deployment artifact (script, workflow, or pipeline) MUST include or document rollback steps.** This applies to bash scripts, GitHub Actions deploy workflows, and any other deployment mechanism. If the deployment method doesn't support automated rollback, add a comment block documenting the manual rollback procedure.
+
 ## Prerequisites
 
 - For GitHub Actions: repository must be on GitHub
@@ -51,11 +55,12 @@ Read reference/docker.md, then:
 2. Create or modify container configuration.
 3. Build and test locally before committing.
 
-**Deployment script:**
+**Deployment script or workflow:**
 1. Determine target environment and deployment method.
-2. Write a bash script (preferred) with proper error handling.
-3. Include rollback instructions or mechanism.
-4. Test in a safe environment first.
+2. For bash scripts: use the deployment script template below with proper error handling.
+3. For GitHub Actions deploy workflows: add a rollback job that triggers on deploy failure, or document rollback in a comment block at the top of the workflow.
+4. Include rollback instructions or mechanism — see Critical Requirements above.
+5. Test in a safe environment first.
 
 **Infrastructure guidance:**
 1. Identify the infrastructure tool (Terraform, CloudFormation, etc.).
