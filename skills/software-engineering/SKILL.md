@@ -5,9 +5,7 @@ description: Self-evolving software engineering knowledge base. Apply and grow k
 
 # Software Engineering Knowledge Base
 
-A self-evolving knowledge base that starts minimal and grows by researching topics, capturing preferences, and consolidating learnings. The knowledge/ and preferences/ directories are the living memory; this file is the immutable DNA.
-
-**Skill root**: `~/.claude/skills/software-engineering/`
+A self-evolving knowledge base that starts minimal and grows by researching topics, capturing preferences, and consolidating learnings. The knowledge/ directory in the skill's own directory is the living knowledge base; user preferences are stored via suda.
 
 ## Critical Requirements
 
@@ -17,10 +15,10 @@ A self-evolving knowledge base that starts minimal and grows by researching topi
 
 On every activation:
 
-1. Read `preferences/INDEX.md`. If any category has >0 entries, read those preference files. If all are 0, skip to step 2.
+1. Load user preferences from suda (if available): `suda recall --type user --json 2>/dev/null` and `suda recall --type feedback --json 2>/dev/null`. These contain engineering preferences and past corrections.
 2. Determine the SE domain(s) of the current task: architecture, debugging, patterns, testing, performance, security, code-review, tooling, or other.
-3. Read `knowledge/INDEX.md`. If a relevant entry exists, read the knowledge file(s). If the index is empty, skip to step 5.
-4. Apply combined knowledge to the task. **Preferences override general knowledge when they conflict.**
+3. Read `knowledge/INDEX.md` from the skill's own directory. If a relevant entry exists, read the knowledge file(s). If the index is empty, skip to step 5.
+4. Apply combined knowledge to the task. **User preferences (from suda) override general knowledge when they conflict.**
 5. **Staleness check**: If any read knowledge file has a `Last researched` date older than 3 months, flag it as potentially stale. If the task depends on version-specific info (e.g., library versions, framework features), re-research before relying on that data.
 6. **Knowledge gap check**: If the task involves a language, framework, or pattern with no entry in knowledge/INDEX.md, follow the Research Protocol. This applies to implementation work too, not just design decisions.
 7. If the user expresses a preference or lesson, follow the Preference Capture Protocol.
@@ -61,12 +59,16 @@ Process:
 
 **Always confirm before saving.** Say: "I'd like to remember that [preference]. Should I save this?"
 
-Process:
-1. Determine category: `style.md` (conventions), `tooling.md` (tools/frameworks), or `lessons.md` (experiential).
-2. Read the current file.
-3. Append the new entry using the format documented in the file's comment block.
-4. Update `preferences/INDEX.md` — increment the entry count.
-5. Append a row to `meta/evolution-log.md`.
+Process (suda — preferred):
+1. Check for duplicates: `suda recall --json "<keywords>"`
+2. Store as appropriate type:
+   - Corrections/approach feedback → `suda store --type feedback --name "<kebab-name>" --description "<one-line>" "<content>"`
+   - User preferences/conventions → `suda store --type user --name "<kebab-name>" --description "<one-line>" "<content>"`
+3. If a similar memory exists, update it: `suda update <ID> --content "<updated>"`
+
+Process (fallback — no suda):
+1. Write to `preferences/` directory: `style.md`, `tooling.md`, or `lessons.md`.
+2. Update `preferences/INDEX.md`.
 
 **Rule**: Never capture one-off situational choices. Only capture things the user indicates are general rules or recurring lessons.
 
@@ -127,5 +129,5 @@ The Post-Task Protocol checks the evolution log entry count after every task. **
 3. **Preferences win.** When general knowledge and a user preference conflict, follow the preference.
 4. **Skip research during urgent debugging** unless asked. Apply best available knowledge; note the gap for later.
 5. **Stable paths.** Use descriptive, kebab-case filenames. Never rename existing files without updating INDEX.md.
-6. **Absolute paths.** Always use full paths: `~/.claude/skills/software-engineering/...`
+6. **Relative paths for knowledge.** Reference knowledge files relative to the skill directory (e.g., `knowledge/architecture/rust-cli-patterns.md`).
 7. **Be concise.** Knowledge files should be actionable, not encyclopedic. Favor practical guidance over theory.

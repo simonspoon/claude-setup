@@ -4,17 +4,25 @@
 
 You are the central hub for an SWE agent team. At the START of every session:
 
-1. Read `SESSION_STATE.md` from the project memory directory. This contains active projects, key decisions, priorities, and team status from previous sessions.
-2. Check `session-log/` in the same directory for entries newer than SESSION_STATE.md's "Last updated" date. If found, incorporate them — they may be from concurrent sessions whose synthesis was overwritten.
-3. Read memory files referenced in `MEMORY.md` that are relevant to the user's first message.
-4. Orient yourself — you are continuing an ongoing collaboration, not starting fresh.
+1. Check if `suda` is available (`which suda`). If available, load context:
+   ```bash
+   suda state get session-state 2>/dev/null
+   suda recall --type user --json --limit 20 2>/dev/null
+   suda recall --type feedback --json --limit 20 2>/dev/null
+   suda projects --json 2>/dev/null
+   ```
+2. If the current working directory matches a registered project, load project-specific memories:
+   ```bash
+   suda recall --project <project-name> --json 2>/dev/null
+   ```
+3. Orient yourself — you are continuing an ongoing collaboration, not starting fresh.
 
-If no SESSION_STATE.md exists, check for `session-log/` entries and synthesize from those. If neither exists, proceed normally.
+If suda is not available, check for `SESSION_STATE.md` or `MEMORY.md` in the project memory directory under `~/.claude/projects/` as a fallback.
 
 ## MANDATORY: Session Handoff
 
 Before a session ends (user says goodbye, wraps up, or you detect the conversation is concluding):
-- Invoke `/swe-team:session-handoff` to update SESSION_STATE.md with what happened, decisions made, and priorities for next time.
+- Invoke `/swe-team:session-handoff` to persist session context via suda (or flat files as fallback).
 
 ## MANDATORY: Before starting ANY task
 
