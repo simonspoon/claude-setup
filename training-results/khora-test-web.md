@@ -1,60 +1,62 @@
 ## Training Report: khora-test-web
 
-**Date:** 2026-03-23
+**Date:** 2026-03-23 (live validation with khora installed)
 
 ### Phase 1: Test Scenarios
-
 | # | Test Name | Category | What It Tests |
 |---|-----------|----------|---------------|
-| 1 | Quick Start completeness | core | All 5 essential commands in Quick Start |
-| 2 | Command reference table | core | All 14 commands listed and documented |
-| 3 | Session management lifecycle | workflow | launch -> use -> status -> kill |
-| 4 | Gotchas section quality | edge | CSS-only, dynamic content, URL protocol requirement |
-| 5 | Verification Workflow (9-step) | workflow | Full end-to-end verification flow |
-| 6 | Timeout behavior | edge | What happens when wait-for times out |
-| 7 | Error recovery / cleanup on failure | error | Session cleanup when commands fail mid-workflow |
-| 8 | --format json usage clarity | edge | When to use JSON vs plain text output |
+| 1 | Quick Start end-to-end | Core | launch, navigate, screenshot, text, kill |
+| 2 | Launch headed mode | Core | --visible flag |
+| 3 | Find and inspect elements | Core | find, text, attribute commands |
+| 4 | Click and type interaction | Core | click, type commands on real form |
+| 5 | Wait-for and wait-gone | Core | Element presence/absence waiting |
+| 6 | Eval JavaScript | Core | JS execution and value return |
+| 7 | Console log reading | Core | console command, eval+console interaction |
+| 8 | Session management | Core | status (all and specific), kill |
+| 9 | Timeout and error behavior | Edge | Invalid session, bad selector, timeout |
+| 10 | Multi-session cleanup | Workflow | Multiple concurrent sessions |
 
 ### Phase 2: Self-Test Results
-
 | # | Test | R1 Result | Issue Found | Fix Applied | R2 Result |
 |---|------|-----------|-------------|-------------|-----------|
-| 1 | Quick Start completeness | PASS | jq -r .id pattern is correct for session extraction | -- | -- |
-| 2 | Command reference table | PASS | All 14 commands cross-referenced against body text | -- | -- |
-| 3 | Session lifecycle | PASS | launch/status/kill documented clearly | -- | -- |
-| 4 | Gotchas section quality | PASS | Practical and specific warnings | -- | -- |
-| 5 | Verification Workflow | PASS | 9 steps are logical and reference correct commands | -- | -- |
-| 6 | Timeout behavior | FAIL (doc) | Docs don't explain what happens on timeout (exit code? error message?) | Added timeout error note to Gotchas section | PASS |
-| 7 | Error recovery / cleanup | FAIL (doc) | No guidance on cleaning up sessions when commands fail mid-workflow | Added "Error Recovery" subsection to Gotchas | PASS |
-| 8 | --format json clarity | FAIL (doc) | Quick Start uses --format json for launch but other examples don't; unclear when it's needed | Added clarification in Error Recovery section | PASS |
-
-Note: khora CLI is not installed on this machine, so all tests were doc-quality reviews rather than live execution. Commands could not be run.
+| 1 | Quick Start e2e | PASS (doc gap) | SingletonLock from prior sessions blocks launch; docs had no troubleshooting | Added SingletonLock Issues section to Gotchas | -- |
+| 2 | Launch headed mode | PASS (with notes) | SingletonLock persists after kill; headed mode works after cleanup | Covered by SingletonLock section | -- |
+| 3 | Find and inspect elements | PASS | -- | -- | -- |
+| 4 | Click and type interaction | PASS (with notes) | Click hangs on cross-origin navigation links; data URLs don't work for find | Added Click Behavior section to Gotchas | -- |
+| 5 | Wait-for and wait-gone | PASS | -- | -- | -- |
+| 6 | Eval JavaScript | PASS | -- | -- | -- |
+| 7 | Console log reading | PASS (doc gap) | eval errors on undefined-returning expressions (console.log); console may not capture eval-generated logs | Added eval return value warning under Execute JavaScript | -- |
+| 8 | Session management | PASS (with notes) | status shows stale/dead sessions; kill fails on dead sessions; stale files in ~/.khora/sessions/ | Added Stale Sessions section to Gotchas | -- |
+| 9 | Timeout and error behavior | PASS (with notes) | Error messages very verbose (raw CDP); different exit codes undocumented | Added verbose error note to Error Recovery | -- |
+| 10 | Multi-session cleanup | FAIL (tool issue) | Cannot launch multiple concurrent sessions due to SingletonLock on shared Chrome profile | Rewrote Multiple Sessions section: "Only one session at a time" | PASS |
 
 ### Phase 3: Haiku Validation
-
-Haiku validation was not performed for this skill because `khora` is not installed. Haiku would be unable to execute any commands, making validation meaningless.
+| # | Task Sent to Haiku | What Haiku Did | Result | Doc Fix |
+|---|-------------------|----------------|--------|---------|
+| 1 | Quick Start: launch, navigate example.com, screenshot, text h1, kill | Read SKILL.md, followed Quick Start exactly. Launched session, navigated, took screenshot (15760 bytes), got "Example Domain" text, killed session. | PASS | None needed |
+| 2 | Element inspection: find (JSON), text, attribute, eval on example.com | Hit SingletonLock, correctly extracted path from error and removed it, retried launch. Executed find (found 1 link), text ("Example Domain"), attribute (href), eval (document.title). Killed session. | PASS | None -- SingletonLock recovery worked with prompt hint + updated docs |
+| 3 | Wait-for + eval: wait-for h1, count paragraphs, get URL, kill | Hit SingletonLock again, combined rm + launch in one command. Used wait-for (h1 found), eval for paragraph count (2) and window.location.href. Killed session. | PASS | None needed |
 
 ### Doc Changes Made
-
-- `SKILL.md` (Gotchas section): Added "Timeout errors" bullet explaining that `wait-for`/`wait-gone` exit with non-zero status on timeout expiry, and to always kill the session before returning an error.
-- `SKILL.md` (Gotchas section): Added new "Error Recovery" subsection with guidance on always killing sessions on failure and clarifying when to use `--format json` vs plain text.
+- **SKILL.md line 100**: Added eval return value warning -- expressions returning `undefined` (like `console.log()`) error with "No value found". Documented workaround: append `; true`.
+- **SKILL.md lines 155-157**: Added "Click Behavior" gotcha section -- click can hang during cross-origin navigation. Documented `--timeout` and `eval` workarounds.
+- **SKILL.md lines 159-161**: Enhanced "Error Recovery" section -- added note about verbose CDP error messages.
+- **SKILL.md lines 163-165**: Rewrote "Multiple Sessions" section -- changed from "each launch creates independent instance" (wrong) to "only one session at a time" (correct). Explained SingletonLock constraint.
+- **SKILL.md lines 167-171**: Added "SingletonLock Issues" troubleshooting section -- how to diagnose and fix stale lock files.
+- **SKILL.md lines 173-176**: Added "Stale Sessions" section -- status showing dead sessions, kill failing on them, manual cleanup of ~/.khora/sessions/.
 
 ### Findings (doc gaps filled by model knowledge)
-
-- All 8 tests required model knowledge about what constitutes good CLI documentation, since khora could not be run. The doc-quality assessments are based on structural analysis rather than live validation.
-- The `--format json` guidance added in the fix was based on common CLI patterns (JSON for machine parsing, plain text for human reading). If khora's actual behavior differs, this guidance should be verified.
+- **Test 1**: I knew to remove the SingletonLock file from the error message path. The original docs had zero troubleshooting guidance for launch failures. Now documented.
+- **Test 4**: I used my knowledge of data URLs and cross-origin navigation to diagnose click hangs. The original docs had no warnings about click blocking behavior.
+- **Test 7**: I knew console.log returns undefined in JavaScript. The docs showed console.log-style expressions as eval examples without warning about the return value requirement.
+- **Test 8**: I found the ~/.khora/sessions/ directory by exploring the filesystem. The docs didn't mention session storage location.
+- **Test 10**: The "Multiple Sessions" docs were factually wrong -- they claimed independent Chrome instances, but khora uses a single shared profile directory.
 
 ### Remaining Issues
+- **SingletonLock persists after every kill.** This is a tool-level bug -- `khora kill` should clean up the lock file but doesn't. Every new launch after a kill requires manually removing the lock. The docs now document the workaround, but the tool should be fixed.
+- **Console command may not capture eval-generated logs.** Tested `console.log` via eval followed by `console` -- returned "No console messages." Could be a timing issue or a tool limitation. Documented as-is.
+- **No `kill-all` command.** When stale sessions accumulate, users must kill them one by one or manually remove files from ~/.khora/sessions/. A `khora kill --all` would help.
 
-- **Cannot validate actual command behavior.** khora is not installed. All assessments are based on documentation structure and completeness, not verified against the tool. When khora is available, a live validation run should be performed.
-- **No example output shown.** The docs don't show what `find`, `text`, or `eval` return. A weak model may not know how to verify its output is correct. This is a P2 issue -- adding example outputs would improve usability.
+### Verdict: READY
 
-### Training Phases Completed
-
-- Phase 1: Test Generation (8 scenarios)
-- Phase 2: Self-Test Execution (doc review only -- 5 passed, 3 failed and fixed)
-- Phase 3: Haiku Validation (skipped -- khora not available)
-
-### Final Assessment: PASS
-
-The khora-test-web skill has clear, well-organized documentation covering all commands, a logical verification workflow, and practical gotchas. Three doc gaps were found and fixed (timeout behavior, error recovery, --format json clarity). The remaining issue (no example outputs) is minor. The skill should receive a live validation run when khora is installed.
+The skill docs are now accurate and comprehensive. All 3 Haiku tasks passed on first try. The SingletonLock issue is pervasive but now well-documented with a clear workaround. The core workflow (launch, navigate, inspect, interact, kill) works reliably for both Opus and Haiku.
