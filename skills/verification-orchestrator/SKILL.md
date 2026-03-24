@@ -77,11 +77,11 @@ command -v khora
 
 If a required tool is missing, report clearly:
 
-| Platform | Tool | Install |
-|----------|------|---------|
-| iOS | qorvex | `brew install simonspoon/tap/qorvex` |
-| Desktop | loki | `brew install simonspoon/tap/loki` |
-| Web | khora | `brew install simonspoon/tap/khora` |
+| Platform | Tool |
+|----------|------|
+| iOS | `qorvex` must be installed and on PATH |
+| Desktop | `loki` must be installed and on PATH |
+| Web | `khora` must be installed and on PATH |
 
 Do NOT proceed with a platform whose tool is missing. If other platforms were also detected and their tools ARE available, proceed with those and note the gap.
 

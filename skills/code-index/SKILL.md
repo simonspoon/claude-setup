@@ -16,11 +16,11 @@ Index a codebase using **helios** — a tree-sitter-based code indexing CLI with
 
 ## Prerequisites
 
-Install helios: `brew install simonspoon/tap/helios`
+`helios` must be installed and on PATH.
 
 ## Activation Protocol
 
-1. Check helios is installed: `which helios`. If not found, tell the user: `brew install simonspoon/tap/helios`
+1. Check helios is installed: `which helios`. If not found, tell the user: "helios must be installed and on PATH."
 2. Determine the project directory to index.
 3. Check if `.helios/index.db` already exists — if so, run `helios update` (incremental). Otherwise run `helios init`.
 4. If `helios init` reports 0 files indexed — the project may have no supported language files. Fall back to manual Glob/Grep exploration.

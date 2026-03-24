@@ -9,7 +9,7 @@ Search and browse past Claude Code conversations indexed by the `nyx` CLI.
 
 ## Prerequisites
 
-- `nyx` must be installed and on PATH. Install via Homebrew: `brew install simonspoon/tap/nyx`
+- `nyx` must be installed and on PATH
 - Index must be built: run `nyx index` if status shows stale data
 
 ## When to Use

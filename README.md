@@ -9,8 +9,8 @@ A Claude Code plugin that provides agents, skills, and commands for autonomous s
 Add the marketplace and install:
 
 ```bash
-# Add the marketplace
-claude plugin marketplace add simonspoon/claude-setup
+# Add the marketplace (replace with the marketplace URL or path)
+claude plugin marketplace add <marketplace-source>
 
 # Install the plugin
 claude plugin install swe-team
@@ -124,29 +124,20 @@ Skills are specialized capabilities invoked with `/swe-team:skill-name`. They pr
 
 Several skills depend on external CLI tools. Install them so the skills work out of the box.
 
-### Homebrew (recommended)
+The following CLI tools must be installed and on PATH for their corresponding skills to work:
 
-```bash
-brew tap simonspoon/tap
+| Tool | Skill |
+|------|-------|
+| `limbo` | project-manager |
+| `nyx` | nyx (conversation search) |
+| `qorvex` | qorvex-test-ios |
+| `loki` | loki-test-desktop |
+| `khora` | khora-test-web |
+| `wisp-cli` | wisp-design |
 
-brew install simonspoon/tap/limbo      # Task management (project-manager)
-brew install simonspoon/tap/nyx        # Conversation search (nyx skill)
-brew install simonspoon/tap/qorvex     # iOS testing (qorvex-test-ios)
-brew install simonspoon/tap/loki       # Desktop testing (loki-test-desktop)
-brew install simonspoon/tap/khora      # Web testing (khora-test-web)
-brew install simonspoon/tap/wisp-cli   # UI design canvas (wisp-design)
-```
+Install them from their GitHub releases or via Homebrew if a tap is available.
 
-### From GitHub Releases
-
-| Tool | Repository |
-|------|------------|
-| limbo | [simonspoon/limbo](https://github.com/simonspoon/limbo/releases) |
-| nyx | [simonspoon/nyx](https://github.com/simonspoon/nyx/releases) |
-| qorvex | [simonspoon/qorvex](https://github.com/simonspoon/qorvex/releases) |
-| loki | [simonspoon/loki](https://github.com/simonspoon/loki/releases) |
-| khora | [simonspoon/khora](https://github.com/simonspoon/khora/releases) |
-| wisp | [simonspoon/wisp](https://github.com/simonspoon/wisp/releases) |
+Check each tool's GitHub repository for release binaries and installation instructions.
 
 ---
 

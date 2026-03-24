@@ -22,11 +22,11 @@ Multiple Claude Code sessions can run concurrently against the same project. A r
 
 ### Step 0: Check for uncommitted changes in all touched repos
 
-Before writing the log entry, enumerate every repo touched during this session and check each one for uncommitted changes. Always include `~/claudehub/swe-team/` (the skill/agent repo). Add any other project repos where files were modified during the session.
+Before writing the log entry, enumerate every repo touched during this session and check each one for uncommitted changes. Include the current working directory and any other repos where files were modified during the session.
 
 ```bash
-# Always check swe-team; add other repos touched in this session
-for repo in ~/claudehub/swe-team <other-repos-touched-this-session>; do
+# Check the current repo and any other repos touched in this session
+for repo in <current-repo> <other-repos-touched-this-session>; do
   echo "=== $repo ==="
   git -C "$repo" status --porcelain
 done

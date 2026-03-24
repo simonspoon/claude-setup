@@ -15,7 +15,7 @@ Cut a versioned release for a project with CI-driven binary builds and Homebrew 
 ## Prerequisites
 
 - Project has `.github/workflows/release.yml` triggered by `v*` tags
-- Project has a Homebrew formula in `simonspoon/homebrew-tap`
+- Project has a Homebrew formula in a tap repo (detect from `.github/workflows/release.yml` or ask the user)
 - `gh` CLI authenticated
 
 ## Activation Protocol
@@ -95,24 +95,30 @@ This triggers the release workflow.
 
 ### Step 8: Verify Homebrew Tap
 
-The release workflow dispatches an auto-update to `simonspoon/homebrew-tap`. Verify it succeeded:
+The release workflow typically dispatches an auto-update to a Homebrew tap repo. Detect the tap repo from `.github/workflows/release.yml` (look for `repository_dispatch` or `workflow_dispatch` targeting a `homebrew-tap` repo). If not found, ask the user.
+
+Verify the tap update succeeded:
 
 ```bash
-gh run list --repo simonspoon/homebrew-tap --limit 3
+# Replace <TAP_REPO> with the detected owner/homebrew-tap repo
+gh run list --repo <TAP_REPO> --limit 3
 ```
 
 If the tap update failed, run the update manually:
 ```bash
-cd ~/claudehub/homebrew-tap
+# Find the local tap repo path
+brew --repository <tap-owner>/<tap-name>
+# Or ask the user for the local tap repo path
+
+cd <LOCAL_TAP_REPO>
 bash scripts/update-formula.sh <FORMULA_NAME> <VERSION_WITHOUT_V> <OWNER/REPO>
-# e.g.: bash scripts/update-formula.sh limbo 0.2.0 simonspoon/limbo
 # IMPORTANT: VERSION must NOT have the v prefix (use 0.2.0, not v0.2.0)
 git add -A && git commit -m "update <FORMULA_NAME> to <VERSION>" && git push
 ```
 
 ## Gotchas
 
-- **Formula name may differ from tool name.** wisp uses `wisp-cli` as the formula name. Check `~/claudehub/homebrew-tap/Formula/` for the actual filename.
+- **Formula name may differ from tool name.** wisp uses `wisp-cli` as the formula name. Check the tap repo's `Formula/` directory for the actual filename.
 - **Workspace versions.** If `Cargo.toml` uses `[workspace.package] version = "X"`, member crates may use `version.workspace = true`. Only bump the workspace root.
 - **Tag format.** Always `vX.Y.Z` with the `v` prefix. Release workflows trigger on `v*` tags.
 - **Don't skip tests.** A failed release wastes CI minutes and creates a broken tag. Always run tests locally first.

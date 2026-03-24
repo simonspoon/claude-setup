@@ -20,7 +20,7 @@ Practical patterns for developing, publishing, and maintaining Claude Code plugi
 1. Edit your plugin skill files as needed
 2. Bump the version in `.claude-plugin/plugin.json` before pushing
 3. Push the changes to the remote
-4. Run `claude plugin update <plugin-name>@<marketplace>` to pull the new version (e.g., `swe-sync` alias or `claude plugin update swe-team@claudehub`)
+4. Run `claude plugin update <plugin-name>@<marketplace>` to pull the new version (e.g., `claude plugin update <plugin-name>@<marketplace-name>`)
 
 Forgetting step 2 is the most common mistake — the update command silently does nothing if the version hasn't changed.
 
