@@ -28,6 +28,7 @@ Quick reference for all active skills — when to use each and how they compose.
 | **skill-trainer** | Validate and harden skills through automated testing and weak-model calibration | Training skills, testing skills, validating skill instructions, calibrating for weaker models, stress-testing before deployment | skill-reflection (improvement loop), all skills (target of training) |
 | **verification-orchestrator** | Auto-detects project type (iOS, desktop, web) and routes to the appropriate QA tool (qorvex, loki, khora) | verify, test, QA, auto-detect platform, check your work | qorvex-test-ios, loki-test-desktop, khora-test-web, project-manager |
 | **wisp-design** | Design and build visual UI layouts using the Wisp desktop canvas and CLI | Designing UI, building layouts, creating mockups, visual design, placing components, arranging elements, iterating on designs | project-manager (design tasks), loki-test-desktop (verify desktop app showing design) |
+| **release** | Cut a versioned release with CI builds and Homebrew distribution | Releasing a tool, cutting a release, bumping version, tagging, publishing to Homebrew | devops (CI pipeline), git-commit (version bump commit) |
 
 ## Composition Patterns
 
