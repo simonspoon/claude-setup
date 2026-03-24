@@ -32,6 +32,9 @@ Detect and list every file that contains a version string to bump:
 # Always present for Rust projects
 grep -rn 'version = "' Cargo.toml | head -5
 
+# Check if workspace members inherit version (only bump the root if they do)
+grep -rn 'version.workspace = true' **/Cargo.toml 2>/dev/null
+
 # Tauri projects (wisp)
 find . -name "tauri.conf.json" -maxdepth 4 2>/dev/null
 find . -name "package.json" -maxdepth 3 2>/dev/null | grep -v node_modules
@@ -41,8 +44,8 @@ Common version file patterns:
 | Project type | Files to bump |
 |---|---|
 | Single-crate Rust | `Cargo.toml` |
-| Workspace Rust | Root `Cargo.toml` + member `Cargo.toml` files (check `[workspace.package]`) |
-| Tauri app | `Cargo.toml`(s) + `tauri.conf.json` + `package.json` |
+| Workspace Rust | Root `Cargo.toml` only (if members use `version.workspace = true`) |
+| Tauri app | Root `Cargo.toml` + `tauri.conf.json` + `package.json` |
 
 ### Step 3: Bump Versions
 
@@ -101,8 +104,10 @@ gh run list --repo simonspoon/homebrew-tap --limit 3
 If the tap update failed, run the update manually:
 ```bash
 cd ~/claudehub/homebrew-tap
-bash scripts/update-formula.sh <FORMULA_NAME> <VERSION> <OWNER/REPO>
-# Then commit and push
+bash scripts/update-formula.sh <FORMULA_NAME> <VERSION_WITHOUT_V> <OWNER/REPO>
+# e.g.: bash scripts/update-formula.sh limbo 0.2.0 simonspoon/limbo
+# IMPORTANT: VERSION must NOT have the v prefix (use 0.2.0, not v0.2.0)
+git add -A && git commit -m "update <FORMULA_NAME> to <VERSION>" && git push
 ```
 
 ## Gotchas

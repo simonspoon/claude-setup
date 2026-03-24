@@ -1,58 +1,70 @@
 ## Training Report: wisp-design
 
-**Date:** 2026-03-23
+**Date:** 2026-03-23 (v0.3.0 re-training)
 
 ### Phase 1: Test Scenarios
 
 | # | Test Name | Category | What It Tests |
 |---|-----------|----------|---------------|
-| 1 | Node add command flags | core | All documented flags match CLI help |
-| 2 | Node edit command flags | core | Edit-specific flags and exclusions documented correctly |
-| 3 | Screenshot flag | core | --out flag syntax matches CLI |
-| 4 | Component ID capture | workflow | grep/awk pattern for capturing component root ID |
-| 5 | Quick start accuracy | core | Quick start commands produce expected result |
-| 6 | Design workflow docs | workflow | Plan-build-component-screenshot-iterate-save flow |
-| 7 | Gotchas accuracy | core | Each gotcha is factually correct |
-| 8 | Troubleshooting table | core | Problem/cause/fix entries are accurate |
-| 9 | Session mode docs | core | Interactive session commands and prefix stripping |
-| 10 | Node types table | core | Listed types match CLI's accepted values |
+| 1 | SKILL.md command table accuracy | core | Every command in Core Commands table exists in CLI |
+| 2 | Node add flag completeness | core | All `node add` flags documented in Node Options |
+| 3 | Node edit flag completeness | core | All `node edit` flags documented, add-only/edit-only noted |
+| 4 | v0.3.0 feature: z-index | feature | `--z-index` flag exists and syntax matches docs |
+| 5 | v0.3.0 feature: text-wrap | feature | `--text-wrap` flag exists and syntax matches docs |
+| 6 | v0.3.0 feature: auto-layout flex mode | feature | All flex flags and values match CLI help |
+| 7 | v0.3.0 feature: drag/resize editing | feature | Interactive editing docs are accurate |
+| 8 | Quick start workflow accuracy | workflow | Quick start commands have correct syntax, deps documented |
+| 9 | Design workflow end-to-end | workflow | All commands in design-workflow.md have valid syntax |
+| 10 | Component templates documentation | core | Template names and flags match CLI |
+| 11 | Troubleshooting table completeness | core | Common failure modes are covered |
+| 12 | Screenshot flag syntax | core | Screenshot flag syntax matches CLI |
 
 ### Phase 2: Self-Test Results
 
-Note: The wisp desktop app was not running (no WebSocket server), so CLI commands could not be executed end-to-end. Testing was performed by validating documented commands against `wisp --help` output and structural analysis of the skill documentation.
+Testing method: All flags and commands validated against `wisp --help` and subcommand `--help` output (wisp v0.3.0). The wisp desktop app was not running, so end-to-end execution was not tested.
 
 | # | Test | R1 Result | Issue Found | Fix Applied | R2 Result |
 |---|------|-----------|-------------|-------------|-----------|
-| 1 | Node add flags | PASS | -- | -- | -- |
-| 2 | Node edit flags | PASS | -- | -- | -- |
-| 3 | Screenshot flag | PASS | -- | -- | -- |
-| 4 | Component ID capture | PASS (doc gap) | Uses grep/awk instead of --json pattern; inconsistent with node add | Not fixed -- may reflect actual output format difference for multi-node components | -- |
-| 5 | Quick start accuracy | FAIL (doc) | Creates duplicate "Header" frame -- shows simple create then recreates with --json | Merged into single ID-capturing command | PASS |
-| 6 | Design workflow docs | PASS | -- | -- | -- |
-| 7 | Gotchas accuracy | FAIL (doc) | Component position gotcha says "always node edit to reposition" but components use supports -x/-y flags | Updated to mention -x/-y at creation time | PASS |
-| 8 | Troubleshooting table | PASS | -- | -- | -- |
-| 9 | Session mode docs | PASS | -- | -- | -- |
-| 10 | Node types table | PASS | -- | -- | -- |
+| 1 | SKILL.md command table | PASS (with notes) | `-o` short flag for screenshot not mentioned | Updated to `-o <path>` and added default path | -- |
+| 2 | Node add flag completeness | FAIL (doc) | `--parent` / `-p` flag missing from Node Options section | Added "Hierarchy (add only)" line with `-p, --parent <id>` | PASS |
+| 3 | Node edit flag completeness | FAIL (doc) | `--name` flag on `node edit` undocumented | Added "Rename (edit only)" line with `--name <string>` | PASS |
+| 4 | v0.3.0: z-index | PASS | -- | -- | -- |
+| 5 | v0.3.0: text-wrap | PASS | -- | -- | -- |
+| 6 | v0.3.0: auto-layout flex | PASS | All 6 flex flags and values match CLI exactly | -- | -- |
+| 7 | v0.3.0: drag/resize editing | PASS | Describes GUI behavior correctly, provides CLI verification path | -- | -- |
+| 8 | Quick start workflow | FAIL (doc) | `jq` dependency not mentioned in Setup Checklist | Added `jq` as prerequisite item 3 | PASS |
+| 9 | Design workflow e2e | PASS | All commands syntactically correct per CLI help | -- | -- |
+| 10 | Component templates | PASS (with notes) | Template names match CLI; node counts unverifiable without app | -- | -- |
+| 11 | Troubleshooting table | PASS (with notes) | Covers 8 common failure modes; could add jq-not-installed | -- | -- |
+| 12 | Screenshot flag syntax | PASS (with notes) | Default output path `wisp-screenshot.png` now documented | -- | -- |
 
 ### Phase 3: Haiku Validation
 
-Skipped. The wisp desktop app is not running, so CLI commands cannot execute end-to-end. Haiku validation would require the desktop app to be launched first, which is outside the scope of this training session. The CLI help validation confirms all documented commands, flags, and syntax are accurate.
+| # | Task Sent to Haiku | What Haiku Did | Result | Doc Fix |
+|---|-------------------|----------------|--------|---------|
+| 1 | Compare `node add --help` vs `node edit --help`, list add-only and edit-only flags | Loaded skill, ran both help commands, correctly identified `-t`/`-p`/`<NAME>` as add-only and `--name`/`<ID>` as edit-only | PASS | None needed |
+| 2 | Check component templates via `components use --help`, write stat-card creation command | Loaded skill, ran help, produced exact correct command: `wisp components use stat-card --parent $MAIN -x 20 -y 20 --label "Revenue" --value "$12,400"` | PASS | None needed |
+| 3 | Write commands to create vertical flex card with 3 text children (no execution) | Produced correct commands using `--json \| jq -r .id` for ID capture, all flex flags correct, used `--parent` for children, noted flex children ignore x/y | PASS | None needed |
 
 ### Doc Changes Made
 
-- `SKILL.md` Quick Start: Removed duplicate "Header" frame creation. Merged into a single command that captures the ID with --json, then adds text as a child.
-- `SKILL.md` Gotchas: Updated "Component position" gotcha to document -x/-y flags on `components use` as the primary positioning method, with `node edit` as an alternative.
+- `SKILL.md` Node Options: Added `--parent` / `-p` under new "Hierarchy (add only)" line
+- `SKILL.md` Node Options: Added `--name` under new "Rename (edit only)" line
+- `SKILL.md` Setup Checklist: Added `jq` as prerequisite (item 3)
+- `SKILL.md` Core Commands: Updated screenshot command to show `-o` short flag and default output path
 
 ### Findings (doc gaps filled by model knowledge)
 
-- Test 4: I noticed the inconsistency between ID capture patterns (--json/jq for node add vs grep/awk for components use) but did not fix it because the component output format may genuinely differ for multi-node templates.
-- All flag validation was done against CLI help output, not actual execution. If the CLI help is inaccurate (flags listed but not implemented), those issues would not be caught.
+- Test 7 (drag/resize): The interactive editing section describes GUI behavior that cannot be verified via CLI. Accepted the docs at face value.
+- Test 10 (component templates): Node counts per template (stat-card: 4, nav-item: 3, etc.) cannot be verified without a running app. Docs taken on trust.
+- Test 11 (troubleshooting): I recognized that `jq` not being installed would be a common failure mode because the docs depend on it heavily -- this observation came from understanding the workflow, not from explicit doc guidance.
 
 ### Remaining Issues
 
-- Cannot validate end-to-end behavior (node creation, screenshot capture, component rendering) without the wisp desktop app running.
-- Component ID capture pattern (grep/awk) should be validated against actual output when the app is available.
+- End-to-end execution not tested (wisp desktop app not running). All validation was against CLI help output.
+- Component node counts unverified.
+- Troubleshooting table could add a row for "jq: command not found" since all ID-capture patterns depend on it.
 
-### Verdict: PASS
+### Verdict: READY
 
-Assessment is based on instruction quality and CLI help validation. The skill is well-structured with comprehensive coverage of commands, workflow patterns, and troubleshooting. All documented commands and flags match the actual CLI. The two issues found (duplicate quick start, misleading gotcha) were fixed. Full end-to-end validation should be done when the wisp desktop app is available.
+The skill documentation accurately reflects wisp CLI v0.3.0. All commands, flags, and values match the actual CLI help. Three doc issues were found and fixed (missing `--parent` flag, missing `--name` flag, missing `jq` prerequisite). Haiku validation passed all 3 tasks cleanly -- Haiku loaded the skill, followed its patterns, and produced correct command syntax on every task without needing to improvise.

@@ -15,7 +15,8 @@ Wisp is a desktop design canvas controlled via CLI. The Wisp desktop app runs a 
 
 1. The Wisp desktop app must be running (it starts the WebSocket server on port 9847)
 2. The `wisp` CLI must be available (`wisp` or path to `target/release/wisp`)
-3. Test connectivity: `wisp tree` should return the document tree without errors
+3. `jq` must be installed (used to capture node IDs from JSON output)
+4. Test connectivity: `wisp tree` should return the document tree without errors
 
 ## Quick Start
 
@@ -47,7 +48,7 @@ wisp screenshot --out design.png
 | `wisp tree` | Print document tree |
 | `wisp components list` | List component templates |
 | `wisp components use <name> [opts]` | Instantiate a template |
-| `wisp screenshot --out <path>` | Capture canvas as PNG |
+| `wisp screenshot -o <path>` | Capture canvas as PNG (default: `wisp-screenshot.png`) |
 | `wisp save <path>` / `wisp load <path>` | Persist / restore document |
 | `wisp undo` / `wisp redo` | Undo/redo (100 levels) |
 | `wisp session` | REPL mode (keeps connection open) |
@@ -55,9 +56,11 @@ wisp screenshot --out design.png
 
 ### Node Options (for `add` and `edit`)
 
+**Hierarchy (add only):** `-p, --parent <id>` (parent node ID, defaults to root)
 **Layout:** `-x`, `-y`, `--width`, `--height`
 **Style:** `--fill <hex>`, `--radius`, `--opacity`, `--z-index <int>`
 **Text:** `--text <string>`, `--font-size`, `--text-wrap`
+**Rename (edit only):** `--name <string>`
 **Auto-layout:** `--layout-mode <none|flex>`, `--direction <row|column>`, `--align`, `--justify`, `--gap`, `--padding`
 **Global:** `--json` (raw JSON output), `--url <ws-url>`
 

@@ -30,7 +30,7 @@ Clarify with the user:
 - **Does it wrap a CLI tool?** (if so, which one)
 - **Does it compose with other skills?** (which ones, at what stage)
 
-If the user already provided clear requirements, skip to Step 2.
+If the user already answered all four questions above (or the answers are obvious from context), skip to Step 2. Otherwise, ask.
 
 ### Step 2: Pick a Reference Skill
 
@@ -102,7 +102,7 @@ One-line summary of what this skill does.
 
 ### Step 4: Register the Skill
 
-Add an entry to `SKILLS-INDEX.md` following the existing table format:
+Add an entry to `skills/SKILLS-INDEX.md` (in the skills root directory) following the existing table format:
 ```
 | **skill-name** | Purpose | When to invoke | Composes with |
 ```
@@ -112,6 +112,7 @@ Add an entry to `SKILLS-INDEX.md` following the existing table format:
 Before declaring done:
 
 - [ ] SKILL.md has valid frontmatter (name + description)
+- [ ] Directory name matches frontmatter `name` field
 - [ ] Description includes trigger keywords
 - [ ] SKILL.md is under 200 lines
 - [ ] Instructions use imperative voice

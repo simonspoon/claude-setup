@@ -39,7 +39,7 @@ Review the session for:
 ## Workflow
 
 1. **Identify signals** from the session (see list above)
-2. **Categorize** each problem. If domain knowledge needed, ask user.
+2. **Categorize** each problem. Check [reference/anti-patterns.md](reference/anti-patterns.md) — if the session shows any of these 5 patterns, flag them. If domain knowledge needed, ask user.
 3. **Plan improvement:**
    ```
    Skill: [name]
@@ -50,7 +50,8 @@ Review the session for:
    Expected Outcome: [how this helps weaker models]
    ```
 4. **Consult user** about domain terminology, valid error conditions, edge cases. Do NOT ask about file structure, instruction clarity, or how to mark critical requirements — those are your call.
-5. **Implement** improvements. Read existing files first. Apply fixes for structure, guardrails, templates, critical requirements. Keep SKILL.md focused (~100 lines). Validate frontmatter and links.
+5. **Implement** improvements. Read existing files first. Apply fixes for structure, guardrails, templates, critical requirements. Keep SKILL.md focused (~100 lines).
+6. **Validate** — run [reference/validation-checklist.md](reference/validation-checklist.md) against your changes. Every item must pass before declaring done.
 
 ## Key Fixes by Category
 
