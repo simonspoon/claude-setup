@@ -117,6 +117,10 @@ This is the primary workflow for the SWE agent team. The project-manager orchest
 3. `/swe-team:wisp-design` → save the final design to a JSON file
 4. `/swe-team:project-manager` → if the design informs code generation, orchestrate implementation from the saved design
 
+### Release a tool
+1. `/swe-team:release` → bump version, commit, tag, push, verify CI + Homebrew tap update
+2. `/swe-team:devops` → if release workflow needs changes
+
 ### Team improvement cycle
 1. `/swe-team:team-evaluator` → run benchmarks, identify gaps
 2. `/swe-team:skill-reflection` → improve weak skills based on evaluation findings

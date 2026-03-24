@@ -16,7 +16,7 @@ Orient yourself using a project's progressive-disclosure docs before writing cod
 Glob for `docs/INDEX.md` in the current working directory.
 
 - **Found** → Continue to Step 2.
-- **Not found** → Fall back to README.md. If no README either, report to user: "No project documentation found. Proceeding with code-level exploration only." See [templates/index-template.md](templates/index-template.md) for the expected INDEX.md format.
+- **Not found** → Fall back to README.md. If no README either, try helios for structural orientation (see Step 4). See [templates/index-template.md](templates/index-template.md) for the expected INDEX.md format.
 
 ## Step 2: Read INDEX.md
 
@@ -37,6 +37,17 @@ This table maps doc files to task areas.
 
 Use doc content to inform implementation. Docs provide architecture context
 and conventions but do not replace reading source code.
+
+## Step 4: Helios Fallback (no docs, no README)
+
+If no docs/ or README.md exist but `helios` is installed (`which helios`):
+
+1. Check for `.helios/index.db` — if missing, run `helios init`.
+2. Run `helios summary` for a structural overview of the project.
+3. Run `helios symbols --kind fn --grep "<task-related-keyword>"` to find relevant code.
+4. Use the output to orient yourself before coding.
+
+If helios is not installed, proceed with Glob/Grep exploration.
 
 ## Rules
 
