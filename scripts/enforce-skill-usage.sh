@@ -1,22 +1,13 @@
 #!/bin/bash
 # PreToolUse hook for Edit and Write: block manual edits to files that should go through skills.
-# Uses exit code 2 to deny the tool call with a message.
-#
-# State tracking: when a skill runs, PostToolUse sets a flag in /tmp/claude-skill-*.
-# This hook checks for that flag before allowing edits to protected file patterns.
+# Input comes via stdin as JSON. Output permissionDecision to deny.
 
-TOOL_INPUT="$CLAUDE_TOOL_INPUT"
-SESSION_ID="${CLAUDE_SESSION_ID:-unknown}"
+INPUT=$(cat)
+SESSION_ID=$(echo "$INPUT" | python3 -c "import sys,json; print(json.load(sys.stdin).get('session_id','unknown'))" 2>/dev/null)
 STATE_DIR="/tmp/claude-skill-state"
 
-# Debug logging
-LOG_FILE="/tmp/claude-skill-enforce.log"
-echo "$(date): enforce-skill-usage.sh called" >> "$LOG_FILE"
-echo "  SESSION_ID=$SESSION_ID" >> "$LOG_FILE"
-echo "  TOOL_INPUT=$TOOL_INPUT" >> "$LOG_FILE"
-
-# Extract file_path from tool input
-FILE_PATH=$(echo "$TOOL_INPUT" | python3 -c "import sys,json; print(json.load(sys.stdin).get('file_path',''))" 2>/dev/null)
+# Extract file_path from tool_input
+FILE_PATH=$(echo "$INPUT" | python3 -c "import sys,json; print(json.load(sys.stdin).get('tool_input',{}).get('file_path',''))" 2>/dev/null)
 
 # If we can't parse the file path, allow (don't block on parse failures)
 if [ -z "$FILE_PATH" ]; then
@@ -59,24 +50,14 @@ check_skill_flag() {
 # --- Enforce ---
 if [ "$IS_DOC" = true ]; then
   if ! check_skill_flag "update-docs"; then
-    cat <<'MSG'
-BLOCKED: You are editing a documentation file without having invoked /swe-team:update-docs first.
-
-ACTION REQUIRED: Call the Skill tool with skill="swe-team:update-docs" BEFORE editing documentation files. The skill handles doc discovery, structure validation, and consistency checks that manual edits miss.
-
-If this is a skill definition file or internal config, not user-facing documentation, you can ignore this warning.
-MSG
+    echo "BLOCKED: You are editing a documentation file without having invoked /swe-team:update-docs first. Call the Skill tool with skill=\"swe-team:update-docs\" BEFORE editing documentation files."
     exit 2
   fi
 fi
 
 if [ "$IS_TEST" = true ]; then
   if ! check_skill_flag "test-engineer"; then
-    cat <<'MSG'
-BLOCKED: You are editing a test file without having invoked /swe-team:test-engineer first.
-
-ACTION REQUIRED: Call the Skill tool with skill="swe-team:test-engineer" BEFORE writing or editing tests. The skill handles framework detection, coverage analysis, and test quality checks.
-MSG
+    echo "BLOCKED: You are editing a test file without having invoked /swe-team:test-engineer first. Call the Skill tool with skill=\"swe-team:test-engineer\" BEFORE writing or editing tests."
     exit 2
   fi
 fi

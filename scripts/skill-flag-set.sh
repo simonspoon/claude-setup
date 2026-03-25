@@ -1,14 +1,14 @@
 #!/bin/bash
 # PostToolUse hook for Skill: sets a flag when a routable skill is invoked.
-# This flag is checked by enforce-skill-usage.sh (PreToolUse on Edit/Write)
-# to verify the skill was called before manual edits.
+# Input comes via stdin as JSON.
 
-SESSION_ID="${CLAUDE_SESSION_ID:-unknown}"
+INPUT=$(cat)
+SESSION_ID=$(echo "$INPUT" | python3 -c "import sys,json; print(json.load(sys.stdin).get('session_id','unknown'))" 2>/dev/null)
 STATE_DIR="/tmp/claude-skill-state"
 mkdir -p "$STATE_DIR"
 
-# Extract the skill name from tool input
-SKILL_NAME=$(echo "$CLAUDE_TOOL_INPUT" | python3 -c "import sys,json; print(json.load(sys.stdin).get('skill',''))" 2>/dev/null)
+# Extract the skill name from tool_input
+SKILL_NAME=$(echo "$INPUT" | python3 -c "import sys,json; print(json.load(sys.stdin).get('tool_input',{}).get('skill',''))" 2>/dev/null)
 
 # Map skill names to flag names (handle both short and namespaced forms)
 case "$SKILL_NAME" in
