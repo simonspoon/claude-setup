@@ -14,24 +14,9 @@ Store and recall structured memories in a SQLite database via the `suda` CLI. Me
 
 ## Setup
 
-For suda to load automatically at session start, `~/.claude/CLAUDE.md` must contain the bootstrap instructions. Add this once:
+Suda context is loaded at session start via `/swe-team:session-init`, which spawns a Sonnet agent to load, deduplicate, and summarize all suda data into a compact briefing. This keeps raw JSON out of the main context window.
 
-```markdown
-## Suda — Structured Memory System
-
-At the start of every session, load context from suda before doing other work:
-
-1. Check if suda is available: `which suda`
-2. If available, load relevant memories and state:
-   suda state get session-state 2>/dev/null
-   suda recall --type user --json --limit 20 2>/dev/null
-   suda recall --type feedback --json --limit 20 2>/dev/null
-   suda projects --json 2>/dev/null
-3. If the CWD matches a registered project, also load project-specific memories:
-   suda recall --project <project-name> --json 2>/dev/null
-```
-
-Without this bootstrap, suda works but must be invoked manually.
+The bootstrap is configured in `~/.claude/CLAUDE.md` and `swe-team/CLAUDE.md`. If session-init is unavailable, the bootstrap falls back to loading suda directly.
 
 ## When to Use
 

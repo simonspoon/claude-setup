@@ -31,6 +31,7 @@ Quick reference for all active skills — when to use each and how they compose.
 | **wisp-design** | Design and build visual UI layouts using the Wisp desktop canvas and CLI | Designing UI, building layouts, creating mockups, visual design, placing components, arranging elements, iterating on designs | tech-lead (design tasks), loki-test-desktop (verify desktop app showing design) |
 | **release** | Cut a versioned release with CI builds and Homebrew distribution | Releasing a tool, cutting a release, bumping version, tagging, publishing to Homebrew | devops (CI pipeline), git-commit (version bump commit) |
 | **global-backlog** | Cross-project task management via `limbo -g` | Global backlog, cross-project tasks, "add to backlog", "what's on the backlog", triage work across projects | tech-lead (can pick up backlog items) |
+| **session-init** | Load suda context via Sonnet agent, return condensed briefing instead of raw JSON | Session start (via CLAUDE.md bootstrap), "reload context", "refresh suda" | status (complements live state), session-wrap (reads what session-init consumes) |
 | **status** | Force-refresh all project state — live git, suda, limbo data | "status", "where are we", "catch me up", start of session, verifying state | session-handoff (complements state persistence), global-backlog (reads backlog) |
 
 ## Composition Patterns
