@@ -39,7 +39,7 @@ Agents are autonomous subprocesses that handle complex, multi-step tasks. They a
 
 | Agent | Description |
 |-------|-------------|
-| **project-manager** | Orchestrates multi-file projects using hierarchical task management and parallel subagent execution. Automatically invoked when a task spans 3+ files or multiple concerns. |
+| **tech-lead** | Engineering gateway for all code-producing tasks. Plans work, enforces review/test/verification gates, orchestrates parallel execution via limbo. Automatically invoked for any task that writes, modifies, or deletes code. |
 | **code-review-agent** | Performs thorough, convention-aware code reviews combining security analysis, bug detection, performance checks, and style enforcement. |
 | **researcher-agent** | Conducts deep research across codebases, documentation, and the web. Produces structured, actionable reports. |
 | **skill-trainer** | Tests, validates, and hardens skills through structured multi-phase training and weak-model (Haiku) calibration. |
@@ -62,7 +62,7 @@ Skills are specialized capabilities invoked with `/swe-team:skill-name`. They pr
 
 | Skill | Command | Description |
 |-------|---------|-------------|
-| **project-manager** | `/swe-team:project-manager` | Orchestrates complex projects using limbo for task management and parallel subagent execution. |
+| **tech-lead** | `/swe-team:tech-lead` | Engineering gateway for all code tasks — plans, reviews, tests, and verifies via limbo and parallel subagents. |
 | **session-handoff** | `/swe-team:session-handoff` | Preserves strategic context, decisions, and priorities in SESSION_STATE.md for the next session. |
 | **project-docs-explore** | `/swe-team:project-docs-explore` | Discovers and reads a project's documentation structure for quick onboarding. |
 
@@ -135,7 +135,7 @@ Or download pre-built binaries from each tool's GitHub Releases page.
 
 ### [limbo](https://github.com/simonspoon/limbo) — Task Manager for Agents
 
-Hierarchical task manager designed for LLMs and AI agents. Stores tasks in a single JSON file (`.limbo/tasks.json`), outputs JSON for easy parsing, and supports progressive decomposition workflows. Used by the **project-manager** skill to orchestrate multi-file projects with parallel subagent execution.
+Hierarchical task manager designed for LLMs and AI agents. Stores tasks in a single JSON file (`.limbo/tasks.json`), outputs JSON for easy parsing, and supports progressive decomposition workflows. Used by the **tech-lead** skill to orchestrate projects with parallel subagent execution.
 
 ### [nyx](https://github.com/simonspoon/nyx) — Conversation History Search
 
@@ -169,4 +169,4 @@ Third-party tool for spawning and controlling terminals, Claude Code sessions, a
 
 ## CLAUDE.md
 
-The included `CLAUDE.md` configures Claude Code with a session startup/handoff protocol, mandatory pre-task steps, and automatic routing to the appropriate agent based on task complexity.
+The included `CLAUDE.md` configures Claude Code with a session startup/handoff protocol, mandatory pre-task steps, and automatic routing to the tech-lead agent for all code-producing tasks.

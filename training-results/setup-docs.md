@@ -25,7 +25,7 @@
 | 2 | Project discovery | PASS | -- | -- | -- |
 | 3 | Plan documentation | PASS | -- | -- | -- |
 | 4 | File count verification | PASS | -- | -- | -- |
-| 5 | Task structure | PASS (doc gap) | Relies on project-manager knowledge for blocking | Not fixed -- cross-skill dependency is intentional | -- |
+| 5 | Task structure | PASS (doc gap) | Relies on tech-lead knowledge for blocking | Not fixed -- cross-skill dependency is intentional | -- |
 | 6 | INDEX.md format | PASS | -- | -- | -- |
 | 7 | Verification phase | PASS | -- | -- | -- |
 | 8 | Missing limbo | PASS | -- | -- | -- |
@@ -44,7 +44,7 @@ None. The skill documentation is thorough and well-structured.
 
 ### Findings (doc gaps filled by model knowledge)
 
-- Test 5: The blocking mechanism for limbo tasks depends on knowing how `/swe-team:project-manager` works. This is an intentional cross-skill dependency, not a gap to fix.
+- Test 5: The blocking mechanism for limbo tasks depends on knowing how `/swe-team:tech-lead` works. This is an intentional cross-skill dependency, not a gap to fix.
 - Test 9: "Be precise" is somewhat subjective as a writing rule, but the surrounding context ("include types, defaults, and edge cases") provides enough guidance.
 
 ### Remaining Issues

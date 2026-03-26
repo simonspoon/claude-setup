@@ -1,18 +1,20 @@
 ---
-name: project-manager
-description: Orchestrate complex projects using limbo for hierarchical task management and parallel subagent execution
+name: tech-lead
+description: Engineering gateway for all code-producing tasks. Plans work, enforces review and testing, orchestrates parallel execution via limbo.
 triggers:
-  - manage this project
-  - break down this feature
+  - implement this
+  - build this
+  - fix this
+  - write code
+  - change code
   - plan this work
-  - decompose this task
   - orchestrate this
-  - /pm
+  - /tl
 ---
 
-# Project Manager Skill
+# Tech Lead Skill
 
-Decompose work into hierarchical tasks (limbo) and dispatch parallel subagents.
+The engineering gateway for all software tasks. Plans work, dispatches subagents, and enforces review/test/verification gates.
 
 ## Prerequisite Check
 
@@ -22,7 +24,7 @@ Before doing anything else, verify `limbo` is installed:
 command -v limbo >/dev/null 2>&1 && echo "OK" || echo "MISSING"
 ```
 
-If `MISSING`: **STOP.** Tell the user: "limbo CLI is not installed. Install it before using /swe-team:project-manager." Do NOT attempt to work around this — limbo is required for task tracking, dependency management, and status rollup.
+If `MISSING`: **STOP.** Tell the user: "limbo CLI is not installed. Install it before using /swe-team:tech-lead." Do NOT attempt to work around this — limbo is required for task tracking, dependency management, and status rollup.
 
 ## ⚠️ CRITICAL REQUIREMENTS
 

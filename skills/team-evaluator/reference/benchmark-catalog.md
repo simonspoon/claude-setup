@@ -28,7 +28,7 @@ Predefined benchmark tasks organized by category. Each benchmark specifies a sce
 **Setup:** Provide a project with user CRUD endpoints but no search.
 **Task:** "Add a search endpoint that supports filtering by name and email, with pagination."
 **Expected:** New endpoint with filtering, pagination, input validation, tests, docs.
-**Exercises:** software-engineering, project-manager, test-engineer
+**Exercises:** software-engineering, tech-lead, test-engineer
 
 ### FI-2: Add Rate Limiting Middleware
 **Setup:** Provide an Express/Actix/Flask app with no rate limiting.
@@ -40,7 +40,7 @@ Predefined benchmark tasks organized by category. Each benchmark specifies a sce
 **Setup:** Provide an app that processes events internally.
 **Task:** "Add webhook support: register URLs, retry on failure, log delivery attempts."
 **Expected:** Registration API, delivery with retries, logging, tests.
-**Exercises:** software-engineering, project-manager, devops
+**Exercises:** software-engineering, tech-lead, devops
 
 ## Code Review Benchmarks
 

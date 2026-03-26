@@ -36,7 +36,7 @@ Read `reference/benchmark-catalog.md` for the full catalog. Summary:
 | Category | Tests | Skills/Agents Exercised |
 |----------|-------|------------------------|
 | Bug Fix | Diagnose and fix a known bug | software-engineering, code-reviewer |
-| Feature Implementation | Build a small feature from spec | software-engineering, project-manager |
+| Feature Implementation | Build a small feature from spec | software-engineering, tech-lead |
 | Code Review | Review code with planted issues | code-reviewer, software-engineering |
 | Test Generation | Generate tests for existing code | test-engineer, software-engineering |
 | CI/CD Setup | Create pipeline for a project | devops, test-engineer |

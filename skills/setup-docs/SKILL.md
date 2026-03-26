@@ -30,15 +30,15 @@ docs/
 
 ## ⚠️ CRITICAL: Execution Method
 
-This skill typically produces 6-10 files. After Phase 2 (planning), invoke `/swe-team:project-manager` to create a limbo task hierarchy and dispatch parallel writing agents. Do NOT try to write all files sequentially yourself.
+This skill typically produces 6-10 files. After Phase 2 (planning), invoke `/swe-team:tech-lead` to create a limbo task hierarchy and dispatch parallel writing agents. Do NOT try to write all files sequentially yourself.
 
-**Prerequisite**: `/swe-team:project-manager` requires the `limbo` CLI. Before invoking it, check:
+**Prerequisite**: `/swe-team:tech-lead` requires the `limbo` CLI. Before invoking it, check:
 
 ```bash
 command -v limbo >/dev/null 2>&1 && echo "OK" || echo "MISSING"
 ```
 
-If `limbo` is missing: **STOP.** Tell the user: "limbo CLI is not installed. /swe-team:setup-docs requires /swe-team:project-manager which requires limbo. Install limbo first, or run /swe-team:setup-docs manually." Do NOT proceed without limbo — the parallel dispatch workflow depends on it.
+If `limbo` is missing: **STOP.** Tell the user: "limbo CLI is not installed. /swe-team:setup-docs requires /swe-team:tech-lead which requires limbo. Install limbo first, or run /swe-team:setup-docs manually." Do NOT proceed without limbo — the parallel dispatch workflow depends on it.
 
 ## Workflow
 
@@ -87,9 +87,9 @@ Based on discovery, decide which files to create. Not every project needs every 
 
 ### Phase 3: Write
 
-Create `docs/dev/` and `docs/user/` directories first. Then dispatch parallel writing agents via `/swe-team:project-manager`.
+Create `docs/dev/` and `docs/user/` directories first. Then dispatch parallel writing agents via `/swe-team:tech-lead`.
 
-**Task structure for project-manager:**
+**Task structure for tech-lead:**
 - One root task for the overall docs effort
 - One leaf task per doc file (no need for grouping tasks — they just add status management overhead)
 - `block` all content file tasks → INDEX.md task (INDEX.md must wait for all content)

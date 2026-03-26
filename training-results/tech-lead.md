@@ -1,6 +1,6 @@
-# Training Report: project-manager
+# Training Report: tech-lead
 
-**Skill:** project-manager
+**Skill:** tech-lead
 **Date:** 2026-03-23
 **Trainer:** Opus 4.6 (skill-trainer)
 
@@ -73,4 +73,4 @@ None. The documentation is accurate, comprehensive, and well-structured.
 
 ## Final Assessment: PASS
 
-The project-manager skill has excellent documentation. All limbo commands work exactly as documented. The command reference, templates, orchestration patterns, dependency management, recovery workflows, and troubleshooting guides are thorough and accurate. The skill is well-structured with clear separation between SKILL.md (overview + critical rules) and reference files (detailed patterns). Haiku correctly loaded the skill and followed its guidance. The only blocking factor in Haiku validation was a user-specific environment issue (broken alias), not a documentation gap.
+The tech-lead skill has excellent documentation. All limbo commands work exactly as documented. The command reference, templates, orchestration patterns, dependency management, recovery workflows, and troubleshooting guides are thorough and accurate. The skill is well-structured with clear separation between SKILL.md (overview + critical rules) and reference files (detailed patterns). Haiku correctly loaded the skill and followed its guidance. The only blocking factor in Haiku validation was a user-specific environment issue (broken alias), not a documentation gap.

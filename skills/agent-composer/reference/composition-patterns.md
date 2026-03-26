@@ -26,9 +26,9 @@ When the Skill tool is invoked, the skill's SKILL.md is loaded into the agent's 
 ## Common Composition Patterns
 
 ### Orchestrator Agent
-Loads: project-manager skill, project-docs-explore, software-engineering
+Loads: tech-lead skill, project-docs-explore, software-engineering
 Uses: Agent tool to dispatch subagents
-Example: project-manager agent
+Example: tech-lead agent
 
 Orchestrator body pattern — dispatch subagents with the Agent tool:
 ```markdown

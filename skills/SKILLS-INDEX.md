@@ -4,9 +4,9 @@ Quick reference for all active skills — when to use each and how they compose.
 
 | Skill | Purpose | When to invoke | Composes with |
 |-------|---------|----------------|---------------|
-| **project-manager** | Orchestrate multi-file tasks with limbo + parallel subagents | Task creates/modifies 3+ files, spans 2+ concerns, has independent parts | project-docs-explore (Phase 0), qorvex-test-ios (verification) |
-| **project-docs-explore** | Orient via progressive-disclosure docs before coding | Starting work on unfamiliar subsystem or onboarding to project | project-manager (Phase 0 research) |
-| **qorvex-test-ios** | Automate and verify iOS app UI on simulator or physical device | Testing iOS apps, verifying UI behavior, taking screenshots | project-manager (verification phase) |
+| **tech-lead** | Engineering gateway for all code tasks — plans, dispatches, reviews, tests, verifies | ANY task that writes, modifies, or deletes code | project-docs-explore (Phase 0), code-reviewer, test-engineer, qorvex-test-ios (verification) |
+| **project-docs-explore** | Orient via progressive-disclosure docs before coding | Starting work on unfamiliar subsystem or onboarding to project | tech-lead (Phase 0 research) |
+| **qorvex-test-ios** | Automate and verify iOS app UI on simulator or physical device | Testing iOS apps, verifying UI behavior, taking screenshots | tech-lead (verification phase) |
 | **setup-docs** | Create docs/ structure with INDEX.md for progressive disclosure | New project needs documentation scaffolding | project-docs-explore (consumer of its output) |
 | **update-docs** | Update existing docs to reflect code changes | After code changes that affect documented behavior | project-docs-explore (reads what update-docs writes) |
 | **skill-creator** | Create new skills with proper structure and frontmatter | User wants a new custom skill | skill-reflection (improve after creation) |
@@ -22,52 +22,52 @@ Quick reference for all active skills — when to use each and how they compose.
 | **session-wrap** | End-of-session reflection + learning capture + session handoff (replaces running session-handoff and skill-reflection separately) | End of session, wrapping up, user says goodbye, significant milestone | software-engineering (lessons), skill-reflection (skill issues), all projects (status updates) |
 | **session-handoff** | Persist session context via suda (standalone, for non-reflective handoffs) | Mid-session milestone, quick state save without full reflection | software-engineering (lessons), all projects (status updates) |
 | **nyx** | Search past Claude Code conversation history | Recalling prior decisions, finding past discussions, "did we already…" questions, locating context from previous sessions | session-handoff (recalls what was preserved), software-engineering (find past architecture decisions) |
-| **loki-test-desktop** | Automate and verify macOS desktop application UI via the loki CLI | Testing desktop apps, verifying UI behavior, macOS app testing, accessibility testing, taking screenshots, clicking buttons, inspecting UI trees | project-manager (verification phase), qorvex-test-ios (sibling pattern) |
-| **khora-test-web** | Automate and verify web application UI via the khora CLI and Chrome DevTools Protocol | Testing web apps, browser testing, Chrome automation, verifying web pages, clicking buttons, taking screenshots, checking page content | project-manager (verification phase), loki-test-desktop (sibling pattern) |
-| **xaku-control** | Control terminals via the xaku headless terminal multiplexer | Spawning interactive terminals, starting Claude Code sessions, running REPLs/TUIs, reading terminal output, sending commands | project-manager (interactive tasks), khora-test-web (browser complement) |
+| **loki-test-desktop** | Automate and verify macOS desktop application UI via the loki CLI | Testing desktop apps, verifying UI behavior, macOS app testing, accessibility testing, taking screenshots, clicking buttons, inspecting UI trees | tech-lead (verification phase), qorvex-test-ios (sibling pattern) |
+| **khora-test-web** | Automate and verify web application UI via the khora CLI and Chrome DevTools Protocol | Testing web apps, browser testing, Chrome automation, verifying web pages, clicking buttons, taking screenshots, checking page content | tech-lead (verification phase), loki-test-desktop (sibling pattern) |
+| **xaku-control** | Control terminals via the xaku headless terminal multiplexer | Spawning interactive terminals, starting Claude Code sessions, running REPLs/TUIs, reading terminal output, sending commands | tech-lead (interactive tasks), khora-test-web (browser complement) |
 | **qorvex-app-explorer** | Systematically explore and map an iOS app's UI via qorvex | Mapping app screens, exploring app functionality, discovering UI flows, building screen maps, generating automation scripts | qorvex-test-ios (uses same tool), project-docs-explore (produces documentation) |
 | **skill-trainer** | Validate and harden skills through automated testing and weak-model calibration | Training skills, testing skills, validating skill instructions, calibrating for weaker models, stress-testing before deployment | skill-reflection (improvement loop), all skills (target of training) |
-| **verification-orchestrator** | Auto-detects project type (iOS, desktop, web) and routes to the appropriate QA tool (qorvex, loki, khora) | verify, test, QA, auto-detect platform, check your work | qorvex-test-ios, loki-test-desktop, khora-test-web, project-manager |
-| **wisp-design** | Design and build visual UI layouts using the Wisp desktop canvas and CLI | Designing UI, building layouts, creating mockups, visual design, placing components, arranging elements, iterating on designs | project-manager (design tasks), loki-test-desktop (verify desktop app showing design) |
+| **verification-orchestrator** | Auto-detects project type (iOS, desktop, web) and routes to the appropriate QA tool (qorvex, loki, khora) | verify, test, QA, auto-detect platform, check your work | qorvex-test-ios, loki-test-desktop, khora-test-web, tech-lead |
+| **wisp-design** | Design and build visual UI layouts using the Wisp desktop canvas and CLI | Designing UI, building layouts, creating mockups, visual design, placing components, arranging elements, iterating on designs | tech-lead (design tasks), loki-test-desktop (verify desktop app showing design) |
 | **release** | Cut a versioned release with CI builds and Homebrew distribution | Releasing a tool, cutting a release, bumping version, tagging, publishing to Homebrew | devops (CI pipeline), git-commit (version bump commit) |
-| **global-backlog** | Cross-project task management via `limbo -g` | Global backlog, cross-project tasks, "add to backlog", "what's on the backlog", triage work across projects | project-manager (can pick up backlog items) |
+| **global-backlog** | Cross-project task management via `limbo -g` | Global backlog, cross-project tasks, "add to backlog", "what's on the backlog", triage work across projects | tech-lead (can pick up backlog items) |
 | **status** | Force-refresh all project state — live git, suda, limbo data | "status", "where are we", "catch me up", start of session, verifying state | session-handoff (complements state persistence), global-backlog (reads backlog) |
 
 ## Composition Patterns
 
 ### Multi-file feature work
 1. `/swe-team:project-docs-explore` → read relevant docs
-2. `/swe-team:project-manager` → decompose into tasks, dispatch subagents
+2. `/swe-team:tech-lead` → decompose into tasks, dispatch subagents
 3. `/swe-team:qorvex-test-ios` → verify iOS UI changes in verification phase
 
 ### iOS bug fix
 1. `/swe-team:project-docs-explore` → understand subsystem
-2. `/swe-team:project-manager` → investigate → fix → test
+2. `/swe-team:tech-lead` → investigate → fix → test
 3. `/swe-team:qorvex-test-ios` → reproduce bug, verify fix on device
 
 ### Desktop app verification
 1. `/swe-team:project-docs-explore` → understand the desktop app's subsystem
-2. `/swe-team:project-manager` → decompose into tasks, dispatch subagents
+2. `/swe-team:tech-lead` → decompose into tasks, dispatch subagents
 3. `/swe-team:loki-test-desktop` → verify macOS desktop UI changes (screenshot, inspect tree, interact, verify)
 
 ### Desktop bug fix
 1. `/swe-team:project-docs-explore` → understand subsystem
-2. `/swe-team:project-manager` → investigate → fix → test
+2. `/swe-team:tech-lead` → investigate → fix → test
 3. `/swe-team:loki-test-desktop` → reproduce bug, verify fix on desktop app
 
 ### Web app verification
 1. `/swe-team:project-docs-explore` → understand the web app's subsystem
-2. `/swe-team:project-manager` → decompose into tasks, dispatch subagents
+2. `/swe-team:tech-lead` → decompose into tasks, dispatch subagents
 3. `/swe-team:khora-test-web` → verify web UI changes (launch Chrome, navigate, screenshot, inspect, verify)
 
 ### Web bug fix
 1. `/swe-team:project-docs-explore` → understand subsystem
-2. `/swe-team:project-manager` → investigate → fix → test
+2. `/swe-team:tech-lead` → investigate → fix → test
 3. `/swe-team:khora-test-web` → reproduce bug in browser, verify fix on web app
 
 ### New project setup
 1. `/swe-team:setup-docs` → create docs/ structure
-2. `/swe-team:project-manager` → orchestrate implementation
+2. `/swe-team:tech-lead` → orchestrate implementation
 3. `/swe-team:update-docs` → keep docs current as code evolves
 
 ### Code review workflow
@@ -88,13 +88,13 @@ Quick reference for all active skills — when to use each and how they compose.
 ### SWE Full Cycle (issue → merge)
 1. `/swe-team:software-engineering` → load conventions and architecture knowledge
 2. `/swe-team:project-docs-explore` → understand existing codebase
-3. `/swe-team:project-manager` → decompose work, dispatch subagents (uses `swe-full-cycle` workflow)
+3. `/swe-team:tech-lead` → decompose work, dispatch subagents (uses `swe-full-cycle` workflow)
 4. `/swe-team:test-engineer` → generate tests, run suites, analyze coverage
 5. `/swe-team:code-reviewer` → review all changes for bugs, security, conventions
 6. `/swe-team:devops` → update CI pipeline if needed
 7. Deliver: commit + create PR
 
-This is the primary workflow for the SWE agent team. The project-manager orchestrates all other skills via its `workflows/swe-full-cycle.md` template.
+This is the primary workflow for the SWE agent team. The tech-lead orchestrates all other skills via its `workflows/swe-full-cycle.md` template.
 
 ### New agent creation
 1. `/swe-team:agent-composer` → generate agent definition from requirements
@@ -121,7 +121,7 @@ This is the primary workflow for the SWE agent team. The project-manager orchest
 1. `/swe-team:wisp-design` → build the visual layout on the Wisp canvas using CLI commands
 2. `/swe-team:wisp-design` → screenshot and inspect, iterate on positioning and styling
 3. `/swe-team:wisp-design` → save the final design to a JSON file
-4. `/swe-team:project-manager` → if the design informs code generation, orchestrate implementation from the saved design
+4. `/swe-team:tech-lead` → if the design informs code generation, orchestrate implementation from the saved design
 
 ### Release a tool
 1. `/swe-team:release` → bump version, commit, tag, push, verify CI + Homebrew tap update

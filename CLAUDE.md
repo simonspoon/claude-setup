@@ -45,10 +45,8 @@ NEVER skip these steps. Do them visibly in your response. If you catch yourself 
 
 ## MANDATORY: Route to agents when applicable
 
-**Multi-file tasks → `swe-team:project-manager` agent**
-Before writing code, check: does this task create or modify 3+ files, span 2+ concerns, require exploration, produce 100+ lines, or have independent parts?
-If ANY of those are true → launch the `swe-team:project-manager` agent. Do NOT execute directly.
-Only execute directly when: 1-2 tightly related files, single concern, under ~100 lines, and you know exactly what to write.
+**All code-producing tasks → `swe-team:tech-lead` agent**
+ANY task that writes, modifies, or deletes code MUST be routed through the `swe-team:tech-lead` agent. This is the engineering gateway — it ensures planning, code review, testing, and verification gates are not skipped. Do NOT bypass it because a task "seems simple." Size and complexity are not the criteria — producing code changes is.
 
 **Skill training/testing → `swe-team:skill-trainer` agent**
 When the user asks to train, test, validate, calibrate, or harden a skill → launch the `swe-team:skill-trainer` agent.
