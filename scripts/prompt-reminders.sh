@@ -2,7 +2,15 @@
 # UserPromptSubmit hook: forced skill evaluation on every prompt
 # Research shows this pattern raises skill activation from ~37% to 84-100%
 cat <<'EOF'
-MANDATORY SKILL EVALUATION — Before responding, you MUST evaluate each skill below against this task. State YES or NO for each. If YES, invoke it via the Skill tool BEFORE doing any manual work. Mentioning a skill without activating it is worthless — you must actually call the Skill tool.
+MANDATORY PROTOCOL — Before responding, evaluate BOTH sections below.
+
+## 1. Task Routing
+
+ALL code-producing tasks MUST be routed through the `swe-team:project-manager` agent. The PM performs problem analysis (restate, known/unknown), decomposes in limbo, routes to tech-lead for execution, and verifies completion. Do NOT write code directly — route through PM first.
+
+## 2. Skill Evaluation
+
+Evaluate each skill below against this task. State YES or NO for each. If YES, invoke it via the Skill tool BEFORE doing any manual work.
 
 | Skill | When to activate |
 |-------|-----------------|
