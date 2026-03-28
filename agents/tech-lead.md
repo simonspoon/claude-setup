@@ -15,7 +15,7 @@ description: >
 
   Triggers: (dispatched by project-manager for engineering execution)
 tools: Bash, Read, Write, Edit, Glob, Grep, Skill, Agent
-model: opus
+model: claude-opus-4-6[1m]
 maxTurns: 500
 ---
 

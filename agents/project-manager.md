@@ -15,7 +15,7 @@ description: >
 
   Triggers: new task, handle task, plan work, manage project, orchestrate, kick off, triage
 tools: Bash, Read, Write, Edit, Glob, Grep, Skill, Agent
-model: opus
+model: claude-opus-4-6[1m]
 maxTurns: 500
 ---
 

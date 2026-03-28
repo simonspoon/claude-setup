@@ -18,7 +18,7 @@ description: >
 
   Triggers: train skill, test skill, validate skill, calibrate skill, harden skill, skill training, skill testing
 tools: Bash, Read, Write, Edit, Glob, Grep, Skill
-model: opus
+model: claude-opus-4-6[1m]
 maxTurns: 200
 ---
 
