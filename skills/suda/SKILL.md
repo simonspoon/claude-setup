@@ -20,23 +20,37 @@ The bootstrap is configured in `~/.claude/CLAUDE.md` and `swe-team/CLAUDE.md`. I
 
 ## When to Use
 
-### On session start
-Load relevant context before doing anything else:
+Memory capture is **automatic** — the suda-observer hook analyzes each conversation exchange and stores worthy items without manual intervention. You do not need to store memories during normal conversation. The system uses an **append-only model**: new memories are always appended, never deduplicated inline. A separate consolidation agent handles dedup/merging offline.
+
+Use this skill for **manual operations only**:
+
+### Recall and search
 ```bash
-suda recall --project <current-project> --json
-suda state get session-context --json
+suda recall "commit preferences"              # FTS5 search
+suda recall --project myapp --json             # all memories for a project
 ```
 
-### During conversation — store memories when you learn:
-- **User info** (role, preferences, expertise, working style): type `user`
-- **Feedback** (corrections, confirmations, approach preferences): type `feedback`
-- **Project context** (goals, deadlines, decisions, architecture): type `project`
-- **External resources** (URLs, tool locations, docs, API refs): type `reference`
-
-### On session end
-Persist session context for the next session:
+### Forget / clean up
 ```bash
-suda state set session-context "summary of what happened, decisions made, next steps"
+suda forget 42                                # remove a specific memory
+```
+
+### Project registry management
+```bash
+suda projects                                  # list all projects
+suda project add myapp /path/to/myapp --description "Main web app"
+```
+
+### Session state (managed by session-wrap, but queryable here)
+```bash
+suda state get session-state --json
+suda state list
+```
+
+### Export / Import
+```bash
+suda export --project myapp --format json
+suda import memories.json
 ```
 
 ## Commands
@@ -92,8 +106,8 @@ suda import memories.json                      # import from JSON
 
 ## Key Rules
 
-1. **Deduplicate before storing.** Always check first: `suda recall --json <keywords>`. If a similar memory exists, use `suda update <ID>` instead of creating a duplicate.
-2. **Use `--json` for programmatic reads.** Parse JSON output when you need to act on results. Use human-readable output when displaying to the user.
-3. **Be selective about what to store.** Store durable knowledge — preferences, decisions, context that future sessions need. Do not store transient or obvious information.
-4. **Scope to projects.** Use `--project` when storing and recalling project-specific memories to keep context clean.
+1. **Do not manually store memories.** The suda-observer hook handles memory capture automatically. Only use `suda store` if the user explicitly asks you to remember something.
+2. **Append-only model.** New memories are appended, not deduplicated inline. A future consolidation agent merges and cleans up offline. Do not call `suda update` or check for duplicates before storing.
+3. **Use `--json` for programmatic reads.** Parse JSON output when you need to act on results. Use human-readable output when displaying to the user.
+4. **Scope to projects.** Use `--project` when recalling project-specific memories to keep context clean.
 5. **Keep memory names descriptive and kebab-case.** Names like `prefers-rust-over-python` or `api-v2-architecture-decision` are searchable and self-documenting.

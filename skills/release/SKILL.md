@@ -69,6 +69,8 @@ Common version file patterns:
 
 Update ALL version files found in Step 2. Verify each change with a diff.
 
+For Rust projects, run `cargo check` after bumping `Cargo.toml` to regenerate `Cargo.lock`, then stage both files.
+
 ### Step 4: Run Checks
 
 ```bash

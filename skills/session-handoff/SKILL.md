@@ -1,7 +1,9 @@
 ---
 name: session-handoff
-description: Persist session context via suda (preferred) or flat files (fallback). Captures what happened, decisions made, and priorities for next session.
+description: "DEPRECATED: Use session-wrap instead. This skill's functionality is now Phase 3 of session-wrap."
 ---
+
+> **DEPRECATED:** Use `/swe-team:session-wrap` instead. This skill's functionality (session state persistence) is now Phase 3 of session-wrap. This file is kept for reference only.
 
 # Session Handoff
 

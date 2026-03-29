@@ -1,11 +1,11 @@
 ---
 name: session-wrap
-description: End-of-session skill that reflects on the full session (decisions, approaches, skill usage), captures learnings into suda, and persists session state for the next conversation. Replaces running session-handoff and skill-reflection separately.
+description: End-of-session skill that commits dirty repos, persists session state, and optionally improves skills. Memory capture is handled automatically by hooks — this skill focuses on clean handoff.
 ---
 
 # Session Wrap
 
-Single end-of-session skill. Reflects broadly on what happened, captures durable learnings, and hands off context for next session.
+End-of-session cleanup. Commits outstanding work, persists session state for the next conversation, and optionally improves skills if requested. Memory capture (reflection, learnings, feedback) is handled automatically by the suda-observer hook — this skill does not duplicate that work.
 
 ## When to Invoke
 
@@ -26,61 +26,9 @@ done
 
 For each dirty repo: commit and push using `/swe-team:git-commit`.
 
-## Phase 2: Session Reflection
+## Phase 2: Skill Improvements (only if requested)
 
-Review the full conversation and answer these questions. Write your answers out visibly.
-
-### Decisions & Reasoning
-- What non-obvious decisions were made? Why?
-- Did any decision change mid-session? What caused the pivot?
-- Were there trade-offs? What was chosen and what was sacrificed?
-
-### Approaches & Outcomes
-- What approaches worked well? Anything surprisingly effective?
-- What failed or had to be retried? What was the root cause?
-- Did anything take longer than expected? Why?
-
-### Process & Feedback
-- Did the user correct you? What was the correction?
-- Did the user confirm a non-obvious approach? (Quiet signals: "yes exactly", "perfect", accepting without pushback)
-- Were there process improvements discovered?
-
-### Skill Usage (only if skills were invoked)
-- Which skills were used? Did any underperform?
-- Were there moments where a skill's instructions were unclear or incomplete?
-- Did you have to work around a skill limitation?
-
-**For each reflection item:** decide if it's worth persisting. Not everything is — routine decisions and expected outcomes don't need memories. Focus on the surprising, the corrective, and the reusable.
-
-## Phase 3: Persist Learnings
-
-For each item worth keeping, store it via suda. Check for duplicates first.
-
-```bash
-# Check before creating
-suda recall --json "<keywords>" 2>/dev/null
-
-# Store new learnings by type
-suda store --type feedback --name "<name>" --description "<desc>" "<content with Why and How to apply>"
-suda store --type project --name "<name>" --project "<project>" --description "<desc>" "<content>"
-suda store --type user --name "<name>" --description "<desc>" "<content>"
-
-# Update existing memories if they need revision
-suda update <ID> --content "<updated content>"
-```
-
-**Rules for what to store:**
-- User corrections → feedback memory (always)
-- User confirmations of non-obvious approaches → feedback memory
-- Project decisions with reasoning → project memory
-- New info about user preferences/role → user memory
-- Skill improvements needed → note in reflection output (don't store, act on it in Phase 4)
-
-**Do NOT store:** routine decisions, things derivable from code/git, ephemeral task state, things already in suda.
-
-## Phase 4: Skill Improvements (conditional)
-
-Only run this phase if Phase 2 identified skill issues. For each issue:
+Only run this phase if the user explicitly asks for skill improvements. For each issue:
 
 1. Read the skill's SKILL.md
 2. Categorize: structure, clarity, guardrails, templates, or critical requirements
@@ -89,7 +37,7 @@ Only run this phase if Phase 2 identified skill issues. For each issue:
 
 Skip this phase entirely if no skill issues were found. Don't force it.
 
-## Phase 5: Session Handoff
+## Phase 3: Session Handoff
 
 Read existing session state, merge new context, and persist.
 
@@ -112,20 +60,18 @@ Session state must include:
 
 **Merge, don't replace.** Read existing state first. Carry forward active project info and priorities that haven't changed.
 
-## Phase 6: Confirm
+## Phase 4: Confirm
 
 Tell the user:
-- Key learnings captured (count and brief summary)
+- Repos committed/pushed (if any)
 - Skill improvements applied (if any)
 - Session state persisted
-- Any repos that were committed/pushed
 
 Keep it brief.
 
 ## Rules
 
-1. **Be selective.** Not every session produces durable learnings. That's fine.
-2. **Be specific.** "Improved workflow" is useless. "Backgrounding the subshell in Stop hooks prevents blocking the prompt" is useful.
-3. **Merge, don't replace** session state.
-4. **Don't duplicate** existing suda memories — check first.
-5. **Reflection is visible.** Write your Phase 2 answers out so the user can see and correct them.
+1. **Be specific.** Session state should capture concrete accomplishments and decisions, not vague summaries.
+2. **Merge, don't replace** session state.
+3. **Don't store memories.** The suda-observer hook handles memory capture automatically. This skill only persists session state.
+4. **Skill improvements are opt-in.** Only run Phase 2 if the user explicitly requests it.

@@ -33,6 +33,7 @@ Quick reference for all active skills — when to use each and how they compose.
 | **global-backlog** | Cross-project task management via `limbo -g` | Global backlog, cross-project tasks, "add to backlog", "what's on the backlog", triage work across projects | tech-lead (can pick up backlog items) |
 | **session-init** | Load suda context via Sonnet agent, return condensed briefing instead of raw JSON | Session start (via CLAUDE.md bootstrap), "reload context", "refresh suda" | status (complements live state), session-wrap (reads what session-init consumes) |
 | **status** | Force-refresh all project state — live git, suda, limbo data | "status", "where are we", "catch me up", start of session, verifying state | session-handoff (complements state persistence), global-backlog (reads backlog) |
+| **dream** | Offline memory consolidation — deduplicates, prunes, and synthesizes suda memories | Manually via `/dream`, on schedule, when suda recall output is noisy or redundant | suda (operates on suda memories), session-init (cleaner data for next session), skill-reflection (produces skill improvement recommendations) |
 
 ## Composition Patterns
 
@@ -127,6 +128,11 @@ This is the primary workflow for the SWE agent team. The tech-lead orchestrates 
 ### Release a tool
 1. `/swe-team:release` → bump version, commit, tag, push, verify CI + Homebrew tap update
 2. `/swe-team:devops` → if release workflow needs changes
+
+### Memory maintenance
+1. `/swe-team:dream` → inventory, consolidate duplicates, prune stale entries, synthesize recommendations
+2. `/swe-team:skill-reflection` → act on skill improvement recommendations from dream report
+3. `/swe-team:session-init` → next session loads cleaner, deduplicated context
 
 ### Team improvement cycle
 1. `/swe-team:team-evaluator` → run benchmarks, identify gaps
