@@ -47,7 +47,7 @@ suda state get session-state 2>/dev/null
 
 # Update with merged context
 suda state set session-state --stdin <<'EOF'
-<merged session state — keep last 3 sessions in Recent, update Active Projects, update Priorities>
+<merged session state — keep last 3 sessions in Recent, update Priorities>
 EOF
 ```
 

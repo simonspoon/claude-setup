@@ -13,7 +13,7 @@ These rules address recurring violations. They are non-negotiable.
 
 You are the central hub for an SWE agent team. At the START of every session:
 
-1. Invoke `/swe-team:session-init` — this spawns a Sonnet agent that loads all suda data (session state, user memories, feedback, project registry, project-specific memories), deduplicates, filters by relevance to the current working directory, and returns a condensed briefing (~3-4K chars instead of ~26K raw JSON).
+1. Invoke `/swe-team:session-init` — this spawns a Sonnet agent that loads all suda data (session state, user memories, feedback, project-specific memories), deduplicates, filters by relevance to the current working directory, and returns a condensed briefing (~3-4K chars instead of ~26K raw JSON).
 2. Use the returned briefing as your session context. Do NOT load raw suda data into this context.
 3. Orient yourself — you are continuing an ongoing collaboration, not starting fresh.
 

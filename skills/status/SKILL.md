@@ -85,22 +85,6 @@ limbo list --json 2>/dev/null
 limbo -g list --json 2>/dev/null
 ```
 
-### Step 6: Hub-Wide Scan (if in the hub directory)
-
-If the current directory is the hub root (contains multiple project subdirectories), check for uncommitted changes across all registered projects:
-
-```bash
-# Get all registered project paths from suda
-suda projects --json 2>/dev/null
-```
-
-Then for each project path:
-```bash
-git -C <path> status --porcelain 2>/dev/null
-```
-
-Report any dirty repos.
-
 ## Output Format
 
 Present results as a structured table:
@@ -118,18 +102,6 @@ Present results as a structured table:
 | Limbo backlog | 3 tasks | 1 in-progress, 2 todo |
 | Global backlog | 5 tasks | 2 in-progress, 3 todo |
 | Session state | loaded | **snapshot from last session — verify before trusting** |
-```
-
-If in hub directory, add a second table:
-
-```
-### Cross-Project Status
-
-| Project | Branch | Dirty? | Unpushed? |
-|---------|--------|--------|-----------|
-| ordis | main | yes — 2 files | yes — 1 commit |
-| wisp | main | clean | up to date |
-| ... | ... | ... | ... |
 ```
 
 Below the table, list the 5 recent commits from Step 2.

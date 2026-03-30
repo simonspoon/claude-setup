@@ -30,8 +30,7 @@ Run these commands and capture all output:
 1. suda state get session-state 2>/dev/null
 2. suda recall --type user --json --limit 20 2>/dev/null
 3. suda recall --type feedback --json --limit 30 2>/dev/null
-4. suda projects --json 2>/dev/null
-5. Detect the current working directory (pwd) and match it against the project registry. If it matches a registered project, also run:
+4. Detect the current working directory (pwd). Derive the project name from the directory basename and run:
    suda recall --project <project-name> --json 2>/dev/null
 
 ## Step 2: Process
@@ -71,9 +70,6 @@ Return a structured briefing in this exact format:
 
 ### User Profile
 <1-2 sentence summary of who the user is and how to work with them>
-
-### Active Projects
-<table of registered projects with name, path, description>
 
 ### Project Context (if in a registered project)
 <relevant project-specific memories>
