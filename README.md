@@ -39,7 +39,8 @@ Agents are autonomous subprocesses that handle complex, multi-step tasks. They a
 
 | Agent | Description |
 |-------|-------------|
-| **tech-lead** | Engineering gateway for all code-producing tasks. Plans work, enforces review/test/verification gates, orchestrates parallel execution via limbo. Automatically invoked for any task that writes, modifies, or deletes code. |
+| **project-manager** | Entry point for all work. Performs problem analysis, decomposes tasks in limbo, routes to tech-lead for execution, and verifies completion. Owns the full task lifecycle from intake through delivery. |
+| **tech-lead** | Engineering executor. Receives decomposed task trees from the project-manager, dispatches parallel subagents, runs integration checkpoints, and enforces review/test gates. |
 | **code-review-agent** | Performs thorough, convention-aware code reviews combining security analysis, bug detection, performance checks, and style enforcement. |
 | **researcher-agent** | Conducts deep research across codebases, documentation, and the web. Produces structured, actionable reports. |
 | **skill-trainer** | Tests, validates, and hardens skills through structured multi-phase training and weak-model (Haiku) calibration. |
@@ -62,8 +63,13 @@ Skills are specialized capabilities invoked with `/swe-team:skill-name`. They pr
 
 | Skill | Command | Description |
 |-------|---------|-------------|
-| **tech-lead** | `/swe-team:tech-lead` | Engineering gateway for all code tasks — plans, reviews, tests, and verifies via limbo and parallel subagents. |
-| **session-handoff** | `/swe-team:session-handoff` | Preserves strategic context, decisions, and priorities in SESSION_STATE.md for the next session. |
+| **tech-lead** | `/swe-team:tech-lead` | Engineering executor — receives tasks from the project-manager, dispatches subagents, enforces review/test gates. |
+| **session-init** | `/swe-team:session-init` | Loads and summarizes suda context at session start via a Sonnet agent, keeping the main context window lean. |
+| **session-wrap** | `/swe-team:session-wrap` | End-of-session cleanup — commits dirty repos, persists session state, and optionally improves skills. |
+| **status** | `/swe-team:status` | Force-refreshes all project state by re-running every command live. Never uses cached data. |
+| **global-backlog** | `/swe-team:global-backlog` | Manages cross-project tasks in the global limbo backlog (`~/.limbo/`). |
+| **suda** | `/swe-team:suda` | Manages structured memories, project registry, and session state via the suda CLI. |
+| **dream** | `/swe-team:dream` | Offline memory consolidation — deduplicates, prunes, and synthesizes suda memories. |
 | **project-docs-explore** | `/swe-team:project-docs-explore` | Discovers and reads a project's documentation structure for quick onboarding. |
 
 ### Verification & Testing
@@ -99,17 +105,18 @@ Skills are specialized capabilities invoked with `/swe-team:skill-name`. They pr
 | **agent-composer** | `/swe-team:agent-composer` | Generates agent definition files from role descriptions, capabilities, and existing skills. |
 | **team-evaluator** | `/swe-team:team-evaluator` | Benchmarks the SWE agent team's capabilities, scores results, and identifies gaps. |
 
-### DevOps & Infrastructure
+### DevOps & Release
 
 | Skill | Command | Description |
 |-------|---------|-------------|
 | **devops** | `/swe-team:devops` | Creates and manages CI/CD pipelines, Docker configs, deployment scripts, and infrastructure. |
+| **release** | `/swe-team:release` | Release engineering — bumps versions, tags, pushes, and publishes to Homebrew. |
 
 ### Utilities
 
 | Skill | Command | Description |
 |-------|---------|-------------|
-| **cmux-control** | `/swe-team:cmux-control` | Controls terminals and browsers via cmux CLI. |
+| **xaku-control** | `/swe-team:xaku-control` | Controls terminals via the xaku headless terminal multiplexer. |
 | **nyx** | `/swe-team:nyx` | Searches past Claude Code conversation history. |
 
 ## Commands
@@ -124,11 +131,11 @@ Skills are specialized capabilities invoked with `/swe-team:skill-name`. They pr
 
 Several skills depend on external CLI tools. Install them so the skills work out of the box.
 
-All tools below (except cmux) are available via Homebrew:
+All tools are available via Homebrew:
 
 ```bash
 brew tap simonspoon/tap
-brew install limbo nyx qorvex loki khora wisp-cli suda
+brew install limbo nyx qorvex loki khora wisp-cli suda xaku
 ```
 
 Or download pre-built binaries from each tool's GitHub Releases page.
@@ -159,14 +166,14 @@ A desktop design surface that agents control through a CLI over WebSocket. The W
 
 ### [suda](https://github.com/simonspoon/suda) — Structured Memory for Agents
 
-SQLite-backed memory and knowledge management CLI. Stores typed memories (user, feedback, project, reference), manages session state, and maintains a project registry. Used by the session startup protocol and **session-handoff** skill to persist context across conversations.
+SQLite-backed memory and knowledge management CLI. Stores typed memories (user, feedback, project, reference), manages session state, and maintains a project registry. Used by the **session-init** and **session-wrap** skills to persist context across conversations.
 
-### [cmux](https://cmux.dev) — Terminal & Browser Multiplexer
+### [xaku](https://github.com/simonspoon/xaku) — Headless Terminal Multiplexer
 
-Third-party tool for spawning and controlling terminals, Claude Code sessions, and browser windows. Used by the **cmux-control** skill to run REPLs, TUIs, interactive shells, and browser-based testing from within agent workflows.
+Headless terminal multiplexer for spawning and controlling terminal sessions, Claude Code sessions, REPLs, and TUIs. Used by the **xaku-control** skill to run interactive shells, send commands, and read terminal output from within agent workflows.
 
 ---
 
 ## CLAUDE.md
 
-The included `CLAUDE.md` configures Claude Code with a session startup/handoff protocol, mandatory pre-task steps, and automatic routing to the tech-lead agent for all code-producing tasks.
+The included `CLAUDE.md` configures Claude Code with a session startup/wrap protocol, mandatory pre-task steps, and automatic routing to the project-manager agent for all code-producing tasks.
