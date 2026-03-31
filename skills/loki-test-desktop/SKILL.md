@@ -153,6 +153,10 @@ loki screenshot --window "$WINDOW" --output after-save.png
 ### Screenshots
 - **Default output is `loki-screenshot.png` in the current directory**: Use `--output` to specify a path.
 - **`--screen` captures all displays**: Use `--window <ID>` for a specific window.
+- **WebGL/GPU-rendered content may appear blank in screenshots.** Apps using WebGL canvases (xterm.js terminals, 3D viewers, GPU-composited layers) can show as solid-colored rectangles in screenshots even though content is rendering correctly on screen. If a screenshot shows a blank area where content should be, verify the process is running (`ps aux | grep ...`) or check the accessibility tree (`loki tree`) before assuming a rendering bug.
+
+### Tauri Apps
+- **Always launch Tauri apps via the .app bundle**, not the bare binary. Running `target/release/<name>` directly may produce a blank webview because the binary lacks the bundle resource context. Use `open target/release/bundle/macos/<Name>.app` or `pnpm tauri dev` for testing.
 
 ### Empty Results
 - **`loki windows` returns an empty JSON array `[]`** when no windows match the filter -- it does not error. Always check the array length before extracting `.[0].window_id`.
