@@ -19,9 +19,8 @@ Quick reference for all active skills — when to use each and how they compose.
 | **team-evaluator** | Benchmark and score team capabilities, identify gaps | Evaluating team performance, running benchmarks, auditing capabilities, gap analysis | All skills (benchmarks exercise them), skill-reflection (improvement loop) |
 | **simplify** | Analyze code for unnecessary complexity and apply focused refactorings | Simplifying code, refactoring, cleanup, reducing complexity, extracting modules, removing duplication | software-engineering (conventions), test-engineer (verify tests), code-reviewer (review result) |
 | **code-index** | Generate structural index of codebase (files + exported symbols) | Indexing a project, generating code map, understanding project structure | project-docs-explore (complements docs with code structure) |
-| **session-wrap** | End-of-session reflection + learning capture + session handoff (replaces running session-handoff and skill-reflection separately) | End of session, wrapping up, user says goodbye, significant milestone | software-engineering (lessons), skill-reflection (skill issues), all projects (status updates) |
-| **session-handoff** | Persist session context via suda (standalone, for non-reflective handoffs) | Mid-session milestone, quick state save without full reflection | software-engineering (lessons), all projects (status updates) |
-| **nyx** | Search past Claude Code conversation history | Recalling prior decisions, finding past discussions, "did we already…" questions, locating context from previous sessions | session-handoff (recalls what was preserved), software-engineering (find past architecture decisions) |
+| **session-wrap** | End-of-session cleanup — commits dirty repos and optionally improves skills | End of session, wrapping up, user says goodbye, significant milestone | software-engineering (lessons), skill-reflection (skill issues) |
+| **nyx** | Search past Claude Code conversation history | Recalling prior decisions, finding past discussions, "did we already…" questions, locating context from previous sessions | software-engineering (find past architecture decisions) |
 | **loki-test-desktop** | Automate and verify macOS desktop application UI via the loki CLI | Testing desktop apps, verifying UI behavior, macOS app testing, accessibility testing, taking screenshots, clicking buttons, inspecting UI trees | tech-lead (verification phase), qorvex-test-ios (sibling pattern) |
 | **khora-test-web** | Automate and verify web application UI via the khora CLI and Chrome DevTools Protocol | Testing web apps, browser testing, Chrome automation, verifying web pages, clicking buttons, taking screenshots, checking page content | tech-lead (verification phase), loki-test-desktop (sibling pattern) |
 | **xaku-control** | Control terminals via the xaku headless terminal multiplexer | Spawning interactive terminals, starting Claude Code sessions, running REPLs/TUIs, reading terminal output, sending commands | tech-lead (interactive tasks), khora-test-web (browser complement) |
@@ -31,9 +30,8 @@ Quick reference for all active skills — when to use each and how they compose.
 | **wisp-design** | Design and build visual UI layouts using the Wisp desktop canvas and CLI | Designing UI, building layouts, creating mockups, visual design, placing components, arranging elements, iterating on designs | tech-lead (design tasks), loki-test-desktop (verify desktop app showing design) |
 | **release** | Cut a versioned release with CI builds and Homebrew distribution | Releasing a tool, cutting a release, bumping version, tagging, publishing to Homebrew | devops (CI pipeline), git-commit (version bump commit) |
 | **global-backlog** | Cross-project task management via `limbo -g` | Global backlog, cross-project tasks, "add to backlog", "what's on the backlog", triage work across projects | tech-lead (can pick up backlog items) |
-| **session-init** | Load suda context via Sonnet agent, return condensed briefing instead of raw JSON | Session start (via CLAUDE.md bootstrap), "reload context", "refresh suda" | status (complements live state), session-wrap (reads what session-init consumes) |
-| **status** | Force-refresh all project state — live git, suda, limbo data | "status", "where are we", "catch me up", start of session, verifying state | session-handoff (complements state persistence), global-backlog (reads backlog) |
-| **dream** | Offline memory consolidation — deduplicates, prunes, and synthesizes suda memories | Manually via `/dream`, on schedule, when suda recall output is noisy or redundant | suda (operates on suda memories), session-init (cleaner data for next session), skill-reflection (produces skill improvement recommendations) |
+| **status** | Force-refresh all project state — live git, suda, limbo data | "status", "where are we", "catch me up", start of session, verifying state | global-backlog (reads backlog) |
+| **dream** | Offline memory consolidation — deduplicates, prunes, and synthesizes suda memories | Manually via `/dream`, on schedule, when suda recall output is noisy or redundant | suda (operates on suda memories), skill-reflection (produces skill improvement recommendations) |
 
 ## Composition Patterns
 
@@ -113,8 +111,7 @@ This is the primary workflow for the SWE agent team. The tech-lead orchestrates 
 
 ### Recall prior context
 1. `/swe-team:nyx` → search conversation history for past decisions, discussions, or patterns
-2. `/swe-team:session-wrap` or `/swe-team:session-handoff` → check session state for strategic context
-3. Combine findings to inform current task
+2. Combine findings to inform current task
 
 ### End of session
 1. `/swe-team:session-wrap` → reflects on session, captures learnings to suda, improves skills if needed, persists state
@@ -132,7 +129,6 @@ This is the primary workflow for the SWE agent team. The tech-lead orchestrates 
 ### Memory maintenance
 1. `/swe-team:dream` → inventory, consolidate duplicates, prune stale entries, synthesize recommendations
 2. `/swe-team:skill-reflection` → act on skill improvement recommendations from dream report
-3. `/swe-team:session-init` → next session loads cleaner, deduplicated context
 
 ### Team improvement cycle
 1. `/swe-team:team-evaluator` → run benchmarks, identify gaps

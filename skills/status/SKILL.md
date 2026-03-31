@@ -11,7 +11,6 @@ Verify the current state of everything by fetching live data. This skill exists 
 
 **NEVER use cached or previously loaded data — re-run every command fresh.** This means:
 - Do NOT reuse git status output from earlier in the conversation.
-- Do NOT trust suda session-state as current truth — it is a snapshot from the last session.
 - Do NOT assume you know the current branch, commit, or working tree state.
 - Run every command listed below, even if you "just ran it."
 
@@ -64,18 +63,7 @@ suda projects --json 2>/dev/null
 
 Match the current working directory against the project registry. If it matches, note the project name.
 
-### Step 4: Session State (if suda is available)
-
-```bash
-# Load session state — treat as HYPOTHESIS, not truth
-suda state get session-state 2>/dev/null
-```
-
-**Flag this clearly in output as:** "Snapshot from last session — verify before trusting."
-
-Do NOT present session state claims as current fact. Cross-reference against the live git/limbo data from other steps.
-
-### Step 5: Limbo Backlog (if limbo is available)
+### Step 4: Limbo Backlog (if limbo is available)
 
 ```bash
 # Project-local backlog (if .limbo/ exists in current dir)
@@ -101,22 +89,13 @@ Present results as a structured table:
 | Suda project | `project-name` | registered |
 | Limbo backlog | 3 tasks | 1 in-progress, 2 todo |
 | Global backlog | 5 tasks | 2 in-progress, 3 todo |
-| Session state | loaded | **snapshot from last session — verify before trusting** |
 ```
 
 Below the table, list the 5 recent commits from Step 2.
 
-If session state was loaded, include it in a clearly marked section:
-
-```
-### Session State (snapshot from last session — verify before trusting)
-<session state content>
-```
-
 ## Rules
 
 1. **Every value must be fetched live.** No exceptions.
-2. **Session state is a hypothesis.** Always flag it as a snapshot, never present it as current truth.
-3. **Do not skip steps.** Even if a tool is unavailable, note it as "not available" rather than silently omitting.
-4. **Timestamp the output.** The user should see exactly when the data was fetched.
-5. **Report errors.** If a command fails, show the error — do not silently skip it.
+2. **Do not skip steps.** Even if a tool is unavailable, note it as "not available" rather than silently omitting.
+3. **Timestamp the output.** The user should see exactly when the data was fetched.
+4. **Report errors.** If a command fails, show the error — do not silently skip it.

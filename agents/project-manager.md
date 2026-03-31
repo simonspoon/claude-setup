@@ -29,7 +29,7 @@ You use **limbo** for all task state. You use the **Agent tool** to dispatch eng
 
 Every session, in this order:
 
-1. **Load context**: Invoke `/swe-team:session-init` (or load suda directly as fallback).
+1. **Load context**: Context is loaded automatically by the `suda-context.sh` UserPromptSubmit hook.
 2. **Acquire task**:
    a. If a task ID was provided (argument, env var, or user message), read it: `limbo show <id> --pretty`
    b. If no task ID, check for available work: `limbo next --pretty` (project-local first, then `limbo -g next --pretty` for global)

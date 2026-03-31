@@ -1,6 +1,6 @@
 ---
 name: suda
-description: Manage structured memories, project registry, and session state using the suda CLI. Use for storing user preferences, feedback, project context, and reference material. Triggers on remember this, store memory, recall, what do you know about me, session state, project registry, memory management.
+description: Manage structured memories and project registry using the suda CLI. Use for storing user preferences, feedback, project context, and reference material. Triggers on remember this, store memory, recall, what do you know about me, project registry, memory management.
 ---
 
 # suda — Structured Memory Management
@@ -14,9 +14,7 @@ Store and recall structured memories in a SQLite database via the `suda` CLI. Me
 
 ## Setup
 
-Suda context is loaded at session start via `/swe-team:session-init`, which spawns a Sonnet agent to load, deduplicate, and summarize all suda data into a compact briefing. This keeps raw JSON out of the main context window.
-
-The bootstrap is configured in `~/.claude/CLAUDE.md` and `swe-team/CLAUDE.md`. If session-init is unavailable, the bootstrap falls back to loading suda directly.
+Suda context is loaded automatically at session start by the `suda-context.sh` UserPromptSubmit hook, which injects relevant memories per-prompt. No manual skill invocation is needed.
 
 ## When to Use
 
@@ -39,12 +37,6 @@ suda forget 42                                # remove a specific memory
 ```bash
 suda projects                                  # list all projects
 suda project add myapp /path/to/myapp --description "Main web app"
-```
-
-### Session state (managed by session-wrap, but queryable here)
-```bash
-suda state get session-state --json
-suda state list
 ```
 
 ### Export / Import
@@ -87,14 +79,6 @@ suda projects                                  # list all projects
 suda project add myapp /path/to/myapp --description "Main web app"
 suda project show myapp
 suda project remove myapp
-```
-
-### Session state (key-value)
-```bash
-suda state set current-task "implementing auth flow"
-suda state get current-task --json
-suda state list
-suda state delete current-task
 ```
 
 ### Export / Import

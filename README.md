@@ -64,11 +64,10 @@ Skills are specialized capabilities invoked with `/swe-team:skill-name`. They pr
 | Skill | Command | Description |
 |-------|---------|-------------|
 | **tech-lead** | `/swe-team:tech-lead` | Engineering executor — receives tasks from the project-manager, dispatches subagents, enforces review/test gates. |
-| **session-init** | `/swe-team:session-init` | Loads and summarizes suda context at session start via a Sonnet agent, keeping the main context window lean. |
-| **session-wrap** | `/swe-team:session-wrap` | End-of-session cleanup — commits dirty repos, persists session state, and optionally improves skills. |
+| **session-wrap** | `/swe-team:session-wrap` | End-of-session cleanup — commits dirty repos and optionally improves skills. |
 | **status** | `/swe-team:status` | Force-refreshes all project state by re-running every command live. Never uses cached data. |
 | **global-backlog** | `/swe-team:global-backlog` | Manages cross-project tasks in the global limbo backlog (`~/.limbo/`). |
-| **suda** | `/swe-team:suda` | Manages structured memories, project registry, and session state via the suda CLI. |
+| **suda** | `/swe-team:suda` | Manages structured memories and project registry via the suda CLI. |
 | **dream** | `/swe-team:dream` | Offline memory consolidation — deduplicates, prunes, and synthesizes suda memories. |
 | **project-docs-explore** | `/swe-team:project-docs-explore` | Discovers and reads a project's documentation structure for quick onboarding. |
 
@@ -166,7 +165,7 @@ A desktop design surface that agents control through a CLI over WebSocket. The W
 
 ### [suda](https://github.com/simonspoon/suda) — Structured Memory for Agents
 
-SQLite-backed memory and knowledge management CLI. Stores typed memories (user, feedback, project, reference), manages session state, and maintains a project registry. Used by the **session-init** and **session-wrap** skills to persist context across conversations.
+SQLite-backed memory and knowledge management CLI. Stores typed memories (user, feedback, project, reference) and maintains a project registry. Context is loaded automatically by the `suda-context.sh` UserPromptSubmit hook.
 
 ### [xaku](https://github.com/simonspoon/xaku) — Headless Terminal Multiplexer
 
