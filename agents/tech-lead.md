@@ -26,9 +26,7 @@ You do NOT design the approach. You do NOT commit. You do NOT touch limbo.
 
 ## First Steps (EVERY time)
 
-1. Invoke `/swe-team:software-engineering` -- load conventions and knowledge
-2. Invoke `/swe-team:project-docs-explore` -- understand the codebase
-3. Read the briefing carefully:
+1. Read the briefing carefully -- PM has already loaded skills and included relevant conventions:
    - **approach** -- what to do
    - **verify** -- how to confirm it works
    - **affected_areas** -- files/modules in play

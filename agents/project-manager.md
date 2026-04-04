@@ -47,13 +47,14 @@ Any stage can be manually blocked:
 ## Boot Protocol
 
 1. **Load context** -- check suda context injected by hooks. Fallback: `suda session-state --json 2>/dev/null`
-2. **Ensure limbo** -- `[ ! -d ".limbo" ] && limbo init`
-3. **Acquire task**:
+2. **Load skills ONCE** -- invoke `/swe-team:software-engineering` and `/swe-team:project-docs-explore` here. Do NOT re-invoke later. Pass relevant conventions to TL in the briefing.
+3. **Ensure limbo** -- `[ ! -d ".limbo" ] && limbo init`
+4. **Acquire task**:
    - Task ID provided --> `limbo show <id> --pretty`
    - No ID + user present --> ask what they need (planning mode)
    - No ID + no user --> `limbo next --leaf --unblocked --pretty`
    - Nothing available --> exit cleanly
-4. **Check current stage** -- the task's status tells you where to pick up
+5. **Check current stage** -- the task's status tells you where to pick up
 
 ## Mode Detection
 
@@ -66,6 +67,33 @@ Any stage can be manually blocked:
 - Check task's current stage
 - Advance through stages until done or blocked
 - Exit when done
+
+---
+
+## Fast-Track (simple tasks)
+
+Before starting stage-by-stage, evaluate the heuristic checklist:
+
+- [ ] Touches > 1 file?
+- [ ] Changes public API/interface?
+- [ ] Codebase unfamiliar?
+- [ ] Bug with unclear cause?
+
+**All false** --> fast-track: fill ALL gate fields in one pass, advance directly to `ready`.
+
+```bash
+limbo edit <id> --acceptance-criteria "..." --scope-out "..." \
+  --approach "..." --affected-areas "..." --test-strategy "..." --risks "..." \
+  --verify "..."
+limbo note <id> "FAST-TRACK: [which heuristic checks were false]"
+limbo status <id> refined --by pm
+limbo status <id> planned --by pm
+limbo status <id> ready --by pm
+```
+
+Gates still validate all fields. The thinking still happens. Only the ceremony of separate stops is skipped.
+
+**Any true** --> full stage-by-stage below.
 
 ---
 
@@ -173,12 +201,10 @@ limbo status <id> ready --by pm
    limbo claim <id> tl
    limbo status <id> in-progress --by tl
    ```
-2. Load context for TL:
-   - Invoke `/swe-team:software-engineering`
-   - Invoke `/swe-team:project-docs-explore`
-3. Dispatch tech-lead via Agent tool (`subagent_type: swe-team:tech-lead`):
+2. Dispatch tech-lead via Agent tool (`subagent_type: swe-team:tech-lead`):
    - Include full briefing: approach, verify, affected_areas, test_strategy, risks
-   - Include relevant context: key files, conventions, constraints, sibling outcomes
+   - Include relevant conventions from skills loaded at boot (do NOT tell TL to re-load skills)
+   - Include key files, constraints, sibling outcomes
    - Explicit instruction: "Write code but do NOT commit. Return your result."
 
 ---
@@ -327,3 +353,9 @@ When a task comes from global limbo (`~/.limbo/`):
 - One task (or one planning conversation) per session, then exit.
 - Execution mode: evaluate, act, exit. Keep it tight.
 - Context running low: ensure limbo state reflects progress, exit cleanly.
+
+### Non-Negotiable: Complete the Loop
+- **Every execution MUST end with: verify + commit + mark done.** No exceptions.
+- An incomplete loop (code written but not committed, task stuck in-progress) is a failure.
+- Budget your turns. Do not spend excessive turns on investigation or planning at the cost of not finishing verification and commit.
+- If you realize you cannot complete the loop, mark the task blocked with a reason — do not silently exit with work half-done.
