@@ -23,12 +23,12 @@ Investigate and fix a bug systematically.
 
 ```
 Investigate
-├── Reproduce issue          (action: Create reproduction steps)
-└── Identify root cause      (action: Trace the bug to source, blocked by: Reproduce issue)
+├── Reproduce issue          (approach: Create reproduction steps)
+└── Identify root cause      (approach: Trace the bug to source, blocked by: Reproduce issue)
 Fix                          (blocked by: Investigate)
 Test                         (blocked by: Fix)
-├── Verify fix               (action: Confirm original issue is resolved)
-└── Regression tests         (action: Ensure no regressions)
+├── Verify fix               (approach: Confirm original issue is resolved)
+└── Regression tests         (approach: Ensure no regressions)
 ```
 
 ### feature
@@ -36,7 +36,7 @@ Test                         (blocked by: Fix)
 Design, implement, test, and review a new feature.
 
 ```
-Design     (action: Research requirements and design the approach)
+Design     (approach: Research requirements and design the approach)
 Implement  (blocked by: Design)
 Test       (blocked by: Implement)
 Review     (blocked by: Test)
@@ -73,8 +73,8 @@ Deliver                      (blocked by: Retrospective)
 
 ## Tips
 
-- Templates create tasks with generic action/verify/result text. Update them with `limbo note` to add project-specific context.
+- Templates create tasks with generic approach/verify/result text. Update them with `limbo note` to add project-specific context.
 - The `--parent` flag is useful when a template represents one phase of a larger project.
-- Templates respect the same structured fields as manual tasks (action, verify, result).
+- Templates respect the same structured fields as manual tasks (approach, verify, result).
 
 Back to [SKILL.md](../SKILL.md) | [limbo Commands](limbo-commands.md)
